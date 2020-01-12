@@ -73,7 +73,7 @@ public class JBoss6VFS extends VFS {
       // Prevent Instantiation
     }
 
-    static VirtualFile getChild(URL url) throws IOException {
+    static VirtualFile getChildMethod(URL url) throws IOException {
       Object o = invoke(getChild, VFS, url);
       return o == null ? null : new VirtualFile(o);
     }
@@ -156,7 +156,7 @@ public class JBoss6VFS extends VFS {
   @Override
   public List<String> list(URL url, String path) throws IOException {
     VirtualFile directory;
-    directory = VFS.getChild(url);
+    directory = VFS.getChildMethod(url);
     if (directory == null) {
       return Collections.emptyList();
     }
