@@ -16,9 +16,9 @@
 package org.apache.ibatis.executor.loader;
 
 /**
- * @author Clinton Begin
+ * @author Eduardo Macarron
  */
 @Deprecated
-public class CglibProxyFactory extends org.apache.ibatis.executor.loader.cglib.CglibProxyFactory {
+public final class JavassistProxyFactoryClass extends org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory {
   /* no-op */
 }

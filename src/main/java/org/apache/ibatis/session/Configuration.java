@@ -916,7 +916,7 @@ public class Configuration {
 
         private static final long serialVersionUID = -4950446264854982944L;
         private final String name;
-        private BiFunction<V, V, String> conflictMessageProducer;
+        private transient BiFunction<V, V, String> conflictMessageProducer;
 
         public StrictMap(String name, int initialCapacity, float loadFactor) {
             super(initialCapacity, loadFactor);
