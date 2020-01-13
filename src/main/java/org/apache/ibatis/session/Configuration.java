@@ -880,20 +880,14 @@ public class Configuration {
                 if (value instanceof ResultMap) {
                     ResultMap entryResultMap = (ResultMap) value;
                     if (!entryResultMap.hasNestedResultMaps() && entryResultMap.getDiscriminator() != null) {
-
-                      checkGloballyForDiscriminatedNestedResultMapsSupport(rm,entryResultMap);
-
+                        Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap().values();
+                        if (discriminatedResultMapNames.contains(rm.getId())) {
+                            entryResultMap.forceNestedResultMaps();
+                        }
                     }
                 }
             }
         }
-    }
-
-    public void checkGloballyForDiscriminatedNestedResultMapsSupport(ResultMap rm, ResultMap entryResultMap){
-      Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap().values();
-      if (discriminatedResultMapNames.contains(rm.getId())) {
-          entryResultMap.forceNestedResultMaps();
-      }
     }
 
     // Slow but a one time cost. A better solution is welcome.
@@ -916,7 +910,7 @@ public class Configuration {
 
         private static final long serialVersionUID = -4950446264854982944L;
         private final String name;
-        private transient BiFunction<V, V, String> conflictMessageProducer;
+        private BiFunction<V, V, String> conflictMessageProducer;
 
         public StrictMap(String name, int initialCapacity, float loadFactor) {
             super(initialCapacity, loadFactor);

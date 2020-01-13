@@ -430,61 +430,46 @@ public class MapperAnnotationBuilder {
         }
       }
     } else if (resolvedReturnType instanceof ParameterizedType) {
-      getReturnTypeSupport(method, returnType,resolvedReturnType);
-    }
-
-    return returnType;
-  }
-
-  private Class<?> getReturnTypeSupport(Method method , Class<?> returnType, Type resolvedReturnType) {
-    ParameterizedType parameterizedType = (ParameterizedType) resolvedReturnType;
-    Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-    if (Collection.class.isAssignableFrom(rawType) || Cursor.class.isAssignableFrom(rawType)) {
-      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-      if (actualTypeArguments != null && actualTypeArguments.length == 1) {
-        Type returnTypeParameter = actualTypeArguments[0];
-        if (returnTypeParameter instanceof Class<?>) {
-          returnType = (Class<?>) returnTypeParameter;
-        } else if (returnTypeParameter instanceof ParameterizedType) {
-          // (gcode issue #443) actual type can be a also a parameterized type
-          returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
-        } else if (returnTypeParameter instanceof GenericArrayType) {
-          Class<?> componentType = (Class<?>) ((GenericArrayType) returnTypeParameter).getGenericComponentType();
-          // (gcode issue #525) support List<byte[]>
-          returnType = Array.newInstance(componentType, 0).getClass();
-        }
-      }
-    } else if (method.isAnnotationPresent(MapKey.class) && Map.class.isAssignableFrom(rawType)) {
-          getReturnTypeSupport2(method, returnType,parameterizedType);
-        }
-     else if (Optional.class.equals(rawType)) {
-      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-      Type returnTypeParameter = actualTypeArguments[0];
-      if (returnTypeParameter instanceof Class<?>) {
-        returnType = (Class<?>) returnTypeParameter;
-      }
-    }
-    return returnType;
-  }
-
-    private Class<?> getReturnTypeSupport2(Method method, Class<?> returnType, ParameterizedType parameterizedType) {
-      // (gcode issue 504) Do not look into Maps if there is not MapKey annotation
-      Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        if (actualTypeArguments != null && actualTypeArguments.length == 2) {
-          Type returnTypeParameter = actualTypeArguments[1];
+      ParameterizedType parameterizedType = (ParameterizedType) resolvedReturnType;
+      Class<?> rawType = (Class<?>) parameterizedType.getRawType();
+      if (Collection.class.isAssignableFrom(rawType) || Cursor.class.isAssignableFrom(rawType)) {
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        if (actualTypeArguments != null && actualTypeArguments.length == 1) {
+          Type returnTypeParameter = actualTypeArguments[0];
           if (returnTypeParameter instanceof Class<?>) {
             returnType = (Class<?>) returnTypeParameter;
           } else if (returnTypeParameter instanceof ParameterizedType) {
-            // (gcode issue 443) actual type can be a also a parameterized type
+            // (gcode issue #443) actual type can be a also a parameterized type
             returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
+          } else if (returnTypeParameter instanceof GenericArrayType) {
+            Class<?> componentType = (Class<?>) ((GenericArrayType) returnTypeParameter).getGenericComponentType();
+            // (gcode issue #525) support List<byte[]>
+            returnType = Array.newInstance(componentType, 0).getClass();
           }
+        }
+      } else if (method.isAnnotationPresent(MapKey.class) && Map.class.isAssignableFrom(rawType)) {
+        // (gcode issue 504) Do not look into Maps if there is not MapKey annotation
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+          if (actualTypeArguments != null && actualTypeArguments.length == 2) {
+            Type returnTypeParameter = actualTypeArguments[1];
+            if (returnTypeParameter instanceof Class<?>) {
+              returnType = (Class<?>) returnTypeParameter;
+            } else if (returnTypeParameter instanceof ParameterizedType) {
+              // (gcode issue 443) actual type can be a also a parameterized type
+              returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
+            }
+          }
+      } else if (Optional.class.equals(rawType)) {
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        Type returnTypeParameter = actualTypeArguments[0];
+        if (returnTypeParameter instanceof Class<?>) {
+          returnType = (Class<?>) returnTypeParameter;
+        }
+      }
+    }
 
+    return returnType;
   }
-  return returnType;
-
-}
-
-
 
   private SqlSource getSqlSourceFromAnnotations(Method method, Class<?> parameterType, LanguageDriver languageDriver) {
     try {

@@ -183,7 +183,6 @@ public class TypeParameterResolver {
             return parentAsType.getActualTypeArguments()[i];
           }
         }
-
       }
       if (declaringClass.isAssignableFrom(parentAsClass)) {
         return resolveTypeVar(typeVar, parentAsType, declaringClass);

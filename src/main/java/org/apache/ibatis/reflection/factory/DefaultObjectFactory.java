@@ -83,28 +83,26 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           throw e;
         }
       }
-    } catch (Exception e){
-    StringBuilder argTypes = new StringBuilder();
-    if (constructorArgTypes != null && !constructorArgTypes.isEmpty()) {
-      for (Class<?> argType : constructorArgTypes) {
-        argTypes.append(argType.getSimpleName());
-        argTypes.append(",");
+    } catch (Exception e) {
+      StringBuilder argTypes = new StringBuilder();
+      if (constructorArgTypes != null && !constructorArgTypes.isEmpty()) {
+        for (Class<?> argType : constructorArgTypes) {
+          argTypes.append(argType.getSimpleName());
+          argTypes.append(",");
+        }
+        argTypes.deleteCharAt(argTypes.length() - 1); // remove trailing ,
       }
-      argTypes.deleteCharAt(argTypes.length() - 1); // remove trailing ,
-    }
-    StringBuilder argValues = new StringBuilder();
-    if (constructorArgs != null && !constructorArgs.isEmpty()) {
-      for (Object argValue : constructorArgs) {
-        argValues.append(String.valueOf(argValue));
-        argValues.append(",");
+      StringBuilder argValues = new StringBuilder();
+      if (constructorArgs != null && !constructorArgs.isEmpty()) {
+        for (Object argValue : constructorArgs) {
+          argValues.append(String.valueOf(argValue));
+          argValues.append(",");
+        }
+        argValues.deleteCharAt(argValues.length() - 1); // remove trailing ,
       }
-      argValues.deleteCharAt(argValues.length() - 1); // remove trailing ,
-    }
-    throw new ReflectionException("Error instantiating  with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
+      throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
     }
   }
-
-
 
   protected Class<?> resolveInterface(Class<?> type) {
     Class<?> classToCreate;

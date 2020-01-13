@@ -40,9 +40,6 @@ import org.apache.ibatis.logging.LogFactory;
  * @author Ben Gunter
  */
 public class DefaultVFS extends VFS {
-  final String LISTING="Listing";
-  final String NOT_A_JAR="Not a JAR";
-
   private static final Log log = LogFactory.getLog(DefaultVFS.class);
 
   /** The magic header that indicates a JAR (ZIP) file. */
@@ -65,7 +62,7 @@ public class DefaultVFS extends VFS {
       if (jarUrl != null) {
         is = jarUrl.openStream();
         if (log.isDebugEnabled()) {
-          log.debug(LISTING + url);
+          log.debug("Listing " + url);
         }
         resources = listResources(new JarInputStream(is), path);
       }
@@ -77,17 +74,53 @@ public class DefaultVFS extends VFS {
             // referenced by the URL isn't actually a JAR
             is = url.openStream();
             try (JarInputStream jarInput = new JarInputStream(is)) {
-
-              listSupport(jarInput, children,url);
-
+              if (log.isDebugEnabled()) {
+                log.debug("Listing " + url);
+              }
+              for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
+                if (log.isDebugEnabled()) {
+                  log.debug("Jar entry: " + entry.getName());
+                }
+                children.add(entry.getName());
+              }
             }
           }
           else {
+            /*
+             * Some servlet containers allow reading from directory resources like a
+             * text file, listing the child resources one per line. However, there is no
+             * way to differentiate between directory and file resources just by reading
+             * them. To work around that, as each line is read, try to look it up via
+             * the class loader as a child of the current resource. If any line fails
+             * then we assume the current resource is not a directory.
+             */
+            is = url.openStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            List<String> lines = new ArrayList<>();
+            for (String line; (line = reader.readLine()) != null;) {
+              if (log.isDebugEnabled()) {
+                log.debug("Reader entry: " + line);
+              }
+              lines.add(line);
+              if (getResources(path + "/" + line).isEmpty()) {
+                lines.clear();
+                break;
+              }
+            }
 
-          listSupport2(is,children,url,path);
-
+            if (!lines.isEmpty()) {
+              if (log.isDebugEnabled()) {
+                log.debug("Listing " + url);
+              }
+              children.addAll(lines);
+            }
           }
         } catch (FileNotFoundException e) {
+          /*
+           * For file URLs the openStream() call might fail, depending on the servlet
+           * container, because directories can't be opened for reading. If that happens,
+           * then list the directory directly instead.
+           */
           if ("file".equals(url.getProtocol())) {
             File file = new File(url.getFile());
             if (log.isDebugEnabled()) {
@@ -95,12 +128,13 @@ public class DefaultVFS extends VFS {
             }
             if (file.isDirectory()) {
               if (log.isDebugEnabled()) {
-                  log.debug(LISTING + url);
+                  log.debug("Listing " + url);
               }
               children = Arrays.asList(file.list());
             }
           }
           else {
+            // No idea where the exception came from so rethrow it
             throw e;
           }
         }
@@ -131,48 +165,6 @@ public class DefaultVFS extends VFS {
       }
     }
   }
-
-
-  public List<String>listSupport(JarInputStream jarInput,List<String>children, URL url)throws IOException{
-    if (log.isDebugEnabled()) {
-      log.debug(LISTING + url);
-    }
-    for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
-      if (log.isDebugEnabled()) {
-        log.debug("Jar entry: " + entry.getName());
-      }
-      children.add(entry.getName());
-    }
-    return children;
-  }
-
-  public List<String>listSupport2(InputStream is,List<String>children,URL url,String path)throws IOException{
-    is = url.openStream();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    List<String> lines = new ArrayList<>();
-    for (String line; (line = reader.readLine()) != null;) {
-      if (log.isDebugEnabled()) {
-        log.debug("Reader entry: " + line);
-      }
-      lines.add(line);
-      if (getResources(path + "/" + line).isEmpty()) {
-        lines.clear();
-        break;
-      }
-    }
-
-    if (!lines.isEmpty()) {
-      if (log.isDebugEnabled()) {
-        log.debug(LISTING + url);
-      }
-      children.addAll(lines);
-
-
-  }
-      return children;
-}
-
-
 
   /**
    * List the names of the entries in the given {@link JarInputStream} that begin with the
@@ -253,7 +245,7 @@ public class DefaultVFS extends VFS {
     }
     else {
       if (log.isDebugEnabled()) {
-        log.debug(NOT_A_JAR + jarUrl);
+        log.debug("Not a JAR: " + jarUrl);
       }
       return null;
     }
@@ -267,7 +259,7 @@ public class DefaultVFS extends VFS {
       else {
         // WebLogic fix: check if the URL's file exists in the filesystem.
         if (log.isDebugEnabled()) {
-          log.debug(NOT_A_JAR + jarUrl);
+          log.debug("Not a JAR: " + jarUrl);
         }
         jarUrl.replace(0, jarUrl.length(), testUrl.getFile());
         File file = new File(jarUrl.toString());
@@ -296,7 +288,7 @@ public class DefaultVFS extends VFS {
     }
 
     if (log.isDebugEnabled()) {
-      log.debug(NOT_A_JAR + jarUrl);
+      log.debug("Not a JAR: " + jarUrl);
     }
     return null;
   }

@@ -49,9 +49,35 @@ public class GenericTokenParser {
         builder.append(src, offset, start - offset - 1).append(openToken);
         offset = start + openToken.length();
       } else {
-
-        parseSupport(offset,expression,builder,src,start,text);
-
+        // found open token. let's search close token.
+        if (expression == null) {
+          expression = new StringBuilder();
+        } else {
+          expression.setLength(0);
+        }
+        builder.append(src, offset, start - offset);
+        offset = start + openToken.length();
+        int end = text.indexOf(closeToken, offset);
+        while (end > -1) {
+          if (end > offset && src[end - 1] == '\\') {
+            // this close token is escaped. remove the backslash and continue.
+            expression.append(src, offset, end - offset - 1).append(closeToken);
+            offset = end + closeToken.length();
+            end = text.indexOf(closeToken, offset);
+          } else {
+            expression.append(src, offset, end - offset);
+            offset = end + closeToken.length();
+            break;
+          }
+        }
+        if (end == -1) {
+          // close token was not found.
+          builder.append(src, start, src.length - start);
+          offset = src.length;
+        } else {
+          builder.append(handler.handleToken(expression.toString()));
+          offset = end + closeToken.length();
+        }
       }
       start = text.indexOf(openToken, offset);
     }
@@ -60,39 +86,4 @@ public class GenericTokenParser {
     }
     return builder.toString();
   }
-
-  public int parseSupport(int offset,StringBuilder expression,StringBuilder builder,char[] src,int start,String text){
-    if (expression == null) {
-      expression = new StringBuilder();
-    } else {
-      expression.setLength(0);
-    }
-    builder.append(src, offset, start - offset);
-    offset = start + openToken.length();
-    int end = text.indexOf(closeToken, offset);
-    while (end > -1) {
-
-      if (end > offset && src[end - 1] == '\\') {
-        // this close token is escaped. remove the backslash and continue.
-        expression.append(src, offset, end - offset - 1).append(closeToken);
-        offset = end + closeToken.length();
-        end = text.indexOf(closeToken, offset);
-      } else {
-        expression.append(src, offset, end - offset);
-        offset = end + closeToken.length();
-        break;
-      }
-
-    }
-
-    if (end == -1) {
-      // close token was not found.
-      builder.append(src, start, src.length - start);
-      offset = src.length;
-    } else {
-      builder.append(handler.handleToken(expression.toString()));
-      offset = end + closeToken.length();
-  }
-  return offset;
-}
 }
