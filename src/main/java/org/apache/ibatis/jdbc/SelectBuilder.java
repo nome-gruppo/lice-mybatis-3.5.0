@@ -42,70 +42,70 @@ public class SelectBuilder {
   }
 
   public static void SELECT(String columns) {
-    sql().SELECT(columns);
+    sqlMethod().SELECT(columns);
   }
 
   public static void SELECT_DISTINCT(String columns) {
-    sql().SELECT_DISTINCT(columns);
+    sqlMethod().SELECT_DISTINCT(columns);
   }
 
   public static void FROM(String table) {
-    sql().FROM(table);
+    sqlMethod().FROM(table);
   }
 
   public static void JOIN(String join) {
-    sql().JOIN(join);
+    sqlMethod().JOIN(join);
   }
 
   public static void INNER_JOIN(String join) {
-    sql().INNER_JOIN(join);
+    sqlMethod().INNER_JOIN(join);
   }
 
   public static void LEFT_OUTER_JOIN(String join) {
-    sql().LEFT_OUTER_JOIN(join);
+    sqlMethod().LEFT_OUTER_JOIN(join);
   }
 
   public static void RIGHT_OUTER_JOIN(String join) {
-    sql().RIGHT_OUTER_JOIN(join);
+    sqlMethod().RIGHT_OUTER_JOIN(join);
   }
 
   public static void OUTER_JOIN(String join) {
-    sql().OUTER_JOIN(join);
+    sqlMethod().OUTER_JOIN(join);
   }
 
   public static void WHERE(String conditions) {
-    sql().WHERE(conditions);
+    sqlMethod().WHERE(conditions);
   }
 
   public static void OR() {
-    sql().OR();
+    sqlMethod().OR();
   }
 
   public static void AND() {
-    sql().AND();
+    sqlMethod().AND();
   }
 
   public static void GROUP_BY(String columns) {
-    sql().GROUP_BY(columns);
+    sqlMethod().GROUP_BY(columns);
   }
 
   public static void HAVING(String conditions) {
-    sql().HAVING(conditions);
+    sqlMethod().HAVING(conditions);
   }
 
   public static void ORDER_BY(String columns) {
-    sql().ORDER_BY(columns);
+    sqlMethod().ORDER_BY(columns);
   }
 
   public static String SQL() {
     try {
-      return sql().toString();
+      return sqlMethod().toString();
     } finally {
       RESET();
     }
   }
 
-  private static SQL sql() {
+  private static SQL sqlMethod() {
     return localSQL.get();
   }
 

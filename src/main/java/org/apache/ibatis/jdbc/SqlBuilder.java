@@ -41,90 +41,90 @@ public class SqlBuilder {
   }
 
   public static void UPDATE(String table) {
-    sql().UPDATE(table);
+    sqlMethodSqlBuilder().UPDATE(table);
   }
 
   public static void SET(String sets) {
-    sql().SET(sets);
+    sqlMethodSqlBuilder().SET(sets);
   }
 
   public static String SQL() {
     try {
-      return sql().toString();
+      return sqlMethodSqlBuilder().toString();
     } finally {
         RESET();
     }
   }
 
   public static void INSERT_INTO(String tableName) {
-    sql().INSERT_INTO(tableName);
+    sqlMethodSqlBuilder().INSERT_INTO(tableName);
   }
 
   public static void VALUES(String columns, String values) {
-    sql().VALUES(columns, values);
+    sqlMethodSqlBuilder().VALUES(columns, values);
   }
 
   public static void SELECT(String columns) {
-    sql().SELECT(columns);
+    sqlMethodSqlBuilder().SELECT(columns);
   }
 
   public static void SELECT_DISTINCT(String columns) {
-    sql().SELECT_DISTINCT(columns);
+    sqlMethodSqlBuilder().SELECT_DISTINCT(columns);
   }
 
   public static void DELETE_FROM(String table) {
-    sql().DELETE_FROM(table);
+    sqlMethodSqlBuilder().DELETE_FROM(table);
   }
 
   public static void FROM(String table) {
-    sql().FROM(table);
+    sqlMethodSqlBuilder().FROM(table);
   }
 
   public static void JOIN(String join) {
-    sql().JOIN(join);
+    sqlMethodSqlBuilder().JOIN(join);
   }
 
   public static void INNER_JOIN(String join) {
-    sql().INNER_JOIN(join);
+    sqlMethodSqlBuilder().INNER_JOIN(join);
   }
 
   public static void LEFT_OUTER_JOIN(String join) {
-    sql().LEFT_OUTER_JOIN(join);
+    sqlMethodSqlBuilder().LEFT_OUTER_JOIN(join);
   }
 
   public static void RIGHT_OUTER_JOIN(String join) {
-    sql().RIGHT_OUTER_JOIN(join);
+    sqlMethodSqlBuilder().RIGHT_OUTER_JOIN(join);
   }
 
   public static void OUTER_JOIN(String join) {
-    sql().OUTER_JOIN(join);
+    sqlMethodSqlBuilder().OUTER_JOIN(join);
   }
 
   public static void WHERE(String conditions) {
-    sql().WHERE(conditions);
+    sqlMethodSqlBuilder().WHERE(conditions);
   }
 
   public static void OR() {
-    sql().OR();
+    sqlMethodSqlBuilder().OR();
   }
 
   public static void AND() {
-    sql().AND();
+    sqlMethodSqlBuilder().AND();
   }
 
   public static void GROUP_BY(String columns) {
-    sql().GROUP_BY(columns);
+    sqlMethodSqlBuilder().GROUP_BY(columns);
   }
 
   public static void HAVING(String conditions) {
-    sql().HAVING(conditions);
+    sqlMethodSqlBuilder().HAVING(conditions);
   }
 
   public static void ORDER_BY(String columns) {
-    sql().ORDER_BY(columns);
+    sqlMethodSqlBuilder().ORDER_BY(columns);
   }
 
-  private static SQL sql() {
+  private static SQL sqlMethodSqlBuilder() {
     return localSQL.get();
   }
 
