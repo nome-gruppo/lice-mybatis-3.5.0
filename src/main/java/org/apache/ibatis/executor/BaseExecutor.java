@@ -56,6 +56,8 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public abstract class BaseExecutor implements Executor {
 
+    final String EXECUTOR_WAS_CLOSED="Executor was closed";
+
     private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
     //事务
@@ -99,7 +101,7 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public Transaction getTransaction() {
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         return transaction;
     }
@@ -136,7 +138,7 @@ public abstract class BaseExecutor implements Executor {
     public int update(MappedStatement ms, Object parameter) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing an update").object(ms.getId());
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         clearLocalCache();
         return doUpdate(ms, parameter);
@@ -149,7 +151,7 @@ public abstract class BaseExecutor implements Executor {
 
     public List<BatchResult> flushStatements(boolean isRollBack) throws SQLException {
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         return doFlushStatements(isRollBack);
     }
@@ -166,7 +168,7 @@ public abstract class BaseExecutor implements Executor {
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         if (queryStack == 0 && ms.isFlushCacheRequired()) {
             clearLocalCache();
@@ -206,7 +208,7 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType) {
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         DeferredLoad deferredLoad = new DeferredLoad(resultObject, property, key, localCache, configuration, targetType);
         if (deferredLoad.canLoad()) {
@@ -219,7 +221,7 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
         if (closed) {
-            throw new ExecutorException("Executor was closed.");
+            throw new ExecutorException(EXECUTOR_WAS_CLOSED);
         }
         CacheKey cacheKey = new CacheKey();
         cacheKey.update(ms.getId());

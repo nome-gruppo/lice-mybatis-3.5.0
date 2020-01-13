@@ -40,6 +40,9 @@ import org.apache.ibatis.logging.LogFactory;
  * @author Ben Gunter
  */
 public class DefaultVFS extends VFS {
+  final String LISTING="Listing";
+  final String NOT_A_JAR="Not a JAR";
+
   private static final Log log = LogFactory.getLog(DefaultVFS.class);
 
   /** The magic header that indicates a JAR (ZIP) file. */
@@ -62,7 +65,7 @@ public class DefaultVFS extends VFS {
       if (jarUrl != null) {
         is = jarUrl.openStream();
         if (log.isDebugEnabled()) {
-          log.debug("Listing " + url);
+          log.debug(LISTING + url);
         }
         resources = listResources(new JarInputStream(is), path);
       }
@@ -92,7 +95,7 @@ public class DefaultVFS extends VFS {
             }
             if (file.isDirectory()) {
               if (log.isDebugEnabled()) {
-                  log.debug("Listing " + url);
+                  log.debug(LISTING + url);
               }
               children = Arrays.asList(file.list());
             }
@@ -132,7 +135,7 @@ public class DefaultVFS extends VFS {
 
   public List<String>listSupport(JarInputStream jarInput,List<String>children, URL url)throws IOException{
     if (log.isDebugEnabled()) {
-      log.debug("Listing " + url);
+      log.debug(LISTING + url);
     }
     for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
       if (log.isDebugEnabled()) {
@@ -160,7 +163,7 @@ public class DefaultVFS extends VFS {
 
     if (!lines.isEmpty()) {
       if (log.isDebugEnabled()) {
-        log.debug("Listing " + url);
+        log.debug(LISTING + url);
       }
       children.addAll(lines);
 
@@ -250,7 +253,7 @@ public class DefaultVFS extends VFS {
     }
     else {
       if (log.isDebugEnabled()) {
-        log.debug("Not a JAR: " + jarUrl);
+        log.debug(NOT_A_JAR + jarUrl);
       }
       return null;
     }
@@ -264,7 +267,7 @@ public class DefaultVFS extends VFS {
       else {
         // WebLogic fix: check if the URL's file exists in the filesystem.
         if (log.isDebugEnabled()) {
-          log.debug("Not a JAR: " + jarUrl);
+          log.debug(NOT_A_JAR + jarUrl);
         }
         jarUrl.replace(0, jarUrl.length(), testUrl.getFile());
         File file = new File(jarUrl.toString());
@@ -293,7 +296,7 @@ public class DefaultVFS extends VFS {
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("Not a JAR: " + jarUrl);
+      log.debug(NOT_A_JAR + jarUrl);
     }
     return null;
   }
