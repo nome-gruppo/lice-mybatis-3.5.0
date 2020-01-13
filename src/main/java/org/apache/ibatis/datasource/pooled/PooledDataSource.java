@@ -419,82 +419,11 @@ public class PooledDataSource implements DataSource {
                             log.debug("Created connection " + conn.getRealHashCode() + ".");
                         }
                     } else {
-                        // Cannot create new connection
-                        PooledConnection oldestActiveConnection = state.activeConnections.get(0);
-                        long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
-                        if (longestCheckoutTime > poolMaximumCheckoutTime) {
-                            // Can claim overdue connection
-                            state.claimedOverdueConnectionCount++;
-                            state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
-                            state.accumulatedCheckoutTime += longestCheckoutTime;
-                            state.activeConnections.remove(oldestActiveConnection);
-                            if (!oldestActiveConnection.getRealConnection().getAutoCommit()) {
-                                try {
-                                    oldestActiveConnection.getRealConnection().rollback();
-                                } catch (SQLException e) {
-                  /*
-                     Just log a message for debug and continue to execute the following
-                     statement like nothing happened.
-                     Wrap the bad connection with a new PooledConnection, this will help
-                     to not interrupt current executing thread and give current thread a
-                     chance to join the next competition for another valid/good database
-                     connection. At the end of this loop, bad {@link @conn} will be set as null.
-                   */
-                                    log.debug("Bad connection. Could not roll back");
-                                }
-                            }
-                            conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
-                            conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
-                            conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
-                            oldestActiveConnection.invalidate();
-                            if (log.isDebugEnabled()) {
-                                log.debug("Claimed overdue connection " + conn.getRealHashCode() + ".");
-                            }
-                        } else {
-                            // Must wait
-                            try {
-                                if (!countedWait) {
-                                    state.hadToWaitCount++;
-                                    countedWait = true;
-                                }
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Waiting as long as " + poolTimeToWait + " milliseconds for connection.");
-                                }
-                                long wt = System.currentTimeMillis();
-                                state.wait(poolTimeToWait);
-                                state.accumulatedWaitTime += System.currentTimeMillis() - wt;
-                            } catch (InterruptedException e) {
-                                break;
-                            }
-                        }
+                        popConnectionSupport(conn,countedWait);
                     }
                 }
                 if (conn != null) {
-                    // ping to server and check the connection is valid or not
-                    if (conn.isValid()) {
-                        if (!conn.getRealConnection().getAutoCommit()) {
-                            conn.getRealConnection().rollback();
-                        }
-                        conn.setConnectionTypeCode(assembleConnectionTypeCode(dataSource.getUrl(), username, password));
-                        conn.setCheckoutTimestamp(System.currentTimeMillis());
-                        conn.setLastUsedTimestamp(System.currentTimeMillis());
-                        state.activeConnections.add(conn);
-                        state.requestCount++;
-                        state.accumulatedRequestTime += System.currentTimeMillis() - t;
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("A bad connection (" + conn.getRealHashCode() + ") was returned from the pool, getting another connection.");
-                        }
-                        state.badConnectionCount++;
-                        localBadConnectionCount++;
-                        conn = null;
-                        if (localBadConnectionCount > (poolMaximumIdleConnections + poolMaximumLocalBadConnectionTolerance)) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("PooledDataSource: Could not get a good connection to the database.");
-                            }
-                            throw new SQLException("PooledDataSource: Could not get a good connection to the database.");
-                        }
-                    }
+                    popConnectionSupport2(conn, localBadConnectionCount, username,password,t);
                 }
             }
 
@@ -508,6 +437,81 @@ public class PooledDataSource implements DataSource {
         }
 
         return conn;
+    }
+
+    private PooledConnection popConnectionSupport(PooledConnection conn, boolean countedWait)throws SQLException{
+      // Cannot create new connection
+      PooledConnection oldestActiveConnection = state.activeConnections.get(0);
+      long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
+      if (longestCheckoutTime > poolMaximumCheckoutTime) {
+          // Can claim overdue connection
+          state.claimedOverdueConnectionCount++;
+          state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
+          state.accumulatedCheckoutTime += longestCheckoutTime;
+          state.activeConnections.remove(oldestActiveConnection);
+          if (!oldestActiveConnection.getRealConnection().getAutoCommit()) {
+              try {
+                  oldestActiveConnection.getRealConnection().rollback();
+              } catch (SQLException e) {
+
+                  log.debug("Bad connection. Could not roll back");
+              }
+          }
+          conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
+          conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
+          conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
+          oldestActiveConnection.invalidate();
+          if (log.isDebugEnabled()) {
+              log.debug("Claimed overdue connection " + conn.getRealHashCode() + ".");
+          }
+      } else {
+          // Must wait
+          try {
+              if (!countedWait) {
+                  state.hadToWaitCount++;
+                  countedWait = true;
+              }
+              if (log.isDebugEnabled()) {
+                  log.debug("Waiting as long as " + poolTimeToWait + " milliseconds for connection.");
+              }
+              long wt = System.currentTimeMillis();
+              state.wait(poolTimeToWait);
+              state.accumulatedWaitTime += System.currentTimeMillis() - wt;
+          } catch (InterruptedException e) {
+              return null;
+          }
+      }
+      return conn;
+    }
+
+
+  private PooledConnection popConnectionSupport2(PooledConnection conn,  int localBadConnectionCount, String username, String password ,long t)throws SQLException{
+      // ping to server and check the connection is valid or not
+      if (conn.isValid()) {
+          if (!conn.getRealConnection().getAutoCommit()) {
+              conn.getRealConnection().rollback();
+          }
+          conn.setConnectionTypeCode(assembleConnectionTypeCode(dataSource.getUrl(), username, password));
+          conn.setCheckoutTimestamp(System.currentTimeMillis());
+          conn.setLastUsedTimestamp(System.currentTimeMillis());
+          state.activeConnections.add(conn);
+          state.requestCount++;
+          state.accumulatedRequestTime += System.currentTimeMillis() - t;
+      } else {
+          if (log.isDebugEnabled()) {
+              log.debug("A bad connection (" + conn.getRealHashCode() + ") was returned from the pool, getting another connection.");
+          }
+          state.badConnectionCount++;
+          localBadConnectionCount++;
+          conn = null;
+          if (localBadConnectionCount > (poolMaximumIdleConnections + poolMaximumLocalBadConnectionTolerance)) {
+              if (log.isDebugEnabled()) {
+                  log.debug("PooledDataSource: Could not get a good connection to the database.");
+              }
+              throw new SQLException("PooledDataSource: Could not get a good connection to the database.");
+          }
+        }
+      return conn;
     }
 
     /**

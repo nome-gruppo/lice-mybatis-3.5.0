@@ -74,53 +74,17 @@ public class DefaultVFS extends VFS {
             // referenced by the URL isn't actually a JAR
             is = url.openStream();
             try (JarInputStream jarInput = new JarInputStream(is)) {
-              if (log.isDebugEnabled()) {
-                log.debug("Listing " + url);
-              }
-              for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
-                if (log.isDebugEnabled()) {
-                  log.debug("Jar entry: " + entry.getName());
-                }
-                children.add(entry.getName());
-              }
+
+              listSupport(jarInput, children,url);
+
             }
           }
           else {
-            /*
-             * Some servlet containers allow reading from directory resources like a
-             * text file, listing the child resources one per line. However, there is no
-             * way to differentiate between directory and file resources just by reading
-             * them. To work around that, as each line is read, try to look it up via
-             * the class loader as a child of the current resource. If any line fails
-             * then we assume the current resource is not a directory.
-             */
-            is = url.openStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            List<String> lines = new ArrayList<>();
-            for (String line; (line = reader.readLine()) != null;) {
-              if (log.isDebugEnabled()) {
-                log.debug("Reader entry: " + line);
-              }
-              lines.add(line);
-              if (getResources(path + "/" + line).isEmpty()) {
-                lines.clear();
-                break;
-              }
-            }
 
-            if (!lines.isEmpty()) {
-              if (log.isDebugEnabled()) {
-                log.debug("Listing " + url);
-              }
-              children.addAll(lines);
-            }
+          listSupport2(is,children,url,path);
+
           }
         } catch (FileNotFoundException e) {
-          /*
-           * For file URLs the openStream() call might fail, depending on the servlet
-           * container, because directories can't be opened for reading. If that happens,
-           * then list the directory directly instead.
-           */
           if ("file".equals(url.getProtocol())) {
             File file = new File(url.getFile());
             if (log.isDebugEnabled()) {
@@ -134,7 +98,6 @@ public class DefaultVFS extends VFS {
             }
           }
           else {
-            // No idea where the exception came from so rethrow it
             throw e;
           }
         }
@@ -165,6 +128,48 @@ public class DefaultVFS extends VFS {
       }
     }
   }
+
+
+  public List<String>listSupport(JarInputStream jarInput,List<String>children, URL url)throws IOException{
+    if (log.isDebugEnabled()) {
+      log.debug("Listing " + url);
+    }
+    for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
+      if (log.isDebugEnabled()) {
+        log.debug("Jar entry: " + entry.getName());
+      }
+      children.add(entry.getName());
+    }
+    return children;
+  }
+
+  public List<String>listSupport2(InputStream is,List<String>children,URL url,String path)throws IOException{
+    is = url.openStream();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    List<String> lines = new ArrayList<>();
+    for (String line; (line = reader.readLine()) != null;) {
+      if (log.isDebugEnabled()) {
+        log.debug("Reader entry: " + line);
+      }
+      lines.add(line);
+      if (getResources(path + "/" + line).isEmpty()) {
+        lines.clear();
+        break;
+      }
+    }
+
+    if (!lines.isEmpty()) {
+      if (log.isDebugEnabled()) {
+        log.debug("Listing " + url);
+      }
+      children.addAll(lines);
+
+
+  }
+      return children;
+}
+
+
 
   /**
    * List the names of the entries in the given {@link JarInputStream} that begin with the
