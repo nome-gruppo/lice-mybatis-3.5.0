@@ -185,7 +185,7 @@ public class Reflector {
           }
         }
       }
-      if (match == null) {
+      if (match == null&&exception!=null) {
         throw exception;
       } else {
         addSetMethod(propName, match);

@@ -148,7 +148,7 @@ public class ResultSetWrapper {
     final Set<String> mappedColumns = prependPrefixes(resultMap.getMappedColumns(), upperColumnPrefix);
     for (String columnName : columnNames) {
       final String upperColumnName = columnName.toUpperCase(Locale.ENGLISH);
-      if (mappedColumns.contains(upperColumnName)) {
+      if (mappedColumns != null &&mappedColumns.contains(upperColumnName)) {
         mappedColumnNames.add(upperColumnName);
       } else {
         unmappedColumnNames.add(columnName);
