@@ -170,23 +170,27 @@ public class XMLConfigBuilder extends BaseBuilder {
     //解析<typeAliases></typeAliases>
     private void typeAliasesElement(XNode parent) {
         if (parent != null) {
-            for (XNode child : parent.getChildren()) {
-                if ("package".equals(child.getName())) {
-                    String typeAliasPackage = child.getStringAttribute("name");
-                    configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
-                } else {
-                    String alias = child.getStringAttribute("alias");
-                    String type = child.getStringAttribute("type");
-                    try {
-                        Class<?> clazz = Resources.classForName(type);
-                        if (alias == null) {
-                            typeAliasRegistry.registerAlias(clazz);
-                        } else {
-                            typeAliasRegistry.registerAlias(alias, clazz);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        throw new BuilderException("Error registering typeAlias for '" + alias + "'. Cause: " + e, e);
+            typeAliasesElementFor(parent);
+        }
+    }//end method
+
+    private void typeAliasesElementFor (XNode parent) {
+        for (XNode child : parent.getChildren()) {
+            if ("package".equals(child.getName())) {
+                String typeAliasPackage = child.getStringAttribute("name");
+                configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
+            } else {
+                String alias = child.getStringAttribute("alias");
+                String type = child.getStringAttribute("type");
+                try {
+                    Class<?> clazz = Resources.classForName(type);
+                    if (alias == null) {
+                        typeAliasRegistry.registerAlias(clazz);
+                    } else {
+                        typeAliasRegistry.registerAlias(alias, clazz);
                     }
+                } catch (ClassNotFoundException e) {
+                    throw new BuilderException("Error registering typeAlias for '" + alias + "'. Cause: " + e, e);
                 }
             }
         }
@@ -359,25 +363,29 @@ public class XMLConfigBuilder extends BaseBuilder {
                     String typeHandlerPackage = child.getStringAttribute("name");
                     typeHandlerRegistry.register(typeHandlerPackage);
                 } else {
-                    //将javaType和jdbcType解析，并注册到TypeHandlerRegistry，进行java类型和数据库的数据类型转换
-                    String javaTypeName = child.getStringAttribute("javaType");
-                    String jdbcTypeName = child.getStringAttribute("jdbcType");
-                    String handlerTypeName = child.getStringAttribute("handler");
-                    Class<?> javaTypeClass = resolveClass(javaTypeName);
-                    JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
-                    Class<?> typeHandlerClass = resolveClass(handlerTypeName);
-                    if (javaTypeClass != null) {
-                        if (jdbcType == null) {
-                            typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
-                        } else {
-                            typeHandlerRegistry.register(javaTypeClass, jdbcType, typeHandlerClass);
-                        }
-                    } else {
-                        typeHandlerRegistry.register(typeHandlerClass);
-                    }
+                   typeHandlerElementElse(child);
                 }
             }
         }
+    }// end method 
+
+    private void typeHandlerElementElse(XNode child){
+         //将javaType和jdbcType解析，并注册到TypeHandlerRegistry，进行java类型和数据库的数据类型转换
+         String javaTypeName = child.getStringAttribute("javaType");
+         String jdbcTypeName = child.getStringAttribute("jdbcType");
+         String handlerTypeName = child.getStringAttribute("handler");
+         Class<?> javaTypeClass = resolveClass(javaTypeName);
+         JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
+         Class<?> typeHandlerClass = resolveClass(handlerTypeName);
+         if (javaTypeClass != null) {
+             if (jdbcType == null) {
+                 typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
+             } else {
+                 typeHandlerRegistry.register(javaTypeClass, jdbcType, typeHandlerClass);
+             }
+         } else {
+             typeHandlerRegistry.register(typeHandlerClass);
+         }
     }
 
 

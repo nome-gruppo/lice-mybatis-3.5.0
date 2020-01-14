@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.builder.annotation;
 
+import java.beans.PropertyVetoException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -83,6 +84,12 @@ public class ProviderSqlSource implements SqlSource {
       throw new BuilderException("Error creating SqlSource for SqlProvider. Method '"
           + providerMethodName + "' not found in SqlProvider '" + this.providerType.getName() + "'.");
     }
+    
+    providerSqlSourceLastFor(mapperType, mapperMethod);
+
+  }//end method
+
+  private void providerSqlSourceLastFor (Class<?> mapperType,  Method mapperMethod) throws BuilderException{
     for (int i = 0; i< this.providerMethodParameterTypes.length; i++) {
       Class<?> parameterType = this.providerMethodParameterTypes[i];
       if (parameterType == ProviderContext.class) {

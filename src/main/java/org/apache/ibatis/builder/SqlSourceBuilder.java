@@ -43,7 +43,7 @@ public class SqlSourceBuilder extends BaseBuilder {
      * typeHandler：类型处理器
      * jdbcTypeName：数据库字段类型名称
      */
-    private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
+    private static final String PARAMETER_PROPERTIES = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
     //初始化SQL构建者，并将Configuration核心配置类传入
     public SqlSourceBuilder(Configuration configuration) {
@@ -137,7 +137,7 @@ public class SqlSourceBuilder extends BaseBuilder {
                 } else if ("expression".equals(name)) {
                     throw new BuilderException("Expression based parameters are not supported yet");
                 } else {
-                    throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content + "}.  Valid properties are " + parameterProperties);
+                    throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content + "}.  Valid properties are " + PARAMETER_PROPERTIES);
                 }
             }
             if (typeHandlerAlias != null) {
