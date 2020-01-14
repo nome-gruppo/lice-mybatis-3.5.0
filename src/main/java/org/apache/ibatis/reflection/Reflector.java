@@ -147,11 +147,11 @@ public class Reflector {
     Method[] methods = getClassMethods(cls);
     for (Method method : methods) {
       String name = method.getName();
-      if (name.startsWith("set") && name.length() > 3) {
-        if (method.getParameterTypes().length == 1) {
+      if (name.startsWith("set") && name.length() > 3 && method.getParameterTypes().length == 1) {
+        
           name = PropertyNamer.methodToProperty(name);
           addMethodConflict(conflictingSetters, name, method);
-        }
+        
       }
     }
     resolveSetterConflicts(conflictingSetters);

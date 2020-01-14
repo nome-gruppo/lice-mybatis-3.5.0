@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2020 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -135,9 +135,9 @@ public class MapWrapper extends BaseWrapper {
 
   @Override
   public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
-    HashMap<String, Object> map = new HashMap<>();
-    set(prop, map);
-    return MetaObject.forObject(map, metaObject.getObjectFactory(), metaObject.getObjectWrapperFactory(), metaObject.getReflectorFactory());
+    HashMap<String, Object> mymap = new HashMap<>();
+    set(prop, mymap);
+    return MetaObject.forObject(mymap, metaObject.getObjectFactory(), metaObject.getObjectWrapperFactory(), metaObject.getReflectorFactory());
   }
 
   @Override
