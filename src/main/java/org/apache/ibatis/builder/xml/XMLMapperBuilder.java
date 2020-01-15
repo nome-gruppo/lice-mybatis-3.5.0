@@ -66,6 +66,10 @@ public class XMLMapperBuilder extends BaseBuilder {
   //Mapper.xml文件
   private final String resource;
 
+  private final static String NAMESPACE = "namespace";
+  private final static String JDBC_TYPE = "jdbcType";
+  private final static String RESULT_MAP = "resultMap";
+
   @Deprecated
   public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
     this(reader, configuration, resource, sqlFragments);
@@ -116,7 +120,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   //解析XNode节点
   private void configurationElement(XNode context) {
     try {
-      String namespace = context.getStringAttribute("namespace");
+      String namespace = context.getStringAttribute(NAMESPACE);
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
@@ -197,8 +201,8 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheRefElement(XNode context) {
     if (context != null) {
-      configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
-      CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
+      configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute(NAMESPACE));
+      CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute(NAMESPACE));
       try {
         cacheRefResolver.resolveCacheRef();
       } catch (IncompleteElementException e) {
@@ -233,8 +237,8 @@ public class XMLMapperBuilder extends BaseBuilder {
       for (XNode parameterNode : parameterNodes) {
         String property = parameterNode.getStringAttribute("property");
         String javaType = parameterNode.getStringAttribute("javaType");
-        String jdbcType = parameterNode.getStringAttribute("jdbcType");
-        String resultMap = parameterNode.getStringAttribute("resultMap");
+        String jdbcType = parameterNode.getStringAttribute(JDBC_TYPE);
+        String resultMap = parameterNode.getStringAttribute(RESULT_MAP);
         String mode = parameterNode.getStringAttribute("mode");
         String typeHandler = parameterNode.getStringAttribute("typeHandler");
         Integer numericScale = parameterNode.getIntAttribute("numericScale");
@@ -305,13 +309,13 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   protected Class<?> inheritEnclosingType(XNode resultMapNode, Class<?> enclosingType) {
-    if ("association".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute("resultMap") == null) {
+    if ("association".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(RESULT_MAP) == null) {
       String property = resultMapNode.getStringAttribute("property");
       if (property != null && enclosingType != null) {
         MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
         return metaResultType.getSetterType(property);
       }
-    } else if ("case".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute("resultMap") == null) {
+    } else if ("case".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(RESULT_MAP) == null) {
       return enclosingType;
     }
     return null;
@@ -332,7 +336,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   private Discriminator processDiscriminatorElement(XNode context, Class<?> resultType, List<ResultMapping> resultMappings) throws Exception {
     String column = context.getStringAttribute("column");
     String javaType = context.getStringAttribute("javaType");
-    String jdbcType = context.getStringAttribute("jdbcType");
+    String jdbcType = context.getStringAttribute(JDBC_TYPE);
     String typeHandler = context.getStringAttribute("typeHandler");
     Class<?> javaTypeClass = resolveClass(javaType);
     Class<? extends TypeHandler<?>> typeHandlerClass = resolveClass(typeHandler);
@@ -340,7 +344,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     Map<String, String> discriminatorMap = new HashMap<>();
     for (XNode caseChild : context.getChildren()) {
       String value = caseChild.getStringAttribute("value");
-      String resultMap = caseChild.getStringAttribute("resultMap", processNestedResultMappings(caseChild, resultMappings, resultType));
+      String resultMap = caseChild.getStringAttribute(RESULT_MAP, processNestedResultMappings(caseChild, resultMappings, resultType));
       discriminatorMap.put(value, resultMap);
     }
     return builderAssistant.buildDiscriminator(resultType, column, javaTypeClass, jdbcTypeEnum, typeHandlerClass, discriminatorMap);
@@ -394,9 +398,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
     String column = context.getStringAttribute("column");
     String javaType = context.getStringAttribute("javaType");
-    String jdbcType = context.getStringAttribute("jdbcType");
+    String jdbcType = context.getStringAttribute(JDBC_TYPE);
     String nestedSelect = context.getStringAttribute("select");
-    String nestedResultMap = context.getStringAttribute("resultMap",
+    String nestedResultMap = context.getStringAttribute(RESULT_MAP,
         processNestedResultMappings(context, Collections.<ResultMapping> emptyList(), resultType));
     String notNullColumn = context.getStringAttribute("notNullColumn");
     String columnPrefix = context.getStringAttribute("columnPrefix");
@@ -424,7 +428,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   protected void validateCollection(XNode context, Class<?> enclosingType) {
-    if ("collection".equals(context.getName()) && context.getStringAttribute("resultMap") == null
+    if ("collection".equals(context.getName()) && context.getStringAttribute(RESULT_MAP) == null
       && context.getStringAttribute("resultType") == null) {
       MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
       String property = context.getStringAttribute("property");
