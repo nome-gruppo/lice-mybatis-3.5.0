@@ -418,35 +418,16 @@ public class MapperAnnotationBuilder {
     Class<?> returnType = method.getReturnType();
     Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, type);
     if (resolvedReturnType instanceof Class) {
-      returnType = (Class<?>) resolvedReturnType;
-      if (returnType.isArray()) {
-        returnType = returnType.getComponentType();
-      }
-      // gcode issue #508
-      if (void.class.equals(returnType)) {
-        ResultType rt = method.getAnnotation(ResultType.class);
-        if (rt != null) {
-          returnType = rt.value();
-        }
-      }
+
+      returnType=getReturnTypeSupport(returnType,resolvedReturnType,method);
+
     } else if (resolvedReturnType instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) resolvedReturnType;
       Class<?> rawType = (Class<?>) parameterizedType.getRawType();
       if (Collection.class.isAssignableFrom(rawType) || Cursor.class.isAssignableFrom(rawType)) {
-        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        if (actualTypeArguments != null && actualTypeArguments.length == 1) {
-          Type returnTypeParameter = actualTypeArguments[0];
-          if (returnTypeParameter instanceof Class<?>) {
-            returnType = (Class<?>) returnTypeParameter;
-          } else if (returnTypeParameter instanceof ParameterizedType) {
-            // (gcode issue #443) actual type can be a also a parameterized type
-            returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
-          } else if (returnTypeParameter instanceof GenericArrayType) {
-            Class<?> componentType = (Class<?>) ((GenericArrayType) returnTypeParameter).getGenericComponentType();
-            // (gcode issue #525) support List<byte[]>
-            returnType = Array.newInstance(componentType, 0).getClass();
-          }
-        }
+
+        returnType=getReturnTypeSupportTwo(returnType,parameterizedType);
+
       } else if (method.isAnnotationPresent(MapKey.class) && Map.class.isAssignableFrom(rawType)) {
         // (gcode issue 504) Do not look into Maps if there is not MapKey annotation
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
@@ -468,6 +449,39 @@ public class MapperAnnotationBuilder {
       }
     }
 
+    return returnType;
+  }
+
+  private Class<?>  getReturnTypeSupport(Class<?>returnType, Type resolvedReturnType, Method method){
+    returnType = (Class<?>) resolvedReturnType;
+    if (returnType.isArray()) {
+      returnType = returnType.getComponentType();
+    }
+    // gcode issue #508
+    if (void.class.equals(returnType)) {
+      ResultType rt = method.getAnnotation(ResultType.class);
+      if (rt != null) {
+        returnType = rt.value();
+      }
+    }
+    return returnType;
+  }
+
+  private Class<?> getReturnTypeSupportTwo(Class<?>returnType, ParameterizedType parameterizedType){
+    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+    if (actualTypeArguments != null && actualTypeArguments.length == 1) {
+      Type returnTypeParameter = actualTypeArguments[0];
+      if (returnTypeParameter instanceof Class<?>) {
+        returnType = (Class<?>) returnTypeParameter;
+      } else if (returnTypeParameter instanceof ParameterizedType) {
+        // (gcode issue #443) actual type can be a also a parameterized type
+        returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
+      } else if (returnTypeParameter instanceof GenericArrayType) {
+        Class<?> componentType = (Class<?>) ((GenericArrayType) returnTypeParameter).getGenericComponentType();
+        // (gcode issue #525) support List<byte[]>
+        returnType = Array.newInstance(componentType, 0).getClass();
+      }
+    }
     return returnType;
   }
 
