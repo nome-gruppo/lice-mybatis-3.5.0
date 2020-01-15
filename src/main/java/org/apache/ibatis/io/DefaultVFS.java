@@ -60,60 +60,22 @@ public class DefaultVFS extends VFS {
       // file is found, then we'll list child resources by reading the JAR.
       URL jarUrl = findJarForResource(url);
       if (jarUrl != null) {
-        is = jarUrl.openStream();
-        if (log.isDebugEnabled()) {
-          log.debug("Listing " + url);
-        }
-        resources = listResources(new JarInputStream(is), path);
+
+        resources=listSupport(resources,is,jarUrl,url,path);
+
       }
       else {
         List<String> children = new ArrayList<>();
         try {
           if (isJar(url)) {
-            // Some versions of JBoss VFS might give a JAR stream even if the resource
-            // referenced by the URL isn't actually a JAR
-            is = url.openStream();
-            try (JarInputStream jarInput = new JarInputStream(is)) {
-              if (log.isDebugEnabled()) {
-                log.debug("Listing " + url);
-              }
-              for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
-                if (log.isDebugEnabled()) {
-                  log.debug("Jar entry: " + entry.getName());
-                }
-                children.add(entry.getName());
-              }
-            }
+
+            children=listSupportTwo(children,is,url);
+
           }
           else {
-            /*
-             * Some servlet containers allow reading from directory resources like a
-             * text file, listing the child resources one per line. However, there is no
-             * way to differentiate between directory and file resources just by reading
-             * them. To work around that, as each line is read, try to look it up via
-             * the class loader as a child of the current resource. If any line fails
-             * then we assume the current resource is not a directory.
-             */
-            is = url.openStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            List<String> lines = new ArrayList<>();
-            for (String line; (line = reader.readLine()) != null;) {
-              if (log.isDebugEnabled()) {
-                log.debug("Reader entry: " + line);
-              }
-              lines.add(line);
-              if (getResources(path + "/" + line).isEmpty()) {
-                lines.clear();
-                break;
-              }
-            }
 
-            if (!lines.isEmpty()) {
-              if (log.isDebugEnabled()) {
-                log.debug("Listing " + url);
-              }
-              children.addAll(lines);
-            }
+            children=listSupportThree(children,is,url,path);
+
           }
         } catch (FileNotFoundException e) {
           /*
@@ -122,16 +84,9 @@ public class DefaultVFS extends VFS {
            * then list the directory directly instead.
            */
           if ("file".equals(url.getProtocol())) {
-            File file = new File(url.getFile());
-            if (log.isDebugEnabled()) {
-                log.debug("Listing directory " + file.getAbsolutePath());
-            }
-            if (file.isDirectory()) {
-              if (log.isDebugEnabled()) {
-                  log.debug("Listing " + url);
-              }
-              children = Arrays.asList(file.list());
-            }
+
+            children=listSupportFour(children,url);
+
           }
           else {
             // No idea where the exception came from so rethrow it
@@ -164,6 +119,79 @@ public class DefaultVFS extends VFS {
         }
       }
     }
+  }
+
+  public List<String>listSupport(List<String>resources,InputStream is,URL jarUrl,URL url,String path)throws IOException{
+    is = jarUrl.openStream();
+    if (log.isDebugEnabled()) {
+      log.debug("Listing " + url);
+    }
+    resources = listResources(new JarInputStream(is), path);
+    return resources;
+  }
+
+  public List<String>listSupportTwo(List<String>children,InputStream is,URL url)throws IOException{
+    // Some versions of JBoss VFS might give a JAR stream even if the resource
+    // referenced by the URL isn't actually a JAR
+    is = url.openStream();
+    try (JarInputStream jarInput = new JarInputStream(is)) {
+      if (log.isDebugEnabled()) {
+        log.debug("Listing " + url);
+      }
+      for (JarEntry entry; (entry = jarInput.getNextJarEntry()) != null; ) {
+        if (log.isDebugEnabled()) {
+          log.debug("Jar entry: " + entry.getName());
+        }
+        children.add(entry.getName());
+      }
+    }
+    return children;
+  }
+
+  public List<String>listSupportThree(List<String>children, InputStream is, URL url, String path)throws IOException{
+    /*
+     * Some servlet containers allow reading from directory resources like a
+     * text file, listing the child resources one per line. However, there is no
+     * way to differentiate between directory and file resources justmvn  by reading
+     * them. To work around that, as each line is read, try to look it up via
+     * the class loader as a child of the current resource. If any line fails
+     * then we assume the current resource is not a directory.
+     */
+    is = url.openStream();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    List<String> lines = new ArrayList<>();
+    for (String line; (line = reader.readLine()) != null;) {
+      if (log.isDebugEnabled()) {
+        log.debug("Reader entry: " + line);
+      }
+      lines.add(line);
+      if (getResources(path + "/" + line).isEmpty()) {
+        lines.clear();
+        break;
+      }
+    }
+
+    if (!lines.isEmpty()) {
+      if (log.isDebugEnabled()) {
+        log.debug("Listing " + url);
+      }
+      children.addAll(lines);
+    }
+    return children;
+  }
+
+  public List<String>listSupportFour(List<String>children,URL url){
+    File file = new File(url.getFile());
+    if (log.isDebugEnabled()) {
+        log.debug("Listing directory " + file.getAbsolutePath());
+    }
+    if (file.isDirectory()) {
+      if (log.isDebugEnabled()) {
+          log.debug("Listing " + url);
+      }
+      children = Arrays.asList(file.list());
+    }
+    return children;
   }
 
   /**
