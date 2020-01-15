@@ -22,7 +22,7 @@
   targetNamespace="http://mybatis.org/schema/mybatis-mapper"
   elementFormDefault="qualified">
   <xs:element name="mapper">
-    <xs:complexType>
+    <xs:complexType> 
       <xs:choice maxOccurs="unbounded">
         <xs:element ref="cache-ref"/>
         <xs:element ref="cache"/>

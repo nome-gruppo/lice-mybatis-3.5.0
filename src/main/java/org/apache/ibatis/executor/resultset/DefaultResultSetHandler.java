@@ -63,7 +63,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * DefaultResultSetHandler:ResultSetHandler的实现类，主要处理Statement处理SQL后，返回的结果集。
+ * DefaultResultSetHandler:ResultSetHandlerçš„å®žçŽ°ç±»ï¼Œä¸»è¦�å¤„ç�†Statementå¤„ç�†SQLå�Žï¼Œè¿”å›žçš„ç»“æžœé›†ã€‚
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -72,45 +72,45 @@ import java.util.Set;
  */
 public class DefaultResultSetHandler implements ResultSetHandler {
 
-    //deferred延迟对象
+    //deferredå»¶è¿Ÿå¯¹è±¡
     private static final Object DEFERRED = new Object();
 
-    //执行器
+    //æ‰§è¡Œå™¨
     private final Executor executor;
-    //核心配置对象
+    //æ ¸å¿ƒé…�ç½®å¯¹è±¡
     private final Configuration configuration;
-    //MappedStatement，SQL片段对象
+    //MappedStatementï¼ŒSQLç‰‡æ®µå¯¹è±¡
     private final MappedStatement mappedStatement;
-    //分页处理对象
+    //åˆ†é¡µå¤„ç�†å¯¹è±¡
     private final RowBounds rowBounds;
-    //将占位符转成实参的对象
+    //å°†å� ä½�ç¬¦è½¬æˆ�å®žå�‚çš„å¯¹è±¡
     private final ParameterHandler parameterHandler;
-    //结果处理
+    //ç»“æžœå¤„ç�†
     private final ResultHandler<?> resultHandler;
-    //处理后的SQL语句
+    //å¤„ç�†å�Žçš„SQLè¯­å�¥
     private final BoundSql boundSql;
 
-    //类型处理器注册器
+    //ç±»åž‹å¤„ç�†å™¨æ³¨å†Œå™¨
     private final TypeHandlerRegistry typeHandlerRegistry;
-    //Object工厂，用于创建结果类型的对象，应该是执行的SQL，返回的结果集，通过配置来创建相应的Pojo实体对象来进行映射
+    //Objectå·¥åŽ‚ï¼Œç”¨äºŽåˆ›å»ºç»“æžœç±»åž‹çš„å¯¹è±¡ï¼Œåº”è¯¥æ˜¯æ‰§è¡Œçš„SQLï¼Œè¿”å›žçš„ç»“æžœé›†ï¼Œé€šè¿‡é…�ç½®æ�¥åˆ›å»ºç›¸åº”çš„Pojoå®žä½“å¯¹è±¡æ�¥è¿›è¡Œæ˜ å°„
     private final ObjectFactory objectFactory;
-    //ReflectorFactory返回工厂
+    //ReflectorFactoryè¿”å›žå·¥åŽ‚
     private final ReflectorFactory reflectorFactory;
 
-    // nested resultmaps--嵌套resultmaps
+    // nested resultmaps--åµŒå¥—resultmaps
     private final Map<CacheKey, Object> nestedResultObjects = new HashMap<>();
     private final Map<String, Object> ancestorObjects = new HashMap<>();
     private Object previousRowValue;
 
-    // multiple resultsets --多个结果集
+    // multiple resultsets --å¤šä¸ªç»“æžœé›†
     private final Map<String, ResultMapping> nextResultMaps = new HashMap<>();
     private final Map<CacheKey, List<PendingRelation>> pendingRelations = new HashMap<>();
 
-    // Cached Automappings  --缓存Automappings
+    // Cached Automappings  --ç¼“å­˜Automappings
     private final Map<String, List<UnMappedColumnAutoMapping>> autoMappingsCache = new HashMap<>();
 
     // temporary marking flag that indicate using constructor mapping (use field to reduce memory usage)
-    //临时标记标志，指示使用构造函数映射(使用字段来减少内存使用)
+    //ä¸´æ—¶æ ‡è®°æ ‡å¿—ï¼ŒæŒ‡ç¤ºä½¿ç”¨æž„é€ å‡½æ•°æ˜ å°„(ä½¿ç”¨å­—æ®µæ�¥å‡�å°‘å†…å­˜ä½¿ç”¨)
     private boolean useConstructorMappings;
 
     private static class PendingRelation {
@@ -177,9 +177,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             final ResultMap resultMap = configuration.getResultMap(resultMapId);
             final ResultSetWrapper rsw = new ResultSetWrapper(rs, configuration);
             if (this.resultHandler == null) {
-                final DefaultResultHandler resultHandler = new DefaultResultHandler(objectFactory);
-                handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
-                metaParam.setValue(parameterMapping.getProperty(), resultHandler.getResultList());
+                final DefaultResultHandler resultHandler1 = new DefaultResultHandler(objectFactory);
+                handleRowValues(rsw, resultMap, resultHandler1, new RowBounds(), null);
+                metaParam.setValue(parameterMapping.getProperty(), resultHandler1.getResultList());
             } else {
                 handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
             }
@@ -190,34 +190,34 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     //
-    // HANDLE RESULT SETS  --处理结果集
+    // HANDLE RESULT SETS  --å¤„ç�†ç»“æžœé›†
     //
     @Override
     public List<Object> handleResultSets(Statement stmt) throws SQLException {
         ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
 
-        //用于存储
+        //ç”¨äºŽå­˜å‚¨
         final List<Object> multipleResults = new ArrayList<>();
 
         int resultSetCount = 0;
-        //结果集的第一个结果
+        //ç»“æžœé›†çš„ç¬¬ä¸€ä¸ªç»“æžœ
         ResultSetWrapper rsw = getFirstResultSet(stmt);
 
-        //获取mapper.xml中的resultMap标签的pojo类型
+        //èŽ·å�–mapper.xmlä¸­çš„resultMapæ ‡ç­¾çš„pojoç±»åž‹
         List<ResultMap> resultMaps = mappedStatement.getResultMaps();
-        //集合的总数
+        //é›†å�ˆçš„æ€»æ•°
         int resultMapCount = resultMaps.size();
-        //对比检验，不匹配抛ExecutorException
+        //å¯¹æ¯”æ£€éªŒï¼Œä¸�åŒ¹é…�æŠ›ExecutorException
         validateResultMapsCount(rsw, resultMapCount);
-        //匹配
+        //åŒ¹é…�
         while (rsw != null && resultMapCount > resultSetCount) {
             ResultMap resultMap = resultMaps.get(resultSetCount);
-            //根据resultMap处理rsw生成java对象
+            //æ ¹æ�®resultMapå¤„ç�†rswç”Ÿæˆ�javaå¯¹è±¡
             handleResultSet(rsw, resultMap, multipleResults, null);
-            //获取结果集的下一个结果
+            //èŽ·å�–ç»“æžœé›†çš„ä¸‹ä¸€ä¸ªç»“æžœ
             rsw = getNextResultSet(stmt);
             cleanUpAfterHandlingResultSet();
-            //处理完一条结果记录，resultSetCount自增1
+            //å¤„ç�†å®Œä¸€æ�¡ç»“æžœè®°å½•ï¼ŒresultSetCountè‡ªå¢ž1
             resultSetCount++;
         }
 
@@ -257,7 +257,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return new DefaultCursor<>(this, resultMap, rsw, rowBounds);
     }
 
-    //获取结果集的第一条记录
+    //èŽ·å�–ç»“æžœé›†çš„ç¬¬ä¸€æ�¡è®°å½•
     private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();
         while (rs == null) {
@@ -278,17 +278,18 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private ResultSetWrapper getNextResultSet(Statement stmt) {
         // Making this method tolerant of bad JDBC drivers
         try {
-            if (stmt.getConnection().getMetaData().supportsMultipleResultSets()) {
+
                 // Crazy Standard JDBC way of determining if there are more results
-                if (!(!stmt.getMoreResults() && stmt.getUpdateCount() == -1)) {
+                if (stmt.getConnection().getMetaData().supportsMultipleResultSets() && stmt.getMoreResults()) {
                     ResultSet rs = stmt.getResultSet();
-                    if (rs == null) {
+                   if (rs == null) {
                         return getNextResultSet(stmt);
                     } else {
                         return new ResultSetWrapper(rs, configuration);
                     }
+
                 }
-            }
+
         } catch (Exception e) {
             // Intentionally ignored.
         }

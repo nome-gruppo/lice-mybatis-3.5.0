@@ -292,15 +292,6 @@ public class DefaultVFS extends VFS {
         jarUrl.replace(0, jarUrl.length(), testUrl.getFile());
         File file = new File(jarUrl.toString());
 
-        // File name might be URL-encoded
-        if (!file.exists()) {
-          try {
-            file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
-          } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Unsupported encoding?  UTF-8?  That's unpossible.");
-          }
-        }
-
         if (file.exists()) {
           if (log.isDebugEnabled()) {
             log.debug("Trying real file: " + file.getAbsolutePath());
@@ -309,6 +300,13 @@ public class DefaultVFS extends VFS {
           if (isJar(testUrl)) {
             return testUrl;
           }
+        }
+        else {
+            try {
+                file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
+              } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException("Unsupported encoding?  UTF-8?  That's unpossible.");
+              }
         }
       }
     } catch (MalformedURLException e) {

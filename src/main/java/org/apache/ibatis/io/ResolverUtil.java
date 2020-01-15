@@ -225,7 +225,10 @@ public class ResolverUtil<T> {
       }
     } catch (IOException ioe) {
       log.error("Could not read package: " + packageName, ioe);
-    }
+    } catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
     return this;
   }
@@ -246,9 +249,10 @@ public class ResolverUtil<T> {
    *
    * @param test the test used to determine if the class matches
    * @param fqn the fully qualified name of a class
+ * @throws ClassNotFoundException 
    */
   @SuppressWarnings("unchecked")
-  protected void addIfMatching(Test test, String fqn) {
+  protected void addIfMatching(Test test, String fqn) throws ClassNotFoundException {
     try {
       String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
       ClassLoader loader = getClassLoader();
@@ -260,7 +264,7 @@ public class ResolverUtil<T> {
       if (test.matches(type)) {
         matches.add((Class<T>) type);
       }
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       log.warn("Could not examine class '" + fqn + "'" + " due to a " +
           t.getClass().getName() + " with message: " + t.getMessage());
     }

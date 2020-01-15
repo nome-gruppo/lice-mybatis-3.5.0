@@ -51,7 +51,7 @@ public class CglibProxyFactory implements ProxyFactory {
   public CglibProxyFactory() {
     try {
       Resources.classForName("net.sf.cglib.proxy.Enhancer");
-    } catch (Throwable e) {
+    } catch (Exception e) {
       throw new IllegalStateException("Cannot enable lazy loading because CGLIB is not available. Add CGLIB to your classpath.", e);
     }
   }
