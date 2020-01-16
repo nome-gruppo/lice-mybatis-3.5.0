@@ -18,6 +18,7 @@ package org.apache.ibatis.executor.resultset;
 import org.apache.ibatis.annotations.AutomapConstructor;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.cache.NullCacheKey;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.cursor.defaults.DefaultCursor;
 import org.apache.ibatis.executor.ErrorContext;
@@ -69,6 +70,7 @@ import java.util.Set;
  * @author Eduardo Macarron
  * @author Iwao AVE!
  * @author Kazuki Shimizu
+ * @param <T>
  */
 public class DefaultResultSetHandler implements ResultSetHandler {
 
@@ -112,6 +114,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // temporary marking flag that indicate using constructor mapping (use field to reduce memory usage)
     //临时标记标志，指示使用构造函数映射(使用字段来减少内存使用)
     private boolean useConstructorMappings;
+
+
+    private static final CacheKey TEMP = new NullCacheKey();
+
 
     private static class PendingRelation {
         public MetaObject metaObject;
@@ -931,7 +937,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                 foundValues = lazyLoader.size() > 0 || foundValues;
                 rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
             }
-            if (combinedKey != CacheKey.NULL_CACHE_KEY) {
+            
+            if (combinedKey != TEMP) {
                 nestedResultObjects.put(combinedKey, rowValue);
             }
         }
@@ -1041,7 +1048,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             createRowKeyForMappedProperties(resultMap, rsw, cacheKey, resultMappings, columnPrefix);
         }
         if (cacheKey.getUpdateCount() < 2) {
-            return CacheKey.NULL_CACHE_KEY;
+            return TEMP;
         }
         return cacheKey;
     }
@@ -1057,7 +1064,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             combinedKey.update(parentRowKey);
             return combinedKey;
         }
-        return CacheKey.NULL_CACHE_KEY;
+        return TEMP;
     }
 
     private List<ResultMapping> getResultMappingsForRowKey(ResultMap resultMap) {
