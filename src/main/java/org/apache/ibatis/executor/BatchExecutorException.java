@@ -29,7 +29,7 @@ import java.util.List;
 public class BatchExecutorException extends ExecutorException {
 
   private static final long serialVersionUID = 154049229650533990L;
-  private final List<BatchResult> successfulBatchResults;
+  private final transient List<BatchResult> successfulBatchResults;
   private final BatchUpdateException batchUpdateException;
   private final BatchResult batchResult;
 

@@ -28,8 +28,7 @@ public class CacheKey implements Serializable {
 
   private static final long serialVersionUID = 1146682552656046210L;
 
-  public static final CacheKey NULL_CACHE_KEY = new NullCacheKey();
-
+  
   private static final int DEFAULT_MULTIPLYER = 37;
   private static final int DEFAULT_HASHCODE = 17;
 

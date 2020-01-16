@@ -143,27 +143,34 @@ public class CglibProxyFactory implements ProxyFactory {
               return original;
             }
           } else {
-            if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
-              if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
-                lazyLoader.loadAll();
-              } else if (PropertyNamer.isSetter(methodName)) {
-                final String property = PropertyNamer.methodToProperty(methodName);
-                lazyLoader.remove(property);
-              } else if (PropertyNamer.isGetter(methodName)) {
-                final String property = PropertyNamer.methodToProperty(methodName);
-                if (lazyLoader.hasLoader(property)) {
-                  lazyLoader.load(property);
-                }
-              }
-            }
+            interceptElse(lazyLoader, methodName);
           }
         }
         return methodProxy.invokeSuper(enhanced, args);
       } catch (Throwable t) {
         throw ExceptionUtil.unwrapThrowable(t);
       }
+    }// end method
+
+    private void  interceptElse(ResultLoaderMap lazyLoader, String methodName) throws Throwable{
+      if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
+        if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
+          lazyLoader.loadAll();
+        } else if (PropertyNamer.isSetter(methodName)) {
+          final String property = PropertyNamer.methodToProperty(methodName);
+          lazyLoader.remove(property);
+        } else if (PropertyNamer.isGetter(methodName)) {
+          final String property = PropertyNamer.methodToProperty(methodName);
+          if (lazyLoader.hasLoader(property)) {
+            lazyLoader.load(property);
+          }
+        }
+      }
     }
-  }
+
+  }// end inner class
+
+  
 
   private static class EnhancedDeserializationProxyImpl extends AbstractEnhancedDeserializationProxy implements MethodInterceptor {
 
