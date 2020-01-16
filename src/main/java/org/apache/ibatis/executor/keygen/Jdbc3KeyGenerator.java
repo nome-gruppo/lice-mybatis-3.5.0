@@ -48,6 +48,10 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
    */
   public static final Jdbc3KeyGenerator INSTANCE = new Jdbc3KeyGenerator();
 
+  private static final String NOTE_KEY_PROPERTY = "Note that when there are multiple parameters, 'keyProperty' must include the parameter name (e.g. 'param.id'). ";
+  private static final String SPECIFIED_KEY_PROPERTIES = "Specified key properties are ";
+  private static final String AND_PARAMETERS = " and available parameters are ";
+  
   @Override
   public void processBefore(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
     // do nothing
@@ -85,8 +89,8 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
     if (firstDot == -1) {
       throw new ExecutorException(
           "Could not determine which parameter to assign generated keys to. "
-              + "Note that when there are multiple parameters, 'keyProperty' must include the parameter name (e.g. 'param.id'). "
-              + "Specified key properties are " + ArrayUtil.toString(keyProperties) + " and available parameters are "
+              + NOTE_KEY_PROPERTY
+              + SPECIFIED_KEY_PROPERTIES + ArrayUtil.toString(keyProperties) + AND_PARAMETERS
               + paramMap.keySet());
     }
     String paramName = keyProperties[0].substring(0, firstDot);
@@ -95,8 +99,8 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
       param = paramMap.get(paramName);
     } else {
       throw new ExecutorException("Could not find parameter '" + paramName + "'. "
-          + "Note that when there are multiple parameters, 'keyProperty' must include the parameter name (e.g. 'param.id'). "
-          + "Specified key properties are " + ArrayUtil.toString(keyProperties) + " and available parameters are "
+          + NOTE_KEY_PROPERTY
+          + SPECIFIED_KEY_PROPERTIES + ArrayUtil.toString(keyProperties) + AND_PARAMETERS
           + paramMap.keySet());
     }
     // Remove param name from 'keyProperty' string. e.g. 'param.id' -> 'id'
@@ -106,8 +110,8 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
         modifiedKeyProperties[i] = keyProperties[i].substring(firstDot + 1);
       } else {
         throw new ExecutorException("Assigning generated keys to multiple parameters is not supported. "
-            + "Note that when there are multiple parameters, 'keyProperty' must include the parameter name (e.g. 'param.id'). "
-            + "Specified key properties are " + ArrayUtil.toString(keyProperties) + " and available parameters are "
+            + NOTE_KEY_PROPERTY
+            + SPECIFIED_KEY_PROPERTIES + ArrayUtil.toString(keyProperties) + AND_PARAMETERS
             + paramMap.keySet());
       }
     }
