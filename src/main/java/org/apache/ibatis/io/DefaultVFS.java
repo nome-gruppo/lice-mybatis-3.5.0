@@ -256,6 +256,7 @@ public class DefaultVFS extends VFS {
         url = new URL(url.getFile());
         if (log.isDebugEnabled()) {
           log.debug("Inner URL: " + url);
+          break;
         }
       }
     } catch (MalformedURLException e) {
