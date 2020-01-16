@@ -85,22 +85,35 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       }
     } catch (Exception e) {
       StringBuilder argTypes = new StringBuilder();
-      if (constructorArgTypes != null && !constructorArgTypes.isEmpty()) {
-        for (Class<?> argType : constructorArgTypes) {
-          argTypes.append(argType.getSimpleName());
-          argTypes.append(",");
-        }
-        argTypes.deleteCharAt(argTypes.length() - 1); // remove trailing ,
-      }
+
+      instantiateClassSupport(constructorArgTypes,argTypes);
+
       StringBuilder argValues = new StringBuilder();
-      if (constructorArgs != null && !constructorArgs.isEmpty()) {
-        for (Object argValue : constructorArgs) {
-          argValues.append(String.valueOf(argValue));
-          argValues.append(",");
-        }
-        argValues.deleteCharAt(argValues.length() - 1); // remove trailing ,
-      }
+
+      instantiateClassSupportTwo(constructorArgs,argValues);
+
+
       throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
+    }
+  }
+
+  private void instantiateClassSupport(List<Class<?>>constructorArgTypes, StringBuilder argTypes){
+    if (constructorArgTypes != null && !constructorArgTypes.isEmpty()) {
+      for (Class<?> argType : constructorArgTypes) {
+        argTypes.append(argType.getSimpleName());
+        argTypes.append(",");
+      }
+      argTypes.deleteCharAt(argTypes.length() - 1); // remove trailing ,
+    }
+  }
+
+  private void instantiateClassSupportTwo(List<Object>constructorArgs,StringBuilder argValues){
+    if (constructorArgs != null && !constructorArgs.isEmpty()) {
+      for (Object argValue : constructorArgs) {
+        argValues.append(String.valueOf(argValue));
+        argValues.append(",");
+      }
+      argValues.deleteCharAt(argValues.length() - 1); // remove trailing ,
     }
   }
 

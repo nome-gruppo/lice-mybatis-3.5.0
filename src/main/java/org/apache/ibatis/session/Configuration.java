@@ -880,14 +880,20 @@ public class Configuration {
                 if (value instanceof ResultMap) {
                     ResultMap entryResultMap = (ResultMap) value;
                     if (!entryResultMap.hasNestedResultMaps() && entryResultMap.getDiscriminator() != null) {
-                        Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap().values();
-                        if (discriminatedResultMapNames.contains(rm.getId())) {
-                            entryResultMap.forceNestedResultMaps();
-                        }
+
+                        checkGloballyForDiscriminatedNestedResultMapsSupport(rm,entryResultMap);
+
                     }
                 }
             }
         }
+    }
+
+    public void checkGloballyForDiscriminatedNestedResultMapsSupport(ResultMap rm, ResultMap entryResultMap){
+      Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap().values();
+      if (discriminatedResultMapNames.contains(rm.getId())) {
+          entryResultMap.forceNestedResultMaps();
+      }
     }
 
     // Slow but a one time cost. A better solution is welcome.
