@@ -24,6 +24,9 @@ import java.sql.SQLException;
  * @author Clinton Begin
  */
 public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
+  
+  private static final String CANNOT_CONVERT = "Cannot convert ";
+  private static final String BY_ORDINAL_VALUE = " by ordinal value.";
 
   private final Class<E> type;
   private final E[] enums;
@@ -53,7 +56,7 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
       try {
         return enums[i];
       } catch (Exception ex) {
-        throw new IllegalArgumentException("Cannot convert " + i + " to " + type.getSimpleName() + " by ordinal value.", ex);
+        throw new IllegalArgumentException(CANNOT_CONVERT + i + " to " + type.getSimpleName() + BY_ORDINAL_VALUE, ex);
       }
     }
   }
@@ -67,7 +70,7 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
       try {
         return enums[i];
       } catch (Exception ex) {
-        throw new IllegalArgumentException("Cannot convert " + i + " to " + type.getSimpleName() + " by ordinal value.", ex);
+        throw new IllegalArgumentException(CANNOT_CONVERT + i + " to " + type.getSimpleName() + BY_ORDINAL_VALUE, ex);
       }
     }
   }
@@ -81,7 +84,7 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
       try {
         return enums[i];
       } catch (Exception ex) {
-        throw new IllegalArgumentException("Cannot convert " + i + " to " + type.getSimpleName() + " by ordinal value.", ex);
+        throw new IllegalArgumentException(CANNOT_CONVERT + i + " to " + type.getSimpleName() + BY_ORDINAL_VALUE, ex);
       }
     }
   }
