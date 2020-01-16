@@ -24,7 +24,7 @@ import org.apache.ibatis.reflection.ArrayUtil;
 /**
  * @author Clinton Begin
  */
-public class CacheKey implements Cloneable, Serializable {
+public class CacheKey implements Serializable {
 
   private static final long serialVersionUID = 1146682552656046210L;
 
@@ -50,6 +50,13 @@ public class CacheKey implements Cloneable, Serializable {
   public CacheKey(Object[] objects) {
     this();
     updateAll(objects);
+  }
+
+  public CacheKey(CacheKey cacheKey) {
+    this.hashcode=cacheKey.hashcode;
+    this.multiplier=cacheKey.multiplier;
+    this.count=cacheKey.count;
+    this.updateList=new ArrayList<>(cacheKey.updateList);
   }
 
   public int getUpdateCount() {
@@ -119,11 +126,6 @@ public class CacheKey implements Cloneable, Serializable {
     return returnValue.toString();
   }
 
-  @Override
-  public CacheKey clone() throws CloneNotSupportedException {
-    CacheKey clonedCacheKey = (CacheKey) super.clone();
-    clonedCacheKey.updateList = new ArrayList<>(updateList);
-    return clonedCacheKey;
-  }
+
 
 }
