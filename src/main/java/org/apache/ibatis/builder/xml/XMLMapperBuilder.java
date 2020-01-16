@@ -69,7 +69,8 @@ public class XMLMapperBuilder extends BaseBuilder {
   private final static String NAMESPACE = "namespace";
   private final static String JDBC_TYPE = "jdbcType";
   private final static String RESULT_MAP = "resultMap";
-
+  private static final String PROPERTY = "property";
+  private static final String TYPEHANDLER = "typeHandler";
   @Deprecated
   public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
     this(reader, configuration, resource, sqlFragments);
@@ -235,12 +236,12 @@ public class XMLMapperBuilder extends BaseBuilder {
       List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
       List<ParameterMapping> parameterMappings = new ArrayList<>();
       for (XNode parameterNode : parameterNodes) {
-        String property = parameterNode.getStringAttribute("property");
+        String property = parameterNode.getStringAttribute(PROPERTY);
         String javaType = parameterNode.getStringAttribute("javaType");
         String jdbcType = parameterNode.getStringAttribute(JDBC_TYPE);
         String resultMap = parameterNode.getStringAttribute(RESULT_MAP);
         String mode = parameterNode.getStringAttribute("mode");
-        String typeHandler = parameterNode.getStringAttribute("typeHandler");
+        String typeHandler = parameterNode.getStringAttribute(TYPEHANDLER);
         Integer numericScale = parameterNode.getIntAttribute("numericScale");
         ParameterMode modeEnum = resolveParameterMode(mode);
         Class<?> javaTypeClass = resolveClass(javaType);
@@ -310,7 +311,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   protected Class<?> inheritEnclosingType(XNode resultMapNode, Class<?> enclosingType) {
     if ("association".equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(RESULT_MAP) == null) {
-      String property = resultMapNode.getStringAttribute("property");
+      String property = resultMapNode.getStringAttribute(PROPERTY);
       if (property != null && enclosingType != null) {
         MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
         return metaResultType.getSetterType(property);
@@ -337,7 +338,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     String column = context.getStringAttribute("column");
     String javaType = context.getStringAttribute("javaType");
     String jdbcType = context.getStringAttribute(JDBC_TYPE);
-    String typeHandler = context.getStringAttribute("typeHandler");
+    String typeHandler = context.getStringAttribute(TYPEHANDLER);
     Class<?> javaTypeClass = resolveClass(javaType);
     Class<? extends TypeHandler<?>> typeHandlerClass = resolveClass(typeHandler);
     JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
@@ -394,7 +395,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
       property = context.getStringAttribute("name");
     } else {
-      property = context.getStringAttribute("property");
+      property = context.getStringAttribute(PROPERTY);
     }
     String column = context.getStringAttribute("column");
     String javaType = context.getStringAttribute("javaType");
@@ -404,7 +405,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         processNestedResultMappings(context, Collections.<ResultMapping> emptyList(), resultType));
     String notNullColumn = context.getStringAttribute("notNullColumn");
     String columnPrefix = context.getStringAttribute("columnPrefix");
-    String typeHandler = context.getStringAttribute("typeHandler");
+    String typeHandler = context.getStringAttribute(TYPEHANDLER);
     String resultSet = context.getStringAttribute("resultSet");
     String foreignColumn = context.getStringAttribute("foreignColumn");
     boolean lazy = "lazy".equals(context.getStringAttribute("fetchType", configuration.isLazyLoadingEnabled() ? "lazy" : "eager"));
@@ -431,7 +432,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     if ("collection".equals(context.getName()) && context.getStringAttribute(RESULT_MAP) == null
       && context.getStringAttribute("resultType") == null) {
       MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
-      String property = context.getStringAttribute("property");
+      String property = context.getStringAttribute(PROPERTY);
       if (!metaResultType.hasSetter(property)) {
         throw new BuilderException(
           "Ambiguous collection type for property '" + property + "'. You must specify 'resultType' or 'resultMap'.");
