@@ -102,21 +102,29 @@ public class CallableStatementHandler extends BaseStatementHandler {
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         for (int i = 0, n = parameterMappings.size(); i < n; i++) {
             ParameterMapping parameterMapping = parameterMappings.get(i);
-            if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
-                if (null == parameterMapping.getJdbcType()) {
-                    throw new ExecutorException("The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
+            registerOutputParametersFor(i, parameterMapping, cs);
+        }
+    }// end method 
+
+    private void registerOutputParametersFor(int i, ParameterMapping parameterMapping, CallableStatement cs) throws SQLException{
+        if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
+            if (null == parameterMapping.getJdbcType()) {
+                throw new ExecutorException("The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
+            } else {
+                if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
+                    cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
                 } else {
-                    if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
-                        cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
-                    } else {
-                        if (parameterMapping.getJdbcTypeName() == null) {
-                            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
-                        } else {
-                            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getJdbcTypeName());
-                        }
-                    }
+                   registerOutputParametersForIf(i, parameterMapping, cs);
                 }
             }
+        }
+    }
+
+    private void registerOutputParametersForIf(int i, ParameterMapping parameterMapping, CallableStatement cs)throws SQLException{
+        if (parameterMapping.getJdbcTypeName() == null) {
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
+        } else {
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getJdbcTypeName());
         }
     }
 
