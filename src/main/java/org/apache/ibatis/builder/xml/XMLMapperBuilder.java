@@ -71,12 +71,17 @@ public class XMLMapperBuilder extends BaseBuilder {
   private final static String RESULT_MAP = "resultMap";
   private static final String PROPERTY = "property";
   private static final String TYPEHANDLER = "typeHandler";
+  /**
+   * @deprecated
+   */
   @Deprecated
   public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
     this(reader, configuration, resource, sqlFragments);
     this.builderAssistant.setCurrentNamespace(namespace);
   }
-
+  /**
+   * @deprecated
+   */
   @Deprecated
   public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
     this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()),
