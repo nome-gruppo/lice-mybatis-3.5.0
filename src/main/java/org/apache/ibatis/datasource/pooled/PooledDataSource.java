@@ -436,8 +436,11 @@ public class PooledDataSource implements DataSource {
                                 state.wait(poolTimeToWait);
                                 state.accumulatedWaitTime += System.currentTimeMillis() - wt;
                             } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
                                 break;
+
                             }
+
                         }
                     }
                 }
@@ -581,8 +584,8 @@ public class PooledDataSource implements DataSource {
                             log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
                         }
                     }
-                
-            
+
+
         }
         return result;
     }

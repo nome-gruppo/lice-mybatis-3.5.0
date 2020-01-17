@@ -104,7 +104,9 @@ public class BlockingCache implements Cache {
           throw new CacheException("Couldn't get a lock in " + timeout + " for the key " +  key + " at the cache " + delegate.getId());
         }
       } catch (InterruptedException e) {
+Thread.currentThread().interrupt();
         throw new CacheException("Got interrupted while trying to acquire lock for key " + key, e);
+
       }finally{
         lock.unlock();
       }
