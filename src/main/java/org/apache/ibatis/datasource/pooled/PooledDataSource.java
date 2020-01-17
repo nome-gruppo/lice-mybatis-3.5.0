@@ -33,9 +33,9 @@ import org.apache.ibatis.logging.LogFactory;
 
 /**
  * This is a simple, synchronous, thread-safe database connection pool.
- * 这是一个简单的、同步的、线程安全的数据库连接池。
+ * è¿™æ˜¯ä¸€ä¸ªç®€å�•çš„ã€�å�Œæ­¥çš„ã€�çº¿ç¨‹å®‰å…¨çš„æ•°æ�®åº“è¿žæŽ¥æ± ã€‚
  * <p>
- * 可以从该连接池获取连接对象Connection
+ * å�¯ä»¥ä»Žè¯¥è¿žæŽ¥æ± èŽ·å�–è¿žæŽ¥å¯¹è±¡Connection
  *
  * @author Clinton Begin
  */
@@ -48,13 +48,13 @@ public class PooledDataSource implements DataSource {
 
     private final UnpooledDataSource dataSource;
 
-    // OPTIONAL CONFIGURATION FIELDS---可选配置字段
+    // OPTIONAL CONFIGURATION FIELDS---å�¯é€‰é…�ç½®å­—æ®µ
 
-    //最大活跃的连接数
+    //æœ€å¤§æ´»è·ƒçš„è¿žæŽ¥æ•°
     protected int poolMaximumActiveConnections = 10;
-    //最大闲置连接数
+    //æœ€å¤§é—²ç½®è¿žæŽ¥æ•°
     protected int poolMaximumIdleConnections = 5;
-    //最大的检查连接时间
+    //æœ€å¤§çš„æ£€æŸ¥è¿žæŽ¥æ—¶é—´
     protected int poolMaximumCheckoutTime = 20000;
     protected int poolTimeToWait = 20000;
     protected int poolMaximumLocalBadConnectionTolerance = 3;
@@ -64,7 +64,7 @@ public class PooledDataSource implements DataSource {
 
     private int expectedConnectionTypeCode;
 
-    //构造器，获取数据库连接数据源
+    //æž„é€ å™¨ï¼ŒèŽ·å�–æ•°æ�®åº“è¿žæŽ¥æ•°æ�®æº�
     public PooledDataSource() {
         dataSource = new UnpooledDataSource();
     }
@@ -74,10 +74,10 @@ public class PooledDataSource implements DataSource {
     }
 
     /**
-     * @param driver   数据库驱动类
-     * @param url      数据库连接url
-     * @param username 用户名
-     * @param password 密码
+     * @param driver   æ•°æ�®åº“é©±åŠ¨ç±»
+     * @param url      æ•°æ�®åº“è¿žæŽ¥url
+     * @param username ç”¨æˆ·å��
+     * @param password å¯†ç �
      */
     public PooledDataSource(String driver, String url, String username, String password) {
         dataSource = new UnpooledDataSource(driver, url, username, password);
@@ -99,7 +99,7 @@ public class PooledDataSource implements DataSource {
         expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 
-    //获取Connection代理数据库连接对象
+    //èŽ·å�–Connectionä»£ç�†æ•°æ�®åº“è¿žæŽ¥å¯¹è±¡
     @Override
     public Connection getConnection() throws SQLException {
         return popConnection(dataSource.getUsername(), dataSource.getPassword()).getProxyConnection();
@@ -547,18 +547,16 @@ public class PooledDataSource implements DataSource {
             result = false;
         }
 
-        if (result) {
-            if (poolPingEnabled) {
-                if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
+        if (poolPingEnabled && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
                     try {
                         if (log.isDebugEnabled()) {
                             log.debug("Testing connection " + conn.getRealHashCode() + " ...");
                         }
                         Connection realConn = conn.getRealConnection();
                         /**
-                         * try(){}:这种称为try-with-resources语句，try语句在该语句结束时自动关闭这些资源。
-                         * 此处的资源指得是那些必须在程序结束时必须关闭的资源（比如数据库连接，网络连接等）。
-                         * try(){}是jdk7开始的语法。
+                         * try(){}:è¿™ç§�ç§°ä¸ºtry-with-resourcesè¯­å�¥ï¼Œtryè¯­å�¥åœ¨è¯¥è¯­å�¥ç»“æ�Ÿæ—¶è‡ªåŠ¨å…³é—­è¿™äº›èµ„æº�ã€‚
+                         * æ­¤å¤„çš„èµ„æº�æŒ‡å¾—æ˜¯é‚£äº›å¿…é¡»åœ¨ç¨‹åº�ç»“æ�Ÿæ—¶å¿…é¡»å…³é—­çš„èµ„æº�ï¼ˆæ¯”å¦‚æ•°æ�®åº“è¿žæŽ¥ï¼Œç½‘ç»œè¿žæŽ¥ç­‰ï¼‰ã€‚
+                         * try(){}æ˜¯jdk7å¼€å§‹çš„è¯­æ³•ã€‚
                          */
                         try (Statement statement = realConn.createStatement()) {
                             statement.executeQuery(poolPingQuery).close();
@@ -583,8 +581,8 @@ public class PooledDataSource implements DataSource {
                             log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
                         }
                     }
-                }
-            }
+                
+            
         }
         return result;
     }

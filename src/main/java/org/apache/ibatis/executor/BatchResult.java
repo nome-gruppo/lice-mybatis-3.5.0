@@ -51,6 +51,9 @@ public class BatchResult {
     return sql;
   }
 
+  /**
+   * @deprecated (when, why, refactoring advice...)
+   */
   @Deprecated
   public Object getParameterObject() {
     return parameterObjects.get(0);
