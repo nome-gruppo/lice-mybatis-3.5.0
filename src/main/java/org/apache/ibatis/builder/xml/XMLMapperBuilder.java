@@ -56,14 +56,14 @@ import org.apache.ibatis.type.TypeHandler;
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
-  //XPathParser：XML节点解析
+  //XPathParserï¼šXMLèŠ‚ç‚¹è§£æž�
   private final XPathParser parser;
 
   private final MapperBuilderAssistant builderAssistant;
-  //将mapper.xml中的sql片段存储到Map中
+  //å°†mapper.xmlä¸­çš„sqlç‰‡æ®µå­˜å‚¨åˆ°Mapä¸­
   private final Map<String, XNode> sqlFragments;
 
-  //Mapper.xml文件
+  //Mapper.xmlæ–‡ä»¶
   private final String resource;
 
   private final static String NAMESPACE = "namespace";
@@ -106,7 +106,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
-  //解析Mapper.xml文件，从<mapper>开始解析。解析到的节点数据，存入到Configuration对象中
+  //è§£æž�Mapper.xmlæ–‡ä»¶ï¼Œä»Ž<mapper>å¼€å§‹è§£æž�ã€‚è§£æž�åˆ°çš„èŠ‚ç‚¹æ•°æ�®ï¼Œå­˜å…¥åˆ°Configurationå¯¹è±¡ä¸­
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
@@ -123,7 +123,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
-  //解析XNode节点
+  //è§£æž�XNodeèŠ‚ç‚¹
   private void configurationElement(XNode context) {
     try {
       String namespace = context.getStringAttribute(NAMESPACE);
@@ -232,7 +232,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
-  //参数类型
+  //å�‚æ•°ç±»åž‹
   private void parameterMapElement(List<XNode> list) {
     for (XNode parameterMapNode : list) {
       String id = parameterMapNode.getStringAttribute("id");
@@ -273,7 +273,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return resultMapElement(resultMapNode, Collections.<ResultMapping> emptyList(), null);
   }
 
-  //返回结果的处理
+  //è¿”å›žç»“æžœçš„å¤„ç�†
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
     String id = resultMapNode.getStringAttribute("id",
@@ -369,7 +369,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       String id = context.getStringAttribute("id");
       id = builderAssistant.applyCurrentNamespace(id, false);
       if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
-        //将sql片段存储，key为Id，value：sql语句
+        //å°†sqlç‰‡æ®µå­˜å‚¨ï¼Œkeyä¸ºIdï¼Œvalueï¼šsqlè¯­å�¥
         sqlFragments.put(id, context);
       }
     }

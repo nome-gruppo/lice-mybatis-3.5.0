@@ -369,7 +369,7 @@ public class Reflector {
     return type;
   }
 
-  public Constructor<?> getDefaultConstructor() {
+  public Constructor getDefaultConstructor() {
     if (defaultConstructor != null) {
       return defaultConstructor;
     } else {

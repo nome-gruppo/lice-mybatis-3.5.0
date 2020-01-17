@@ -46,6 +46,7 @@ import org.apache.ibatis.session.RowBounds;
  * @author Franta Mejta
  */
 public class ResultLoaderMap {
+	private static final String CONFIG_FACMETHOD= "Cannot get Configuration as factory method [";
 
   private final Map<String, LoadPair> loaderMap = new HashMap<>();
 
@@ -105,6 +106,8 @@ public class ResultLoaderMap {
    * Property which was not loaded yet.
    */
   public static class LoadPair implements Serializable {
+	  
+	
 
     private static final long serialVersionUID = 20130412;
     /**
@@ -228,7 +231,7 @@ public class ResultLoaderMap {
       try {
         final Method factoryMethod = this.configurationFactory.getDeclaredMethod(FACTORY_METHOD);
         if (!Modifier.isStatic(factoryMethod.getModifiers())) {
-          throw new ExecutorException("Cannot get Configuration as factory method ["
+          throw new ExecutorException(CONFIG_FACMETHOD
                   + this.configurationFactory + "]#["
                   + FACTORY_METHOD + "] is not static.");
         }
@@ -251,15 +254,15 @@ public class ResultLoaderMap {
       } catch (final ExecutorException ex) {
         throw ex;
       } catch (final NoSuchMethodException ex) {
-        throw new ExecutorException("Cannot get Configuration as factory class ["
+        throw new ExecutorException(CONFIG_FACMETHOD
                 + this.configurationFactory + "] is missing factory method of name ["
                 + FACTORY_METHOD + "].", ex);
       } catch (final PrivilegedActionException ex) {
-        throw new ExecutorException("Cannot get Configuration as factory method ["
+        throw new ExecutorException(CONFIG_FACMETHOD
                 + this.configurationFactory + "]#["
                 + FACTORY_METHOD + "] threw an exception.", ex.getCause());
       } catch (final Exception ex) {
-        throw new ExecutorException("Cannot get Configuration as factory method ["
+        throw new ExecutorException(CONFIG_FACMETHOD
                 + this.configurationFactory + "]#["
                 + FACTORY_METHOD + "] threw an exception.", ex);
       }
@@ -283,7 +286,7 @@ public class ResultLoaderMap {
   }
 
   private static final class ClosedExecutor extends BaseExecutor {
-
+	  private static final String NOT_SUPPORTED = "Not supported"; 
     public ClosedExecutor() {
       super(null, null);
     }
@@ -295,22 +298,22 @@ public class ResultLoaderMap {
 
     @Override
     protected int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
-      throw new UnsupportedOperationException("Not supported.");
+      throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     protected List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
-      throw new UnsupportedOperationException("Not supported.");
+      throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     protected <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
-      throw new UnsupportedOperationException("Not supported.");
+      throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql) throws SQLException {
-      throw new UnsupportedOperationException("Not supported.");
+      throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
   }
 }

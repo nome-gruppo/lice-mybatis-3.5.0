@@ -199,7 +199,7 @@ public class ResultMapping {
     return jdbcType;
   }
 
-  public TypeHandler<?> getTypeHandler() {
+  public TypeHandler getTypeHandler() {
     return typeHandler;
   }
 

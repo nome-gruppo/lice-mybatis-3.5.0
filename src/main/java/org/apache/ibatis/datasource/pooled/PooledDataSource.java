@@ -40,6 +40,7 @@ import org.apache.ibatis.logging.LogFactory;
  * @author Clinton Begin
  */
 public class PooledDataSource implements DataSource {
+	private static final String CONNECTION = "Connection";
 
     private static final Log log = LogFactory.getLog(PooledDataSource.class);
 
@@ -545,7 +546,7 @@ public class PooledDataSource implements DataSource {
             result = !conn.getRealConnection().isClosed();
         } catch (SQLException e) {
             if (log.isDebugEnabled()) {
-                log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
+                log.debug(CONNECTION + conn.getRealHashCode() + " is BAD: " + e.getMessage());
             }
             result = false;
         }
@@ -570,7 +571,7 @@ public class PooledDataSource implements DataSource {
                         }
                         result = true;
                         if (log.isDebugEnabled()) {
-                            log.debug("Connection " + conn.getRealHashCode() + " is GOOD!");
+                            log.debug(CONNECTION + conn.getRealHashCode() + " is GOOD!");
                         }
                     } catch (Exception e) {
                         log.warn("Execution of ping query '" + poolPingQuery + "' failed: " + e.getMessage());
@@ -581,7 +582,7 @@ public class PooledDataSource implements DataSource {
                         }
                         result = false;
                         if (log.isDebugEnabled()) {
-                            log.debug("Connection " + conn.getRealHashCode() + " is BAD: " + e.getMessage());
+                            log.debug(CONNECTION + conn.getRealHashCode() + " is BAD: " + e.getMessage());
                         }
                     }
 

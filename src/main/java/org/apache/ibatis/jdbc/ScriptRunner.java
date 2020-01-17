@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
  * @author Clinton Begin
  */
 public class ScriptRunner {
+	private static final String ERROR_EXECUTING = "Error Executing";
+	private static final String CAUSE= "Cause";
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
@@ -128,7 +130,7 @@ public class ScriptRunner {
       executeStatement(command);
       commitConnection();
     } catch (Exception e) {
-      String message = "Error executing: " + script + ".  Cause: " + e;
+      String message = ERROR_EXECUTING + script + CAUSE + e;
       printlnError(message);
       throw new RuntimeSqlException(message, e);
     }
@@ -145,7 +147,7 @@ public class ScriptRunner {
       commitConnection();
       checkForMissingLineTerminator(command);
     } catch (Exception e) {
-      String message = "Error executing: " + command + ".  Cause: " + e;
+      String message = ERROR_EXECUTING + command + CAUSE + e;
       printlnError(message);
       throw new RuntimeSqlException(message, e);
     }
@@ -165,7 +167,7 @@ public class ScriptRunner {
         connection.setAutoCommit(autoCommit);
       }
     } catch (Throwable t) {
-      throw new RuntimeSqlException("Could not set AutoCommit to " + autoCommit + ". Cause: " + t, t);
+      throw new RuntimeSqlException("Could not set AutoCommit to " + autoCommit + CAUSE + t, t);
     }
   }
 
@@ -245,7 +247,7 @@ public class ScriptRunner {
         if (stopOnError) {
           throw e;
         } else {
-          String message = "Error executing: " + command + ".  Cause: " + e;
+          String message =ERROR_EXECUTING+ command + CAUSE + e;
           printlnError(message);
         }
       }
