@@ -44,7 +44,7 @@ public class JBoss6VFS extends VFS {
       this.virtualFile = virtualFile;
     }
 
-    String getPathNameRelativeTo(VirtualFile parent) {
+    String getPathName(VirtualFile parent) {
       try {
         return invoke(getPathNameRelativeTo, virtualFile, parent.virtualFile);
       } catch (IOException e) {
@@ -168,7 +168,7 @@ public class JBoss6VFS extends VFS {
     List<VirtualFile> children = directory.getChildren();
     List<String> names = new ArrayList<>(children.size());
     for (VirtualFile vf : children) {
-      names.add(path + vf.getPathNameRelativeTo(directory));
+      names.add(path + vf.getPathName(directory));
     }
 
     return names;

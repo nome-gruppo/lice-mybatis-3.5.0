@@ -105,6 +105,8 @@ public class BlockingCache implements Cache {
         }
       } catch (InterruptedException e) {
         throw new CacheException("Got interrupted while trying to acquire lock for key " + key, e);
+      }finally{
+        lock.unlock();
       }
     } else {
       lock.lock();

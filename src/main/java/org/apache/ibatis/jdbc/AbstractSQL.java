@@ -28,8 +28,10 @@ import java.util.List;
  */
 public abstract class AbstractSQL<T> {
 
-  private static final String AND = ") \nAND (";
+  private static final String AND_ = ") \nAND (";
   private static final String OR = ") \nOR (";
+  private static final String AND = " AND ";
+  private static final String WHERE = "WHERE";
 
   private final SQLStatement sql = new SQLStatement();
 
@@ -217,7 +219,7 @@ public abstract class AbstractSQL<T> {
   }
 
   public T AND() {
-    sql().lastList.add(AND);
+    sql().lastList.add(AND_);
     return getSelf();
   }
 
@@ -345,7 +347,7 @@ public abstract class AbstractSQL<T> {
         String last = "________";
         for (int i = 0, n = parts.size(); i < n; i++) {
           String part = parts.get(i);
-          if (i > 0 && !part.equals(AND) && !part.equals(OR) && !last.equals(AND) && !last.equals(OR)) {
+          if (i > 0 && !part.equals(AND_) && !part.equals(OR) && !last.equals(AND_) && !last.equals(OR)) {
             builder.append(conjunction);
           }
           builder.append(part);
@@ -356,6 +358,9 @@ public abstract class AbstractSQL<T> {
     }
 
     private String selectSQL(SafeAppendable builder) {
+
+      
+
       if (distinct) {
         sqlClause(builder, "SELECT DISTINCT", select, "", "", ", ");
       } else {
@@ -364,9 +369,9 @@ public abstract class AbstractSQL<T> {
 
       sqlClause(builder, "FROM", tables, "", "", ", ");
       joins(builder);
-      sqlClause(builder, "WHERE", where, "(", ")", " AND ");
+      sqlClause(builder, WHERE, where, "(", ")", AND );
       sqlClause(builder, "GROUP BY", groupBy, "", "", ", ");
-      sqlClause(builder, "HAVING", having, "(", ")", " AND ");
+      sqlClause(builder, "HAVING", having, "(", ")", AND );
       sqlClause(builder, "ORDER BY", orderBy, "", "", ", ");
       return builder.toString();
     }
@@ -388,7 +393,7 @@ public abstract class AbstractSQL<T> {
 
     private String deleteSQL(SafeAppendable builder) {
       sqlClause(builder, "DELETE FROM", tables, "", "", "");
-      sqlClause(builder, "WHERE", where, "(", ")", " AND ");
+      sqlClause(builder, WHERE, where, "(", ")",  AND );
       return builder.toString();
     }
 
@@ -396,7 +401,7 @@ public abstract class AbstractSQL<T> {
       sqlClause(builder, "UPDATE", tables, "", "", "");
       joins(builder);
       sqlClause(builder, "SET", sets, "", "", ", ");
-      sqlClause(builder, "WHERE", where, "(", ")", " AND ");
+      sqlClause(builder, WHERE, where, "(", ")",  AND );
       return builder.toString();
     }
 

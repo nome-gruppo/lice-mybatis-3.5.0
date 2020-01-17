@@ -1057,11 +1057,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private CacheKey combineKeys(CacheKey rowKey, CacheKey parentRowKey) {
         if (rowKey.getUpdateCount() > 1 && parentRowKey.getUpdateCount() > 1) {
             CacheKey combinedKey;
-            try {
-                combinedKey = rowKey.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new ExecutorException("Error cloning cache key.  Cause: " + e, e);
-            }
+            
+            combinedKey = new CacheKey(rowKey);
             combinedKey.update(parentRowKey);
             return combinedKey;
         }

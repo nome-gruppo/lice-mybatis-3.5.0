@@ -58,6 +58,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private final XPathParser parser;
     private String environment;
     private final ReflectorFactory localReflectorFactory = new DefaultReflectorFactory();
+    private static final String PACKAGE = "package";
 
     public XMLConfigBuilder(Reader reader) {
         this(reader, null, null);
@@ -176,7 +177,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     private void typeAliasesElementFor (XNode parent) {
         for (XNode child : parent.getChildren()) {
-            if ("package".equals(child.getName())) {
+            if (PACKAGE.equals(child.getName())) {
                 String typeAliasPackage = child.getStringAttribute("name");
                 configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
             } else {
@@ -359,7 +360,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private void typeHandlerElement(XNode parent) {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-                if ("package".equals(child.getName())) {
+                if (PACKAGE.equals(child.getName())) {
                     String typeHandlerPackage = child.getStringAttribute("name");
                     typeHandlerRegistry.register(typeHandlerPackage);
                 } else {
@@ -393,7 +394,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-                if ("package".equals(child.getName())) {
+                if (PACKAGE.equals(child.getName())) {
                     String mapperPackage = child.getStringAttribute("name");
                     configuration.addMappers(mapperPackage);
                 } else {

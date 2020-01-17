@@ -605,7 +605,7 @@ public class PooledDataSource implements DataSource {
         return conn;
     }
 
-    protected void finalize() throws Throwable {
+    protected void finalized() throws Throwable {
         forceCloseAll();
         super.finalize();
     }

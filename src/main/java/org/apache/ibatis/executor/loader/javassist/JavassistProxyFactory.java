@@ -185,7 +185,7 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
 
     @Override
     public Object invoke(Object enhanced, Method method, Method methodProxy, Object[] args) throws Throwable {
-      final Object o = super.invoke(enhanced, method, args);
+      final Object o = super.invoke(enhanced, method);
       return o instanceof AbstractSerialStateHolder ? o : methodProxy.invoke(o, args);
     }
 
