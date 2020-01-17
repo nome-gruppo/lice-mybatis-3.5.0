@@ -246,7 +246,7 @@ class PooledConnection implements InvocationHandler {
                 checkConnection();
             }
             return method.invoke(realConnection, args);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw ExceptionUtil.unwrapThrowable(t);
         }
 

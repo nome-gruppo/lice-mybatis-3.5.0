@@ -325,9 +325,9 @@ public class XMLConfigBuilder extends BaseBuilder {
             databaseIdProvider = (DatabaseIdProvider) resolveClass(type).newInstance();
             databaseIdProvider.setProperties(properties);
         }
-        Environment environment = configuration.getEnvironment();
-        if (environment != null && databaseIdProvider != null) {
-            String databaseId = databaseIdProvider.getDatabaseId(environment.getDataSource());
+        Environment environment1 = configuration.getEnvironment();
+        if (environment1 != null && databaseIdProvider != null) {
+            String databaseId = databaseIdProvider.getDatabaseId(environment1.getDataSource());
             configuration.setDatabaseId(databaseId);
         }
     }
@@ -368,7 +368,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 }
             }
         }
-    }// end method 
+    }// end method
 
     private void typeHandlerElementElse(XNode child){
          //将javaType和jdbcType解析，并注册到TypeHandlerRegistry，进行java类型和数据库的数据类型转换

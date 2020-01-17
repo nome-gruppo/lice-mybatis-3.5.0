@@ -516,27 +516,27 @@ public class MapperAnnotationBuilder {
   }
 
   private SqlCommandType getSqlCommandType(Method method) {
-    Class<? extends Annotation> type = getSqlAnnotationType(method);
+    Class<? extends Annotation> type1 = getSqlAnnotationType(method);
 
-    if (type == null) {
-      type = getSqlProviderAnnotationType(method);
+    if (type1 == null) {
+      type1 = getSqlProviderAnnotationType(method);
 
-      if (type == null) {
+      if (type1 == null) {
         return SqlCommandType.UNKNOWN;
       }
 
-      if (type == SelectProvider.class) {
-        type = Select.class;
-      } else if (type == InsertProvider.class) {
-        type = Insert.class;
-      } else if (type == UpdateProvider.class) {
-        type = Update.class;
-      } else if (type == DeleteProvider.class) {
-        type = Delete.class;
+      if (type1 == SelectProvider.class) {
+        type1 = Select.class;
+      } else if (type1 == InsertProvider.class) {
+        type1 = Insert.class;
+      } else if (type1 == UpdateProvider.class) {
+        type1 = Update.class;
+      } else if (type1 == DeleteProvider.class) {
+        type1 = Delete.class;
       }
     }
 
-    return SqlCommandType.valueOf(type.getSimpleName().toUpperCase(Locale.ENGLISH));
+    return SqlCommandType.valueOf(type1.getSimpleName().toUpperCase(Locale.ENGLISH));
   }
 
   private Class<? extends Annotation> getSqlAnnotationType(Method method) {
@@ -548,10 +548,10 @@ public class MapperAnnotationBuilder {
   }
 
   private Class<? extends Annotation> chooseAnnotationType(Method method, Set<Class<? extends Annotation>> types) {
-    for (Class<? extends Annotation> type : types) {
-      Annotation annotation = method.getAnnotation(type);
+    for (Class<? extends Annotation> type1 : types) {
+      Annotation annotation = method.getAnnotation(type1);
       if (annotation != null) {
-        return type;
+        return type1;
       }
     }
     return null;
