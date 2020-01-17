@@ -1,3 +1,18 @@
+/**
+ *    Copyright 2009-2020 the original author or authors.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package org.apache.ibatis.executor.statement;
 
 import java.sql.CallableStatement;
@@ -87,21 +102,29 @@ public class CallableStatementHandler extends BaseStatementHandler {
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         for (int i = 0, n = parameterMappings.size(); i < n; i++) {
             ParameterMapping parameterMapping = parameterMappings.get(i);
-            if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
-                if (null == parameterMapping.getJdbcType()) {
-                    throw new ExecutorException("The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
+            registerOutputParametersFor(i, parameterMapping, cs);
+        }
+    }// end method 
+
+    private void registerOutputParametersFor(int i, ParameterMapping parameterMapping, CallableStatement cs) throws SQLException{
+        if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
+            if (null == parameterMapping.getJdbcType()) {
+                throw new ExecutorException("The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
+            } else {
+                if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
+                    cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
                 } else {
-                    if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
-                        cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
-                    } else {
-                        if (parameterMapping.getJdbcTypeName() == null) {
-                            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
-                        } else {
-                            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getJdbcTypeName());
-                        }
-                    }
+                   registerOutputParametersForIf(i, parameterMapping, cs);
                 }
             }
+        }
+    }
+
+    private void registerOutputParametersForIf(int i, ParameterMapping parameterMapping, CallableStatement cs) throws SQLException{
+        if (parameterMapping.getJdbcTypeName() == null) {
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
+        } else {
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getJdbcTypeName());
         }
     }
 
