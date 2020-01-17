@@ -26,7 +26,7 @@ import org.apache.ibatis.reflection.Reflector;
 public class MethodInvoker implements Invoker {
 
   private final Class<?> type;
-  private final Method method;
+  public final Method method;
 
   public MethodInvoker(Method method) {
     this.method = method;

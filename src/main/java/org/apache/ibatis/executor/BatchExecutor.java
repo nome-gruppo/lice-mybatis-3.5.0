@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.Serializable;
 
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
@@ -40,7 +41,7 @@ import org.apache.ibatis.transaction.Transaction;
  *
  * @author Jeff Butler
  */
-public class BatchExecutor extends BaseExecutor {
+public class BatchExecutor extends BaseExecutor implements Serializable {
 
     public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
 
