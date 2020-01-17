@@ -44,11 +44,11 @@ public abstract class AbstractSerialStateHolder implements Externalizable {
   private static final long serialVersionUID = 8940388717901644661L;
   private static final ThreadLocal<ObjectOutputStream> stream = new ThreadLocal<>();
   private byte[] userBeanBytes = new byte[0];
-  private Object userBean;
+  private transient Object userBean;
   private Map<String, ResultLoaderMap.LoadPair> unloadedProperties;
-  private ObjectFactory objectFactory;
+  private transient ObjectFactory objectFactory;
   private Class<?>[] constructorArgTypes;
-  private Object[] constructorArgs;
+  private transient Object[] constructorArgs;
 
   public AbstractSerialStateHolder() {
   }
