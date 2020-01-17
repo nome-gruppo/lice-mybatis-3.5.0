@@ -421,14 +421,15 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private String processNestedResultMappings(XNode context, List<ResultMapping> resultMappings, Class<?> enclosingType) throws Exception {
-    if ("association".equals(context.getName())
+    if (("association".equals(context.getName())
         || "collection".equals(context.getName())
-        || "case".equals(context.getName())) {
-      if (context.getStringAttribute("select") == null) {
+        || "case".equals(context.getName()))
+        && (context.getStringAttribute("select") == null)) {
+      
         validateCollection(context, enclosingType);
         ResultMap resultMap = resultMapElement(context, resultMappings, enclosingType);
         return resultMap.getId();
-      }
+      
     }
     return null;
   }
@@ -454,14 +455,14 @@ public class XMLMapperBuilder extends BaseBuilder {
       } catch (ClassNotFoundException e) {
         //ignore, bound type is not required
       }
-      if (boundType != null) {
-        if (!configuration.hasMapper(boundType)) {
+      if ((boundType != null) && (!configuration.hasMapper(boundType))) {
+        
           // Spring may not know the real resource name so we set a flag
           // to prevent loading again this resource from the mapper interface
           // look at MapperAnnotationBuilder#loadXmlResource
           configuration.addLoadedResource("namespace:" + namespace);
           configuration.addMapper(boundType);
-        }
+        
       }
     }
   }
