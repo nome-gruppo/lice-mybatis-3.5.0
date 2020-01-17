@@ -239,7 +239,7 @@ public class UnpooledDataSource implements DataSource {
             Class<?> driverType;
             try {
                 if (driverClassLoader != null) {
-                    //取了运行时的Driver类,类似于JDBC操作数据库时的Class.forName("com.mysql.jdbc.Driver");
+                    
                     driverType = Class.forName(driver, true, driverClassLoader);
                 } else {
                     driverType = Resources.classForName(driver);

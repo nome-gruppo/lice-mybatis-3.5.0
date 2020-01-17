@@ -37,7 +37,7 @@ import org.apache.ibatis.session.ResultHandler;
  */
 public interface StatementHandler {
 
-    //通过Connection对象，获取JDBC的Statement对象。Statement sts = conn.createStatement();
+    
     Statement prepare(Connection connection, Integer transactionTimeout)
             throws SQLException;
 

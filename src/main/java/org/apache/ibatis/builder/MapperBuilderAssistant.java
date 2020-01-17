@@ -163,7 +163,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Integer numericScale) {
     resultMap = applyCurrentNamespace(resultMap, true);
 
-    // Class parameterType = parameterMapBuilder.type();
+    
     Class<?> javaTypeClass = resolveParameterJavaType(parameterType, property, javaType, jdbcType);
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
 
