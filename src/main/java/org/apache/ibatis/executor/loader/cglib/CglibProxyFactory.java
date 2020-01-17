@@ -190,7 +190,7 @@ public class CglibProxyFactory implements ProxyFactory {
 
     @Override
     public Object intercept(Object enhanced, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-      final Object o = super.invoke(enhanced, method, args);
+      final Object o = super.invoke(enhanced, method);
       return o instanceof AbstractSerialStateHolder ? o : methodProxy.invokeSuper(o, args);
     }
 

@@ -35,6 +35,7 @@ public class JdbcTransactionFactory implements TransactionFactory {
 
     @Override
     public void setProperties(Properties props) {
+        //constructor
     }
 
     @Override
