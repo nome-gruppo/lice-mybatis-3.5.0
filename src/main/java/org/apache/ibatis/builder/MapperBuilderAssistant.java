@@ -50,7 +50,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
- * MapperBuilderAssistant 用于缓存、sql参数、查询返回的结果集的处理
+ * MapperBuilderAssistant ç”¨äºŽç¼“å­˜ã€�sqlå�‚æ•°ã€�æŸ¥è¯¢è¿”å›žçš„ç»“æžœé›†çš„å¤„ç�†
  * @author Clinton Begin
  */
 public class MapperBuilderAssistant extends BaseBuilder {
@@ -58,7 +58,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
   private String currentNamespace;
   private final String resource;
   private Cache currentCache;
-  //是否不能解析CacheRef的标记，存在#676的问题
+  //æ˜¯å�¦ä¸�èƒ½è§£æž�CacheRefçš„æ ‡è®°ï¼Œå­˜åœ¨#676çš„é—®é¢˜
   private boolean unresolvedCacheRef; // issue #676
 
 
@@ -176,6 +176,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .build();
   }
 
+  public void costr(boolean declaresConstructor,  List<ResultMapping> extendedResultMappings) {
+      if (declaresConstructor) {
+          Iterator<ResultMapping> extendedResultMappingsIter = extendedResultMappings.iterator();
+          while (extendedResultMappingsIter.hasNext()) {
+            if (extendedResultMappingsIter.next().getFlags().contains(ResultFlag.CONSTRUCTOR)) {
+              extendedResultMappingsIter.remove();
+            }
+          }
+        }
+  }
   public ResultMap addResultMap(
       String id,
       Class<?> type,
@@ -201,14 +211,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
           break;
         }
       }
-      if (declaresConstructor) {
-        Iterator<ResultMapping> extendedResultMappingsIter = extendedResultMappings.iterator();
-        while (extendedResultMappingsIter.hasNext()) {
-          if (extendedResultMappingsIter.next().getFlags().contains(ResultFlag.CONSTRUCTOR)) {
-            extendedResultMappingsIter.remove();
-          }
-        }
-      }
+      costr(declaresConstructor, extendedResultMappings);
+
       resultMappings.addAll(extendedResultMappings);
     }
     ResultMap resultMap = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping)
