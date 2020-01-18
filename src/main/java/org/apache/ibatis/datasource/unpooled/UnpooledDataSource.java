@@ -148,7 +148,7 @@ public class UnpooledDataSource implements DataSource {
         this.driverProperties = driverProperties;
     }
 
-    public String getDriver() {
+    public synchronized String getDriver() {
         return driver;
     }
 
