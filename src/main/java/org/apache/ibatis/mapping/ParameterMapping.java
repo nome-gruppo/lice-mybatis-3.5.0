@@ -196,7 +196,7 @@ public class ParameterMapping {
      *
      * @return
      */
-    public TypeHandler<?> getTypeHandler() {
+    public TypeHandler<? extends Object> getTypeHandler() {
         return typeHandler;
     }
 
