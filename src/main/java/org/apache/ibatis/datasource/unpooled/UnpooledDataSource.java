@@ -32,38 +32,39 @@ import javax.sql.DataSource;
 import org.apache.ibatis.io.Resources;
 
 /**
- * UnpooledDataSource：非连接池的数据库连接对象
- * pooledDataSource和JNDI都是通过UnpooledDataSource来获取具有操作数据库能力的Connection对象的
+ * UnpooledDataSourceï¼šé�žè¿žæŽ¥æ± çš„æ•°æ�®åº“è¿žæŽ¥å¯¹è±¡
+ * pooledDataSourceå’ŒJNDIéƒ½æ˜¯é€šè¿‡UnpooledDataSourceæ�¥èŽ·å�–å…·æœ‰æ“�ä½œæ•°æ�®åº“èƒ½åŠ›çš„Connectionå¯¹è±¡çš„
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
 public class UnpooledDataSource implements DataSource {
 
-    //类加载器
+    //ç±»åŠ è½½å™¨
     private ClassLoader driverClassLoader;
-    //属性解析类
+    //å±žæ€§è§£æž�ç±»
     private Properties driverProperties;
-    //m注册到map的数据库驱动类，加载数据的驱动
+    //mæ³¨å†Œåˆ°mapçš„æ•°æ�®åº“é©±åŠ¨ç±»ï¼ŒåŠ è½½æ•°æ�®çš„é©±åŠ¨
     private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
-    //Connection所需的参数
+    //Connectionæ‰€éœ€çš„å�‚æ•°
     private String driver;
     private String url;
     private String username;
     private String password;
+   
 
-    //是否自动提交
+    //æ˜¯å�¦è‡ªåŠ¨æ��äº¤
     private Boolean autoCommit;
-    //默认事务隔离级别
+    //é»˜è®¤äº‹åŠ¡éš”ç¦»çº§åˆ«
     private Integer defaultTransactionIsolationLevel;
 
     static {
-        //获取数据库驱动类Driver类
+        //èŽ·å�–æ•°æ�®åº“é©±åŠ¨ç±»Driverç±»
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             Driver driver = drivers.nextElement();
-            //获取已经加载到注册器中驱动类
+            //èŽ·å�–å·²ç»�åŠ è½½åˆ°æ³¨å†Œå™¨ä¸­é©±åŠ¨ç±»
             registeredDrivers.put(driver.getClass().getName(), driver);
         }
     }
@@ -71,7 +72,7 @@ public class UnpooledDataSource implements DataSource {
     public UnpooledDataSource() {
     }
 
-    //初始化变量
+    //åˆ�å§‹åŒ–å�˜é‡�
     public UnpooledDataSource(String driver, String url, String username, String password) {
         this.driver = driver;
         this.url = url;
@@ -85,7 +86,7 @@ public class UnpooledDataSource implements DataSource {
         this.driverProperties = driverProperties;
     }
 
-    //可传入类加载器
+    //å�¯ä¼ å…¥ç±»åŠ è½½å™¨
     public UnpooledDataSource(ClassLoader driverClassLoader, String driver, String url, String username, String password) {
         this.driverClassLoader = driverClassLoader;
         this.driver = driver;
@@ -211,7 +212,7 @@ public class UnpooledDataSource implements DataSource {
 
 
     /**
-     * 通过DriverManager管理器获取Connection对象
+     * é€šè¿‡DriverManagerç®¡ç�†å™¨èŽ·å�–Connectionå¯¹è±¡
      * @param properties
      * @return
      * @throws SQLException
@@ -219,18 +220,18 @@ public class UnpooledDataSource implements DataSource {
     private Connection doGetConnection(Properties properties) throws SQLException {
         initializeDriver();
         /**
-         * 通过DriverManager管理器获取Connection对象
-         * 类似于JDBC操作数据库的：connection = DriverManager.getConnection(url, username, password);
-         * Connection对象，将可以获取得到PrepareStatement和Statement对象来操作SQL语句
+         * é€šè¿‡DriverManagerç®¡ç�†å™¨èŽ·å�–Connectionå¯¹è±¡
+         * ç±»ä¼¼äºŽJDBCæ“�ä½œæ•°æ�®åº“çš„ï¼šconnection = DriverManager.getConnection(url, username, password);
+         * Connectionå¯¹è±¡ï¼Œå°†å�¯ä»¥èŽ·å�–å¾—åˆ°PrepareStatementå’ŒStatementå¯¹è±¡æ�¥æ“�ä½œSQLè¯­å�¥
          */
         Connection connection = DriverManager.getConnection(url, properties);
-        //配置连接对象的属性
+        //é…�ç½®è¿žæŽ¥å¯¹è±¡çš„å±žæ€§
         configureConnection(connection);
         return connection;
     }
 
     /**
-     * 获取了运行时的Driver类
+     * èŽ·å�–äº†è¿�è¡Œæ—¶çš„Driverç±»
      * Class.forName(driver, true, driverClassLoader)
      * @throws SQLException
      */
@@ -245,12 +246,12 @@ public class UnpooledDataSource implements DataSource {
                     driverType = Resources.classForName(driver);
                 }
                 // DriverManager requires the driver to be loaded via the system ClassLoader.
-                //DriverManager要求驱动程序通过系统类加载器加载。
+                //DriverManagerè¦�æ±‚é©±åŠ¨ç¨‹åº�é€šè¿‡ç³»ç»Ÿç±»åŠ è½½å™¨åŠ è½½ã€‚
                 // http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
                 Driver driverInstance = (Driver) driverType.newInstance();
 
 
-                //将获取到Driver对象注册到DriverManager管理器中
+                //å°†èŽ·å�–åˆ°Driverå¯¹è±¡æ³¨å†Œåˆ°DriverManagerç®¡ç�†å™¨ä¸­
                 DriverManager.registerDriver(new DriverProxy(driverInstance));
                 registeredDrivers.put(driver, driverInstance);
             } catch (Exception e) {
@@ -259,7 +260,7 @@ public class UnpooledDataSource implements DataSource {
         }
     }
 
-    //配置Connection连接对象的一些属性
+    //é…�ç½®Connectionè¿žæŽ¥å¯¹è±¡çš„ä¸€äº›å±žæ€§
     private void configureConnection(Connection conn) throws SQLException {
         if (autoCommit != null && autoCommit != conn.getAutoCommit()) {
             conn.setAutoCommit(autoCommit);
