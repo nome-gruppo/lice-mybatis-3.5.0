@@ -34,6 +34,11 @@ public class ResultExtractor {
     this.objectFactory = objectFactory;
   }
 
+ public void forinnestat(List<Object> list, Object array) {
+     for (int i = 0; i < list.size(); i++) {
+         Array.set(array, i, list.get(i));
+       } 
+ }
   public Object extractObjectFromList(List<Object> list, Class<?> targetType) {
     Object value = null;
     if (targetType != null && targetType.isAssignableFrom(list.getClass())) {
@@ -46,9 +51,7 @@ public class ResultExtractor {
       Class<?> arrayComponentType = targetType.getComponentType();
       Object array = Array.newInstance(arrayComponentType, list.size());
       if (arrayComponentType.isPrimitive()) {
-        for (int i = 0; i < list.size(); i++) {
-          Array.set(array, i, list.get(i));
-        }
+    	  forinnestat(list, array);
         value = array;
       } else {
         value = list.toArray((Object[])array);
