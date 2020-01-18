@@ -25,6 +25,7 @@ public class DefaultReflectorFactory implements ReflectorFactory {
     private final ConcurrentMap<Class<?>, Reflector> reflectorMap = new ConcurrentHashMap<>();
     //默认反射对象工厂
     public DefaultReflectorFactory() {
+        //do something
     }
 
     @Override

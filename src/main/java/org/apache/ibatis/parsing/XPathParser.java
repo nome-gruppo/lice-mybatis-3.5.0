@@ -286,6 +286,7 @@ public class XPathParser {
 
                 @Override
                 public void warning(SAXParseException exception) throws SAXException {
+                //do something
                 }
             });
             //解析XML文件，返回一个Document对象

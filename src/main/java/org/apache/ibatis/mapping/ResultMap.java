@@ -210,15 +210,23 @@ public class ResultMap {
           if (actualParamNames == null) {
             actualParamNames = ParamNameUtil.getParamNames(constructor);
           }
-          if (actualParamNames.size() > paramIndex) {
-            name = actualParamNames.get(paramIndex);
-          }
+
+          name = getArgNamesIf(paramIndex, actualParamNames, name);
+          
         }
         paramNames.add(name != null ? name : "arg" + paramIndex);
       }
       return paramNames;
+    }// end method getArgNames
+
+    private String getArgNamesIf(int paramIndex, List<String> actualParamNames, String name){
+      if (actualParamNames.size() > paramIndex) {
+        name = actualParamNames.get(paramIndex);
+      }
+      return name;
     }
-  }
+
+  }// end class builder
 
   public String getId() {
     return id;
