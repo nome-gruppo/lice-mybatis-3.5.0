@@ -157,8 +157,11 @@ public class DefaultVFS extends VFS {
      * loader as a child of the current resource. If any line fails then we assume
      * the current resource is not a directory.
      */
-    is = url.openStream();
+	  is = url.openStream();
+	  try { 
+   
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+   
     List<String> lines = new ArrayList<>();
     for (String line; (line = reader.readLine()) != null;) {
       if (log.isDebugEnabled()) {
@@ -177,7 +180,13 @@ public class DefaultVFS extends VFS {
       }
       children.addAll(lines);
     }
-    return children;
+     }
+   catch (Exception e ) {
+	   
+   } finally {
+	   is.close();
+   }
+	  return children;
   }
 
   public List<String> listSupportFour(List<String> children, URL url) {
