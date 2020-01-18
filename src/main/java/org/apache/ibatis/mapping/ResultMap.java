@@ -62,7 +62,8 @@ public class ResultMap {
       this(configuration, id, type, resultMappings, null);
     }
 
-    public Builder(Configuration configuration, String id, Class<?> type, List<ResultMapping> resultMappings, Boolean autoMapping) {
+    public Builder(Configuration configuration, String id, Class<?> type, List<ResultMapping> resultMappings,
+        Boolean autoMapping) {
       resultMap.configuration = configuration;
       resultMap.id = id;
       resultMap.type = type;
@@ -91,42 +92,27 @@ public class ResultMap {
       final List<String> constructorArgNames = new ArrayList<>();
       for (ResultMapping resultMapping : resultMap.resultMappings) {
         resultMap.hasNestedQueries = resultMap.hasNestedQueries || resultMapping.getNestedQueryId() != null;
-        resultMap.hasNestedResultMaps = resultMap.hasNestedResultMaps || (resultMapping.getNestedResultMapId() != null && resultMapping.getResultSet() == null);
+        resultMap.hasNestedResultMaps = resultMap.hasNestedResultMaps
+            || (resultMapping.getNestedResultMapId() != null && resultMapping.getResultSet() == null);
         final String column = resultMapping.getColumn();
         if (column != null) {
           resultMap.mappedColumns.add(column.toUpperCase(Locale.ENGLISH));
         } else if (resultMapping.isCompositeResult()) {
-          for (ResultMapping compositeResultMapping : resultMapping.getComposites()) {
-            final String compositeColumn = compositeResultMapping.getColumn();
-            if (compositeColumn != null) {
-              resultMap.mappedColumns.add(compositeColumn.toUpperCase(Locale.ENGLISH));
-            }
-          }
+
+          buildFor(resultMapping);
+
         }
-        final String property = resultMapping.getProperty();
-        if(property != null) {
-          resultMap.mappedProperties.add(property);
-        }
-        if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
-          resultMap.constructorResultMappings.add(resultMapping);
-          if (resultMapping.getProperty() != null) {
-            constructorArgNames.add(resultMapping.getProperty());
-          }
-        } else {
-          resultMap.propertyResultMappings.add(resultMapping);
-        }
-        if (resultMapping.getFlags().contains(ResultFlag.ID)) {
-          resultMap.idResultMappings.add(resultMapping);
-        }
-      }
+
+        buildIfs(resultMapping, constructorArgNames);
+
+      } // end for
       if (resultMap.idResultMappings.isEmpty()) {
         resultMap.idResultMappings.addAll(resultMap.resultMappings);
       }
       if (!constructorArgNames.isEmpty()) {
         final List<String> actualArgNames = argNamesOfMatchingConstructor(constructorArgNames);
         if (actualArgNames == null) {
-          throw new BuilderException("Error in result map '" + resultMap.id
-              + "'. Failed to find a constructor in '"
+          throw new BuilderException("Error in result map '" + resultMap.id + "'. Failed to find a constructor in '"
               + resultMap.getType().getName() + "' by arg names " + constructorArgNames
               + ". There might be more info in debug log.");
         }
@@ -143,6 +129,35 @@ public class ResultMap {
       resultMap.propertyResultMappings = Collections.unmodifiableList(resultMap.propertyResultMappings);
       resultMap.mappedColumns = Collections.unmodifiableSet(resultMap.mappedColumns);
       return resultMap;
+    }// end method build
+
+    private void buildFor(ResultMapping resultMapping) {
+      for (ResultMapping compositeResultMapping : resultMapping.getComposites()) {
+        final String compositeColumn = compositeResultMapping.getColumn();
+        if (compositeColumn != null) {
+          resultMap.mappedColumns.add(compositeColumn.toUpperCase(Locale.ENGLISH));
+        }
+      }
+    }
+
+    private void buildIfs(ResultMapping resultMapping, List<String> constructorArgNames) {
+
+      final String property = resultMapping.getProperty();
+      if (property != null) {
+        resultMap.mappedProperties.add(property);
+      }
+      if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
+        resultMap.constructorResultMappings.add(resultMapping);
+        if (resultMapping.getProperty() != null) {
+          constructorArgNames.add(resultMapping.getProperty());
+        }
+      } else {
+        resultMap.propertyResultMappings.add(resultMapping);
+      }
+      if (resultMapping.getFlags().contains(ResultFlag.ID)) {
+        resultMap.idResultMappings.add(resultMapping);
+      }
+
     }
 
     private List<String> argNamesOfMatchingConstructor(List<String> constructorArgNames) {
@@ -160,18 +175,17 @@ public class ResultMap {
       return null;
     }
 
-    private boolean argTypesMatch(final List<String> constructorArgNames,
-        Class<?>[] paramTypes, List<String> paramNames) {
+    private boolean argTypesMatch(final List<String> constructorArgNames, Class<?>[] paramTypes,
+        List<String> paramNames) {
       for (int i = 0; i < constructorArgNames.size(); i++) {
         Class<?> actualType = paramTypes[paramNames.indexOf(constructorArgNames.get(i))];
         Class<?> specifiedType = resultMap.constructorResultMappings.get(i).getJavaType();
         if (!actualType.equals(specifiedType)) {
           if (log.isDebugEnabled()) {
-            log.debug("While building result map '" + resultMap.id
-                + "', found a constructor with arg names " + constructorArgNames
-                + ", but the type of '" + constructorArgNames.get(i)
-                + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: ["
-                + actualType.getName() + "]");
+            log.debug("While building result map '" + resultMap.id + "', found a constructor with arg names "
+                + constructorArgNames + ", but the type of '" + constructorArgNames.get(i)
+                + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: [" + actualType.getName()
+                + "]");
           }
           return false;
         }
