@@ -35,7 +35,7 @@ public class JBoss6VFS extends VFS {
 
   /** A class that mimics a tiny subset of the JBoss VirtualFile class. */
   static class VirtualFile {
-    static Class<?> VirtualFile;
+    static Class<?> VirtualFile1;
     static Method getPathNameRelativeTo, getChildrenRecursively;
 
     Object virtualFile;
@@ -90,17 +90,17 @@ public class JBoss6VFS extends VFS {
 
       // Look up and verify required classes
       VFS.VFS = checkNotNull(getClass("org.jboss.vfs.VFS"));
-      VirtualFile.VirtualFile = checkNotNull(getClass("org.jboss.vfs.VirtualFile"));
+      VirtualFile.VirtualFile1 = checkNotNull(getClass("org.jboss.vfs.VirtualFile"));
 
       // Look up and verify required methods
       VFS.getChild = checkNotNull(getMethod(VFS.VFS, "getChild", URL.class));
-      VirtualFile.getChildrenRecursively = checkNotNull(getMethod(VirtualFile.VirtualFile,
+      VirtualFile.getChildrenRecursively = checkNotNull(getMethod(VirtualFile.VirtualFile1,
           "getChildrenRecursively"));
-      VirtualFile.getPathNameRelativeTo = checkNotNull(getMethod(VirtualFile.VirtualFile,
-          "getPathNameRelativeTo", VirtualFile.VirtualFile));
+      VirtualFile.getPathNameRelativeTo = checkNotNull(getMethod(VirtualFile.VirtualFile1,
+          "getPathNameRelativeTo", VirtualFile.VirtualFile1));
 
       // Verify that the API has not changed
-      checkReturnType(VFS.getChild, VirtualFile.VirtualFile);
+      checkReturnType(VFS.getChild, VirtualFile.VirtualFile1);
       checkReturnType(VirtualFile.getChildrenRecursively, List.class);
       checkReturnType(VirtualFile.getPathNameRelativeTo, String.class);
     }
