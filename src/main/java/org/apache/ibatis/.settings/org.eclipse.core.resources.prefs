@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
 encoding//builder/xml/XMLMapperBuilder.java=UTF-8
 encoding//datasource/pooled/PooledDataSource.java=UTF-8
+encoding//datasource/unpooled/UnpooledDataSource.java=UTF-8

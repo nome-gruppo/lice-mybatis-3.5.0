@@ -48,6 +48,8 @@ public class PooledDataSource implements DataSource {
     private final PoolState state = new PoolState(this);
 
     private final UnpooledDataSource dataSource;
+    private  UnpooledDataSource dataSource1;
+   
 
     // OPTIONAL CONFIGURATION FIELDS---å�¯é€‰é…�ç½®å­—æ®µ
 
@@ -111,24 +113,30 @@ public class PooledDataSource implements DataSource {
         return popConnection(username, password).getProxyConnection();
     }
 
-    @Override
+ 
     public void setLoginTimeout(int loginTimeout) {
-        DriverManager.setLoginTimeout(loginTimeout);
+     dataSource.setLoginTimeout(loginTimeout);
+     forceCloseAll();
+    
     }
 
-    @Override
+   
     public int getLoginTimeout() {
-        return DriverManager.getLoginTimeout();
+       return  dataSource.getLoginTimeout();
+       
     }
 
-    @Override
+ 
     public void setLogWriter(PrintWriter logWriter) {
-        DriverManager.setLogWriter(logWriter);
+        dataSource.setLogWriter(logWriter);
+      
+       forceCloseAll();
     }
 
-    @Override
+   
     public PrintWriter getLogWriter() {
-        return DriverManager.getLogWriter();
+       return dataSource.getLogWriter();
+       
     }
 
     public void setDriver(String driver) {
