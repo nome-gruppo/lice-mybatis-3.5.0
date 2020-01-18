@@ -39,6 +39,8 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
   private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
 
+  private final static String ERROR_ROLLBACK = "Error:  Cannot rollback.  No managed session is started.";
+
   private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
     this.sqlSessionFactory = sqlSessionFactory;
     this.sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
@@ -301,7 +303,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
   public void rollback() {
     final SqlSession sqlSession = localSqlSession.get();
     if (sqlSession == null) {
-      throw new SqlSessionException("Error:  Cannot rollback.  No managed session is started.");
+      throw new SqlSessionException(ERROR_ROLLBACK);
     }
     sqlSession.rollback();
   }
@@ -310,7 +312,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
   public void rollback(boolean force) {
     final SqlSession sqlSession = localSqlSession.get();
     if (sqlSession == null) {
-      throw new SqlSessionException("Error:  Cannot rollback.  No managed session is started.");
+      throw new SqlSessionException(ERROR_ROLLBACK);
     }
     sqlSession.rollback(force);
   }
@@ -319,7 +321,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
   public List<BatchResult> flushStatements() {
     final SqlSession sqlSession = localSqlSession.get();
     if (sqlSession == null) {
-      throw new SqlSessionException("Error:  Cannot rollback.  No managed session is started.");
+      throw new SqlSessionException(ERROR_ROLLBACK);
     }
     return sqlSession.flushStatements();
   }

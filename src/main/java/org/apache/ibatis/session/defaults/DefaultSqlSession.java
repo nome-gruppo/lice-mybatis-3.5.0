@@ -67,6 +67,8 @@ public class DefaultSqlSession implements SqlSession {
     //游标集合
     private List<Cursor<?>> cursorList;
 
+    private static final String ERROR_STRING = "Error querying database.  Cause: ";
+
     //DefaultSqlSession构造器，初始化Configuration configuration, Executor executor, boolean autoCommit
     public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {
         this.configuration = configuration;
@@ -149,7 +151,7 @@ public class DefaultSqlSession implements SqlSession {
             registerCursor(cursor);
             return cursor;
         } catch (Exception e) {
-            throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+            throw ExceptionFactory.wrapException(ERROR_STRING + e, e);
         } finally {
             ErrorContext.instance().reset();
         }
@@ -188,7 +190,7 @@ public class DefaultSqlSession implements SqlSession {
             //委托执行器取执行语句
             return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
         } catch (Exception e) {
-            throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+            throw ExceptionFactory.wrapException(ERROR_STRING + e, e);
         } finally {
             ErrorContext.instance().reset();
         }
@@ -213,7 +215,7 @@ public class DefaultSqlSession implements SqlSession {
             MappedStatement ms = configuration.getMappedStatement(statement);
             executor.query(ms, wrapCollection(parameter), rowBounds, handler);
         } catch (Exception e) {
-            throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+            throw ExceptionFactory.wrapException(ERROR_STRING + e, e);
         } finally {
             ErrorContext.instance().reset();
         }
