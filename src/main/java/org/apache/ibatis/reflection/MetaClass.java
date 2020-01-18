@@ -127,6 +127,7 @@ public class MetaClass {
         return TypeParameterResolver.resolveFieldType(field, reflector.getType());
       }
     } catch (NoSuchFieldException | IllegalAccessException ignored) {
+      ignored.printStackTrace();
     }
     return null;
   }

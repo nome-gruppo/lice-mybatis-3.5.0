@@ -371,14 +371,14 @@ public class MapperMethod {
     }
 
     private String getMapKey(Method method) {
-      String mapKey = null;
+      String privateMapKey = null;
       if (Map.class.isAssignableFrom(method.getReturnType())) {
         final MapKey mapKeyAnnotation = method.getAnnotation(MapKey.class);
         if (mapKeyAnnotation != null) {
-          mapKey = mapKeyAnnotation.value();
+          privateMapKey = mapKeyAnnotation.value();
         }
       }
-      return mapKey;
+      return privateMapKey;
     }
   }
 
