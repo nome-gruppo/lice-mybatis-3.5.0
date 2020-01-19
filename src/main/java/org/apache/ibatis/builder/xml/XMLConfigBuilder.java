@@ -389,15 +389,19 @@ public class XMLConfigBuilder extends BaseBuilder {
          }
     }
 
+private void ifinn(XNode child) {
+  if (PACKAGE.equals(child.getName())) {
+      String mapperPackage = child.getStringAttribute("name");
+      configuration.addMappers(mapperPackage);
+  }
+}
 
     //解析mybatis.cfg.xml中mapper.xml的引入
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-                if (PACKAGE.equals(child.getName())) {
-                    String mapperPackage = child.getStringAttribute("name");
-                    configuration.addMappers(mapperPackage);
-                } else {
+              ifinn(child);
+          if(!(PACKAGE.equals(child.getName()))) {
                     String resource = child.getStringAttribute("resource");
                     String url = child.getStringAttribute("url");
                     String mapperClass = child.getStringAttribute("class");
