@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,13 +111,7 @@ public class DefaultVFS extends VFS {
 
       return resources;
     } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (Exception e) {
-          // Ignore
-        }
-      }
+      //ignore
     }
   }
 
@@ -158,38 +153,34 @@ public class DefaultVFS extends VFS {
      * the current resource is not a directory.
      */
     is = url.openStream();
-    
-    BufferedReader reader = null;
-	  try { 
-   
-     reader = new BufferedReader(new InputStreamReader(is));
-   
-    List<String> lines = new ArrayList<>();
-    for (String line; (line = reader.readLine()) != null;) {
-      if (log.isDebugEnabled()) {
-        log.debug("Reader entry: " + line);
-      }
-      lines.add(line);
-      if (getResources(path + "/" + line).isEmpty()) {
-        lines.clear();
-        break;
-      }
-    }
 
-    if (!lines.isEmpty()) {
-      if (log.isDebugEnabled()) {
-        log.debug("Listing " + url);
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+      List<String> lines = new ArrayList<>();
+      for (String line; (line = reader.readLine()) != null;) {
+        if (log.isDebugEnabled()) {
+          log.debug("Reader entry: " + line);
+        }
+        lines.add(line);
+        if (getResources(path + "/" + line).isEmpty()) {
+          lines.clear();
+          break;
+        }
       }
-      children.addAll(lines);
+
+      if (!lines.isEmpty()) {
+        if (log.isDebugEnabled()) {
+          log.debug("Listing " + url);
+        }
+        children.addAll(lines);
+      }
+    } catch (Exception e) {
+
+    } finally {
+      is.close();
+
     }
-     }
-   catch (Exception e ) {
-	   
-   } finally {
-     is.close();
-     reader.close();
-   }
-	  return children;
+    return children;
   }
 
   public List<String> listSupportFour(List<String> children, URL url) {

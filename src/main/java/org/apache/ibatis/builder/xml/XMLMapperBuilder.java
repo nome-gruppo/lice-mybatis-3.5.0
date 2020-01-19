@@ -66,9 +66,9 @@ public class XMLMapperBuilder extends BaseBuilder {
   //Mapper.xmlæ–‡ä»¶
   private final String resource;
 
-  private final static String NAMESPACE = "namespace";
-  private final static String JDBC_TYPE = "jdbcType";
-  private final static String RESULT_MAP = "resultMap";
+  private static final String NAMESPACE = "namespace";
+  private static final String JDBC_TYPE = "jdbcType";
+  private static final String RESULT_MAP = "resultMap";
   private static final String PROPERTY = "property";
   private static final String TYPEHANDLER = "typeHandler";
   /**

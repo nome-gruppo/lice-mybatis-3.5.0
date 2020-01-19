@@ -45,11 +45,11 @@ public class BatchExecutor extends BaseExecutor implements Serializable {
 
     public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
 
-    private final List<Statement> statementList = new ArrayList<>();
-    private final List<BatchResult> batchResultList = new ArrayList<>();
+    private final transient List<Statement> statementList = new ArrayList<>();
+    private final transient List<BatchResult> batchResultList = new ArrayList<>();
     private String currentSql;
     //mapper.xml中SQL语句
-    private MappedStatement currentStatement;
+    private transient MappedStatement currentStatement;
 
     //初始化Configuration和Transaction对象
     public BatchExecutor(Configuration configuration, Transaction transaction) {

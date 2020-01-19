@@ -56,7 +56,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public abstract class BaseExecutor implements Executor {
 
-    final String EXECUTOR_WAS_CLOSED="Executor was closed";
+    private static final String EXECUTOR_WAS_CLOSED="Executor was closed";
 
     private static final Log log = LogFactory.getLog(BaseExecutor.class);
 

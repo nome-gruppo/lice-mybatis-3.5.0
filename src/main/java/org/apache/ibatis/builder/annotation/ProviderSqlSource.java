@@ -15,7 +15,6 @@
  */
 package org.apache.ibatis.builder.annotation;
 
-import java.beans.PropertyVetoException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -89,7 +88,7 @@ public class ProviderSqlSource implements SqlSource {
 
   }//end method
 
-  private void providerSqlSourceLastFor (Class<?> mapperType,  Method mapperMethod) throws BuilderException{
+  private void providerSqlSourceLastFor (Class<?> mapperType,  Method mapperMethod){
     for (int i = 0; i< this.providerMethodParameterTypes.length; i++) {
       Class<?> parameterType = this.providerMethodParameterTypes[i];
       if (parameterType == ProviderContext.class) {

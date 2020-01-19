@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -33,9 +32,6 @@ import org.apache.ibatis.logging.LogFactory;
 
 /**
  * This is a simple, synchronous, thread-safe database connection pool.
- * è¿™æ˜¯ä¸€ä¸ªç®€å�•çš„ã€�å�Œæ­¥çš„ã€�çº¿ç¨‹å®‰å…¨çš„æ•°æ�®åº“è¿žæŽ¥æ± ã€‚
- * <p>
- * å�¯ä»¥ä»Žè¯¥è¿žæŽ¥æ± èŽ·å�–è¿žæŽ¥å¯¹è±¡Connection
  *
  * @author Clinton Begin
  */
@@ -617,7 +613,6 @@ public class PooledDataSource implements DataSource {
 
     protected void finalized() throws Throwable {
         forceCloseAll();
-        super.finalize();
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {
