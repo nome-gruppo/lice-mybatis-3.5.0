@@ -41,7 +41,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
     this.statement = stmt;
   }
 
-public void ifinn(Object[] params, Method method) {
+public void setcolumn(Object[] params, Method method) {
   if ("setNull".equals(method.getName())) {
     setColumn(params[0], null);
   } else {
@@ -49,13 +49,13 @@ public void ifinn(Object[] params, Method method) {
   }
 }
 
-public void ifinn2() {
+public void debugenabled() {
   if (isDebugEnabled()) {
     debug("Parameters: " + getParameterValueString(), true);
   }
 }
 
-public void ifinn3(int updateCount) {
+public void updatecount(int updateCount) {
     if (updateCount != -1) {
         debug("   Updates: " + updateCount, false);
       }
@@ -69,7 +69,7 @@ public void ifinn3(int updateCount) {
         return method.invoke(this, params);
       }
       if (EXECUTE_METHODS.contains(method.getName())) {
-         ifinn2();
+         debugenabled();
         clearColumnInfo();
         if ("executeQuery".equals(method.getName())) {
           ResultSet rs = (ResultSet) method.invoke(statement, params);
@@ -79,7 +79,7 @@ public void ifinn3(int updateCount) {
         }
       } else if (SET_METHODS.contains(method.getName())) {
 
-          ifinn(params, method);
+          setcolumn(params, method);
 
 
         return method.invoke(statement, params);
@@ -89,8 +89,8 @@ public void ifinn3(int updateCount) {
       } else if ("getUpdateCount".equals(method.getName())) {
         int updateCount = (Integer) method.invoke(statement, params);
 
-        
-        ifinn3(updateCount);
+
+        updatecount(updateCount);
         return updateCount;
       } else {
         return method.invoke(statement, params);
