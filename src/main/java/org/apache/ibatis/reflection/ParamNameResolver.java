@@ -68,16 +68,12 @@ public class ParamNameResolver {
           break;
         }
       }
-      if (name == null) {
+      if (name == null && config.isUseActualParamName()) {
         // @Param was not specified.
-        if (config.isUseActualParamName()) {
-          name = getActualParamName(method, paramIndex);
-        }
-        if (name == null) {
-          // use the parameter index as the name ("0", "1", ...)
-          // gcode issue #71
+        name = getActualParamName(method, paramIndex);
+
+      } else if (name == null) {
           name = String.valueOf(map.size());
-        }
       }
       map.put(paramIndex, name);
     }
