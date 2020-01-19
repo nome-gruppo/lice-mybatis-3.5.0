@@ -389,10 +389,16 @@ public class XMLConfigBuilder extends BaseBuilder {
          }
     }
 
-private void ifinn(XNode child) {
+private void childgetsattribute(XNode child) {
   if (PACKAGE.equals(child.getName())) {
       String mapperPackage = child.getStringAttribute("name");
       configuration.addMappers(mapperPackage);
+  }
+}
+
+private void exceptioninn(String resource,String url, String mapperClass) {
+  if (resource != null && url != null && mapperClass == null){
+      throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
   }
 }
 
@@ -400,7 +406,7 @@ private void ifinn(XNode child) {
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-              ifinn(child);
+              childgetsattribute(child);
           if(!(PACKAGE.equals(child.getName()))) {
                     String resource = child.getStringAttribute("resource");
                     String url = child.getStringAttribute("url");
@@ -428,9 +434,10 @@ private void ifinn(XNode child) {
                     } else if (resource == null && url == null && mapperClass != null) {
                         Class<?> mapperInterface = Resources.classForName(mapperClass);
                         configuration.addMapper(mapperInterface);
-                    } else {
-                        throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
                     }
+
+                    exceptioninn(resource, url, mapperClass);
+
                 }
             }
         }
