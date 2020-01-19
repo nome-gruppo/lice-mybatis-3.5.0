@@ -41,6 +41,27 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
     this.statement = stmt;
   }
 
+public void ifinn(Object[] params, Method method) {
+  if ("setNull".equals(method.getName())) {
+    setColumn(params[0], null);
+  } else {
+    setColumn(params[0], params[1]);
+  }
+}
+
+public void ifinn2() {
+  if (isDebugEnabled()) {
+    debug("Parameters: " + getParameterValueString(), true);
+  }
+}
+
+public void ifinn3(int updateCount) {
+    if (updateCount != -1) {
+        debug("   Updates: " + updateCount, false);
+      }
+}
+
+
   @Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
@@ -48,9 +69,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
         return method.invoke(this, params);
       }
       if (EXECUTE_METHODS.contains(method.getName())) {
-        if (isDebugEnabled()) {
-          debug("Parameters: " + getParameterValueString(), true);
-        }
+         ifinn2();
         clearColumnInfo();
         if ("executeQuery".equals(method.getName())) {
           ResultSet rs = (ResultSet) method.invoke(statement, params);
@@ -59,20 +78,19 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
           return method.invoke(statement, params);
         }
       } else if (SET_METHODS.contains(method.getName())) {
-        if ("setNull".equals(method.getName())) {
-          setColumn(params[0], null);
-        } else {
-          setColumn(params[0], params[1]);
-        }
+
+          ifinn(params, method);
+
+
         return method.invoke(statement, params);
       } else if ("getResultSet".equals(method.getName())) {
         ResultSet rs = (ResultSet) method.invoke(statement, params);
         return rs == null ? null : ResultSetLogger.newInstance(rs, statementLog, queryStack);
       } else if ("getUpdateCount".equals(method.getName())) {
         int updateCount = (Integer) method.invoke(statement, params);
-        if (updateCount != -1) {
-          debug("   Updates: " + updateCount, false);
-        }
+
+        
+        ifinn3(updateCount);
         return updateCount;
       } else {
         return method.invoke(statement, params);
