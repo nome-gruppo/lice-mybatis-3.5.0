@@ -170,6 +170,12 @@ public class Reflector {
     list.add(method);
   }
 
+private void matchexception(Method match,ReflectionException exception) {
+  if (match == null&& exception!=null) {
+    throw exception;
+  }
+}
+
   private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
     for (String propName : conflictingSetters.keySet()) {
       List<Method> setters = conflictingSetters.get(propName);
@@ -193,11 +199,11 @@ public class Reflector {
           }
         }
       }
-      if (match == null&&exception!=null) {
-        throw exception;
-      } else {
-        addSetMethod(propName, match);
-      }
+
+matchexception(match, exception);
+if (match != null) {
+      addSetMethod(propName, match);
+}
     }
   }
 
