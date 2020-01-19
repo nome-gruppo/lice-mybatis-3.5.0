@@ -914,15 +914,28 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // GET VALUE FROM ROW FOR NESTED RESULT MAP
     //
 
+private void rowvaluenested(Object rowValue, ResultMap resultMap, String resultMapId, ResultSetWrapper rsw, String columnPrefix, CacheKey combinedKey){
+  if (rowValue != null) {
+      final MetaObject metaObject = configuration.newMetaObject(rowValue);
+      putAncestor(rowValue, resultMapId);
+      applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, false);
+      ancestorObjects.remove(resultMapId);
+  }
+}
+
+private void nestedresultobjects(CacheKey TEMP, CacheKey combinedKey, Map<CacheKey, Object> nestedResultObjects, Object rowValue) {
+  if (combinedKey != TEMP) {
+      nestedResultObjects.put(combinedKey, rowValue);
+  }
+}
+
     private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap, CacheKey combinedKey, String columnPrefix, Object partialObject) throws SQLException {
         final String resultMapId = resultMap.getId();
         Object rowValue = partialObject;
-        if (rowValue != null) {
-            final MetaObject metaObject = configuration.newMetaObject(rowValue);
-            putAncestor(rowValue, resultMapId);
-            applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, false);
-            ancestorObjects.remove(resultMapId);
-        } else {
+
+rowvaluenested(rowValue, resultMap,resultMapId,rsw, columnPrefix, combinedKey);
+
+          if(rowValue ==null) {
             final ResultLoaderMap lazyLoader = new ResultLoaderMap();
             rowValue = createResultObject(rsw, resultMap, lazyLoader, columnPrefix);
             if (rowValue != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
@@ -938,10 +951,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                 foundValues = lazyLoader.size() > 0 || foundValues;
                 rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
             }
-            
-            if (combinedKey != TEMP) {
-                nestedResultObjects.put(combinedKey, rowValue);
-            }
+
+              nestedresultobjects(TEMP, combinedKey, nestedResultObjects, rowValue);
+
         }
         return rowValue;
     }
@@ -1057,7 +1069,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private CacheKey combineKeys(CacheKey rowKey, CacheKey parentRowKey) {
         if (rowKey.getUpdateCount() > 1 && parentRowKey.getUpdateCount() > 1) {
             CacheKey combinedKey;
-            
+
             combinedKey = new CacheKey(rowKey);
             combinedKey.update(parentRowKey);
             return combinedKey;
