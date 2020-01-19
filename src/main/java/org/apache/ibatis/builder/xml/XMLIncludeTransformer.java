@@ -51,6 +51,12 @@ public class XMLIncludeTransformer {
     applyIncludes(source, variablesContext, false);
   }
 
+  
+  private void forin(NodeList children, final Properties variablesContext, boolean included) {
+      for (int i = 0; i < children.getLength(); i++) {
+          applyIncludes(children.item(i), variablesContext, included);
+        }
+  }
   /**
    * Recursively apply includes through all SQL fragments.
    * @param source Include node in DOM tree
@@ -79,9 +85,8 @@ public class XMLIncludeTransformer {
         }
       }
       NodeList children = source.getChildNodes();
-      for (int i = 0; i < children.getLength(); i++) {
-        applyIncludes(children.item(i), variablesContext, included);
-      }
+forin(children,  variablesContext, included);
+      
     } else if (included && source.getNodeType() == Node.TEXT_NODE
         && !variablesContext.isEmpty()) {
       // replace variables in text node

@@ -48,7 +48,7 @@ public class PooledDataSource implements DataSource {
     private final PoolState state = new PoolState(this);
 
     private final UnpooledDataSource dataSource;
-    private  UnpooledDataSource dataSource1;
+  
    
 
     // OPTIONAL CONFIGURATION FIELDS---å�¯é€‰é…�ç½®å­—æ®µ
