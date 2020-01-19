@@ -226,8 +226,7 @@ public class ResolverUtil<T> {
     } catch (IOException ioe) {
       log.error("Could not read package: " + packageName, ioe);
     } catch (ClassNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		//do smoething
 	}
 
     return this;

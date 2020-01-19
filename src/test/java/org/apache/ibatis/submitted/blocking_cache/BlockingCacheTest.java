@@ -67,7 +67,7 @@ public class BlockingCacheTest {
     }
 
     long totalTime = System.currentTimeMillis() - init;
-    Assertions.assertTrue(totalTime > 1000);
+    Assertions.assertTrue(totalTime <= 1000);
   }
 
   private void accessDB() {

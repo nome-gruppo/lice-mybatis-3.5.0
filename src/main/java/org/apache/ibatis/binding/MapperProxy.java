@@ -75,7 +75,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                 constructor.setAccessible(true);
             }
         } catch (SecurityException e) {
-            e.printStackTrace();
+            //do something
         }
 
         final Class<?> declaringClass = method.getDeclaringClass();

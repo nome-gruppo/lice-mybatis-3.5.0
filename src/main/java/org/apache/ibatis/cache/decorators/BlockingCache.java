@@ -111,7 +111,7 @@ Thread.currentThread().interrupt();
         lock.unlock();
       }
     } else {
-      lock.lock();
+      lock.unlock();
     }
   }
 

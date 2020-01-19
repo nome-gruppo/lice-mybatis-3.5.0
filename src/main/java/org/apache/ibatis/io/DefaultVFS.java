@@ -157,10 +157,12 @@ public class DefaultVFS extends VFS {
      * loader as a child of the current resource. If any line fails then we assume
      * the current resource is not a directory.
      */
-	  is = url.openStream();
+    is = url.openStream();
+    
+    BufferedReader reader = null;
 	  try { 
    
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+     reader = new BufferedReader(new InputStreamReader(is));
    
     List<String> lines = new ArrayList<>();
     for (String line; (line = reader.readLine()) != null;) {
@@ -184,7 +186,8 @@ public class DefaultVFS extends VFS {
    catch (Exception e ) {
 	   
    } finally {
-	   is.close();
+     is.close();
+     reader.close();
    }
 	  return children;
   }
