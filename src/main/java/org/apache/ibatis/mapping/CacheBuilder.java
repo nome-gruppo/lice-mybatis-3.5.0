@@ -139,43 +139,52 @@ public class CacheBuilder {
     }
   }
 
+
+  private void Stringmetacache(MetaObject metaCache,   String name, String value) {
+    if (metaCache.hasSetter(name)) {
+      Class<?> type = metaCache.getSetterType(name);
+    if (String.class == type) {
+      metaCache.setValue(name, value);
+    } else if (int.class == type  || Integer.class == type) {
+      metaCache.setValue(name, Integer.valueOf(value));
+    } else if (long.class == type|| Long.class == type) {
+      metaCache.setValue(name, Long.valueOf(value));
+    } else if (short.class == type || Short.class == type) {
+      metaCache.setValue(name, Short.valueOf(value));
+    } else if (byte.class == type || Byte.class == type) {
+      metaCache.setValue(name, Byte.valueOf(value));
+    } else if (float.class == type  || Float.class == type) {
+      metaCache.setValue(name, Float.valueOf(value));
+    } else if (boolean.class == type  || Boolean.class == type) {
+      metaCache.setValue(name, Boolean.valueOf(value));
+    } else if (double.class == type  || Double.class == type) {
+      metaCache.setValue(name, Double.valueOf(value));
+    } else {
+      throw new CacheException("Unsupported property type for cache: '" + name + "' of type " + type);
+    }
+  }
+  }
+
   private void setCacheProperties(Cache cache) {
     if (properties != null) {
       MetaObject metaCache = SystemMetaObject.forObject(cache);
       for (Map.Entry<Object, Object> entry : properties.entrySet()) {
         String name = (String) entry.getKey();
         String value = (String) entry.getValue();
-        if (metaCache.hasSetter(name)) {
-          Class<?> type = metaCache.getSetterType(name);
-          if (String.class == type) {
-            metaCache.setValue(name, value);
-          } else if (int.class == type
-              || Integer.class == type) {
-            metaCache.setValue(name, Integer.valueOf(value));
-          } else if (long.class == type
-              || Long.class == type) {
-            metaCache.setValue(name, Long.valueOf(value));
-          } else if (short.class == type
-              || Short.class == type) {
-            metaCache.setValue(name, Short.valueOf(value));
-          } else if (byte.class == type
-              || Byte.class == type) {
-            metaCache.setValue(name, Byte.valueOf(value));
-          } else if (float.class == type
-              || Float.class == type) {
-            metaCache.setValue(name, Float.valueOf(value));
-          } else if (boolean.class == type
-              || Boolean.class == type) {
-            metaCache.setValue(name, Boolean.valueOf(value));
-          } else if (double.class == type
-              || Double.class == type) {
-            metaCache.setValue(name, Double.valueOf(value));
-          } else {
-            throw new CacheException("Unsupported property type for cache: '" + name + "' of type " + type);
-          }
+
+
+
+
+Stringmetacache(metaCache, name, value);
+
+
+
+
+
+
         }
       }
-    }
+
     if (InitializingObject.class.isAssignableFrom(cache.getClass())){
       try {
         ((InitializingObject) cache).initialize();
