@@ -114,6 +114,10 @@ public class SqlSourceBuilder extends BaseBuilder {
             Class<?> javaType = propertyType;
             String typeHandlerAlias = null;
             //将数据库返回的字段一一构建成JAVA数据类型
+            parameterMappingFor(content, propertiesMap, builder, javaType, typeHandlerAlias);
+            return builder.build();
+        }
+        private void parameterMappingFor(String content, Map<String,String> propertiesMap, ParameterMapping.Builder builder, Class<?> javaType, String typeHandlerAlias ){
             for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
                 String name = entry.getKey();
                 String value = entry.getValue();
@@ -143,9 +147,7 @@ public class SqlSourceBuilder extends BaseBuilder {
             if (typeHandlerAlias != null) {
                 builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
             }
-            return builder.build();
         }
-
         private Map<String, String> parseParameterMapping(String content) {
             try {
                 return new ParameterExpression(content);
