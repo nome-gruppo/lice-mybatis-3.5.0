@@ -192,7 +192,7 @@ public final class TypeHandlerRegistry {
         return javaTypeReference != null && getTypeHandler(javaTypeReference, jdbcType) != null;
     }
 
-    public TypeHandler<?> getMappingTypeHandler(Class<? extends TypeHandler<?>> handlerType) {
+    public TypeHandler<? extends Object> getMappingTypeHandler(Class<? extends TypeHandler<?>> handlerType) {
         return ALL_TYPE_HANDLERS_MAP.get(handlerType);
     }
 
@@ -204,7 +204,7 @@ public final class TypeHandlerRegistry {
         return getTypeHandler(javaTypeReference, null);
     }
 
-    public TypeHandler<?> getTypeHandler(JdbcType jdbcType) {
+    public TypeHandler<? extends Object> getTypeHandler(JdbcType jdbcType) {
         return JDBC_TYPE_HANDLER_MAP.get(jdbcType);
     }
 
@@ -461,7 +461,7 @@ public final class TypeHandlerRegistry {
     /**
      * @since 3.2.2
      */
-    public Collection<TypeHandler<?>> getTypeHandlers() {
+    public Collection<TypeHandler<? extends Object>> getTypeHandlers() {
         return Collections.unmodifiableCollection(ALL_TYPE_HANDLERS_MAP.values());
     }
 

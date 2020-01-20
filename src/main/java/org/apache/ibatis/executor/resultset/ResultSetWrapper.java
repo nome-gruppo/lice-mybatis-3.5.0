@@ -96,7 +96,7 @@ public class ResultSetWrapper {
    * @param columnName
    * @return
    */
-  public TypeHandler<?> getTypeHandler(Class<?> propertyType, String columnName) {
+  public TypeHandler<? extends Object> getTypeHandler(Class<?> propertyType, String columnName) {
     TypeHandler<?> handler = null;
     Map<Class<?>, TypeHandler<?>> columnHandlers = typeHandlerMap.get(columnName);
     if (columnHandlers == null) {

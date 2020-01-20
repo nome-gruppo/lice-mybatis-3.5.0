@@ -39,7 +39,7 @@ public class ExpressionEvaluator {
     return value != null;
   }
 
-  public Iterable<?> evaluateIterable(String expression, Object parameterObject) {
+  public Iterable<? extends Object> evaluateIterable(String expression, Object parameterObject) {
     Object value = OgnlCache.getValue(expression, parameterObject);
     if (value == null) {
       throw new BuilderException("The expression '" + expression + "' evaluated to a null value.");
