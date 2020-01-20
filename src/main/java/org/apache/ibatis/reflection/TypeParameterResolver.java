@@ -169,6 +169,8 @@ public class TypeParameterResolver {
     return Object.class;
   }
 
+  
+
   private static Type scanSuperTypes(TypeVariable<?> typeVar, Type srcType, Class<?> declaringClass, Class<?> clazz, Type superclass) {
     if (superclass instanceof ParameterizedType) {
       ParameterizedType parentAsType = (ParameterizedType) superclass;

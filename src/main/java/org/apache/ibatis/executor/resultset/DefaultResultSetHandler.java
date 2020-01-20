@@ -456,6 +456,14 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // PROPERTY MAPPINGS
     //
 
+private void valuenotnull(Object value, MetaObject metaObject, String property) {
+  if (value != null || (configuration.isCallSettersOnNulls())) {
+      // gcode issue #377, call setter on nulls (value is not 'found')
+      metaObject.setValue(property, value);
+  }
+}
+
+
     private boolean applyPropertyMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, ResultLoaderMap lazyLoader, String columnPrefix)
             throws SQLException {
         final List<String> mappedColumnNames = rsw.getMappedColumnNames(resultMap, columnPrefix);
@@ -482,10 +490,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                 if (value != null) {
                     foundValues = true;
                 }
-                if (value != null || (configuration.isCallSettersOnNulls() && !metaObject.getSetterType(property).isPrimitive())) {
-                    // gcode issue #377, call setter on nulls (value is not 'found')
-                    metaObject.setValue(property, value);
-                }
+
+
+valuenotnull( value, metaObject, property);
+
+
             }
         }
         return foundValues;
