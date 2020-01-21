@@ -99,7 +99,17 @@ public class Reflector {
     resolveGetterConflicts(conflictingGetters);
   }
 
-
+private void candidatewinnerInnested(Method candidate, Method winner, Class<?> candidateType, String propName) {
+  if (!boolean.class.equals(candidateType)) {
+    throw new ReflectionException(
+        "Illegal overloaded getter method with ambiguous type for property "
+            + propName + " in class " + winner.getDeclaringClass()
+            + ". This breaks the JavaBeans specification and can cause unpredictable results.");
+  }
+  if (candidate.getName().startsWith("is")) {
+     winner = candidate;
+   }
+}
 
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
@@ -114,15 +124,10 @@ public class Reflector {
         Class<?> candidateType = candidate.getReturnType();
         if (candidateType.equals(winnerType)) {
 
-          if (!boolean.class.equals(candidateType)) {
-            throw new ReflectionException(
-                "Illegal overloaded getter method with ambiguous type for property "
-                    + propName + " in class " + winner.getDeclaringClass()
-                    + ". This breaks the JavaBeans specification and can cause unpredictable results.");
-          }
-          if (candidate.getName().startsWith("is")) {
-             winner = candidate;
-           }
+
+ candidatewinnerInnested(candidate, winner, candidateType, propName);
+
+
 
 
         } else if (candidateType.isAssignableFrom(winnerType)) {
