@@ -213,13 +213,8 @@ public class ResultLoaderMap {
        * and executors aren't thread safe. (Is this sufficient?)
        *
        * A better approach would be making executors thread safe. */
-      if (this.serializationCheck == null) {
-        final ResultLoader old = this.resultLoader;
-        this.resultLoader = new ResultLoader(old.configuration, new ClosedExecutor(), old.mappedStatement,
-                old.parameterObject, old.targetType, old.cacheKey, old.boundSql);
-      }
 
-      this.metaResultObject.setValue(property, this.resultLoader.loadResult());
+       this.metaResultObject.setValue(property, this.resultLoader.loadResult());
     }
 
     private Configuration getConfiguration() {

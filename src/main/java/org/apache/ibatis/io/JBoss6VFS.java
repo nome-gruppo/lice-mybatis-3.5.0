@@ -35,18 +35,19 @@ public class JBoss6VFS extends VFS {
 
   /** A class that mimics a tiny subset of the JBoss VirtualFile class. */
   static class VirtualFile {
-    static Class<?> VirtualFile;
-    static Method getPathNameRelativeTo, getChildrenRecursively;
+    static Class<?> virtFile1;
+    static Method getPathNameRelativeTo;
+    static Method getChildrenRecursively;
     
-    Object virtualFile;
+    Object objVF;
 
     VirtualFile(Object virtualFile) {
-      this.virtualFile = virtualFile;
+      this.objVF = virtualFile;
     }
 
     String getPathName(VirtualFile parent) {
       try {
-        return invoke(getPathNameRelativeTo, virtualFile, parent.virtualFile);
+        return invoke(getPathNameRelativeTo, objVF, parent.objVF);
       } catch (IOException e) {
         // This exception is not thrown by the called method
         log.error("This should not be possible. VirtualFile.getPathNameRelativeTo() threw IOException.");
@@ -55,7 +56,7 @@ public class JBoss6VFS extends VFS {
     }
 
     List<VirtualFile> getChildren() throws IOException {
-      List<?> objects = invoke(getChildrenRecursively, virtualFile);
+      List<?> objects = invoke(getChildrenRecursively, objVF);
       List<VirtualFile> children = new ArrayList<>(objects.size());
       for (Object object : objects) {
         children.add(new VirtualFile(object));
@@ -65,16 +66,16 @@ public class JBoss6VFS extends VFS {
   }
 
   /** A class that mimics a tiny subset of the JBoss VFS class. */
-  static class VFS {
-    static Class<?> VFS;
+  static class Vfs {
+    static Class<?> tmp;
     static Method getChild;
 
-    private VFS() {
+    private Vfs() {
       // Prevent Instantiation
     }
 
     static VirtualFile getChildMethod(URL url) throws IOException {
-      Object o = invoke(getChild, VFS, url);
+      Object o = invoke(getChild, tmp, url);
       return o == null ? null : new VirtualFile(o);
     }
   }
@@ -91,16 +92,16 @@ public class JBoss6VFS extends VFS {
       valid = Boolean.TRUE;
 
       // Look up and verify required classes
-      VFS.VFS = checkNotNull(getClass("org.jboss.vfs.VFS"));
-      VirtualFile.VirtualFile = checkNotNull(getClass("org.jboss.vfs.VirtualFile"));
+      Vfs.tmp = checkNotNull(getClass("org.jboss.vfs.VFS"));
+      VirtualFile.virtFile1 = checkNotNull(getClass("org.jboss.vfs.VirtualFile"));
 
       // Look up and verify required methods
-      VFS.getChild = checkNotNull(getMethod(VFS.VFS, "getChild", URL.class));
-      VirtualFile.getChildrenRecursively = checkNotNull(getMethod(VirtualFile.VirtualFile, "getChildrenRecursively"));
-      VirtualFile.getPathNameRelativeTo = checkNotNull(getMethod(VirtualFile.VirtualFile, "getPathNameRelativeTo", VirtualFile.VirtualFile));
+      Vfs.getChild = checkNotNull(getMethod(Vfs.tmp, "getChild", URL.class));
+      VirtualFile.getChildrenRecursively = checkNotNull(getMethod(VirtualFile.virtFile1, "getChildrenRecursively"));
+      VirtualFile.getPathNameRelativeTo = checkNotNull(getMethod(VirtualFile.virtFile1, "getPathNameRelativeTo", VirtualFile.virtFile1));
 
       // Verify that the API has not changed
-      checkReturnType(VFS.getChild, VirtualFile.VirtualFile);
+      checkReturnType(Vfs.getChild, VirtualFile.virtFile1);
       checkReturnType(VirtualFile.getChildrenRecursively, List.class);
       checkReturnType(VirtualFile.getPathNameRelativeTo, String.class);
     }
@@ -156,7 +157,7 @@ public class JBoss6VFS extends VFS {
   @Override
   public List<String> list(URL url, String path) throws IOException {
     VirtualFile directory;
-    directory = VFS.getChildMethod(url);
+    directory = Vfs.getChildMethod(url);
     if (directory == null) {
       return Collections.emptyList();
     }
