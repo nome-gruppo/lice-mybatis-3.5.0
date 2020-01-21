@@ -266,7 +266,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     //èŽ·å�–ç»“æžœé›†çš„ç¬¬ä¸€æ�¡è®°å½•
     private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();
-        while (rs == null) {
+        if (rs != null) {
+
+        }
+        else {
             // move forward to get the first resultset in case the driver
             // doesn't return the resultset as the first result (HSQLDB 2.1)
             if (stmt.getMoreResults()) {
@@ -274,7 +277,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             } else {
                 if (stmt.getUpdateCount() == -1) {
                     // no more results. Must be no resultset
-                    break;
+
                 }
             }
         }
