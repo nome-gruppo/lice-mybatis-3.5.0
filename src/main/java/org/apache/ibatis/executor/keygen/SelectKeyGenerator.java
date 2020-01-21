@@ -66,23 +66,13 @@ public class SelectKeyGenerator implements KeyGenerator {
           // The transaction will be closed by parent executor.
           Executor keyExecutor = configuration.newExecutor(executor.getTransaction(), ExecutorType.SIMPLE);
           List<Object> values = keyExecutor.query(keyStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
-          if (values.size() == 0) {
+          if (values.isEmpty()) {
             throw new ExecutorException("SelectKey returned no data.");
           } else if (values.size() > 1) {
             throw new ExecutorException("SelectKey returned more than one value.");
           } else {
             MetaObject metaResult = configuration.newMetaObject(values.get(0));
-            if (keyProperties.length == 1) {
-              if (metaResult.hasGetter(keyProperties[0])) {
-                setValue(metaParam, keyProperties[0], metaResult.getValue(keyProperties[0]));
-              } else {
-                // no getter for the property - maybe just a single value object
-                // so try that
-                setValue(metaParam, keyProperties[0], values.get(0));
-              }
-            } else {
-              handleMultipleProperties(keyProperties, metaParam, metaResult);
-            }
+            processGeneratedKeysIf(keyProperties,metaParam, metaResult, values);
           }
         }
       }
@@ -92,7 +82,20 @@ public class SelectKeyGenerator implements KeyGenerator {
       throw new ExecutorException("Error selecting key or setting result to parameter object. Cause: " + e, e);
     }
   }
+  private void processGeneratedKeysIf(String[] keyProperties, final MetaObject metaParam, MetaObject metaResult, List<Object> values) {
 
+    if (keyProperties.length == 1) {
+      if (metaResult.hasGetter(keyProperties[0])) {
+        setValue(metaParam, keyProperties[0], metaResult.getValue(keyProperties[0]));
+      } else {
+        // no getter for the property - maybe just a single value object
+        // so try that
+        setValue(metaParam, keyProperties[0], values.get(0));
+      }
+    } else {
+      handleMultipleProperties(keyProperties, metaParam, metaResult);
+    }
+  }
   private void handleMultipleProperties(String[] keyProperties,
       MetaObject metaParam, MetaObject metaResult) {
     String[] keyColumns = keyStatement.getKeyColumns();
