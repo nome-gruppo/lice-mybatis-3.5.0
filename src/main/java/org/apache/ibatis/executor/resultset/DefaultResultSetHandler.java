@@ -975,6 +975,12 @@ rowvaluenested(rowValue, resultMap,resultMapId,rsw, columnPrefix, combinedKey);
     // NESTED RESULT MAP (JOIN MAPPING)
     //
 
+
+private void IfObjectInnested(MetaObject metaObject,  boolean newObject, ResultMapping resultMapping, Object ancestorObject) {
+  if (newObject==true) {
+      linkObjects(metaObject, resultMapping, ancestorObject); // issue #385
+  }
+}
     private boolean applyNestedResultMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String parentPrefix, CacheKey parentRowKey, boolean newObject) {
         boolean foundValues = false;
         for (ResultMapping resultMapping : resultMap.getPropertyResultMappings()) {
@@ -988,9 +994,9 @@ rowvaluenested(rowValue, resultMap,resultMapId,rsw, columnPrefix, combinedKey);
                         // is not specified for the nested result map (issue #215)
                         Object ancestorObject = ancestorObjects.get(nestedResultMapId);
                         if (ancestorObject != null) {
-                            if (newObject) {
-                                linkObjects(metaObject, resultMapping, ancestorObject); // issue #385
-                            }
+
+IfObjectInnested(metaObject, newObject,  resultMapping, ancestorObject);
+
                             continue;
                         }
                     }
