@@ -267,6 +267,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();
         while (rs == null) {
+
               // move forward to get the first resultset in case the driver
               // doesn't return the resultset as the first result (HSQLDB 2.1)
               if (stmt.getMoreResults()) {
@@ -288,11 +289,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                 // Crazy Standard JDBC way of determining if there are more results
                 if (stmt.getConnection().getMetaData().supportsMultipleResultSets() && stmt.getMoreResults()) {
                     ResultSet rs = stmt.getResultSet();
-                   if (rs == null) {
-                        return getNextResultSet(stmt);
-                    } else {
+
                         return new ResultSetWrapper(rs, configuration);
-                    }
+                    
 
                 }
 
