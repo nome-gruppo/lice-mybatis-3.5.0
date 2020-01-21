@@ -91,6 +91,19 @@ public class SqlRunner {
     }
   }
 
+
+
+public Object GenkeyInnested(Object genkey) {
+
+
+    try {
+      return Integer.parseInt(genkey.toString());
+    } catch (NumberFormatException e) {
+      //ignore, no numeric key support
+    }
+return genkey;
+
+}
   /**
    * Executes an INSERT statement.
    *
@@ -117,13 +130,11 @@ public class SqlRunner {
           Iterator<Object> i = key.values().iterator();
           if (i.hasNext()) {
             Object genkey = i.next();
-            if (genkey != null) {
-              try {
-                return Integer.parseInt(genkey.toString());
-              } catch (NumberFormatException e) {
-                //ignore, no numeric key support
-              }
-            }
+  if (genkey != null) {
+GenkeyInnested(genkey);
+
+}
+return  Integer.parseInt(genkey.toString());
           }
         }
       }

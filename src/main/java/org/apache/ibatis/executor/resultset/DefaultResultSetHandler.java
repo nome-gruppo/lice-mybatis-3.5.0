@@ -291,9 +291,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                     ResultSet rs = stmt.getResultSet();
 
                         return new ResultSetWrapper(rs, configuration);
-                    
+                    }
 
-                }
+                
 
         } catch (Exception e) {
             // Intentionally ignored.
