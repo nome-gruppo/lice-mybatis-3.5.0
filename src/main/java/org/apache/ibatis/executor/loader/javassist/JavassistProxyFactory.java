@@ -126,6 +126,25 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
       return enhanced;
     }
 
+
+
+    public void invokeInnested(String methodName) throws Exception{
+
+      if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
+        lazyLoader.loadAll();
+      } else if (PropertyNamer.isSetter(methodName)) {
+        final String property = PropertyNamer.methodToProperty(methodName);
+        lazyLoader.remove(property);
+      } else if (PropertyNamer.isGetter(methodName)) {
+        final String property = PropertyNamer.methodToProperty(methodName);
+        if (lazyLoader.hasLoader(property)) {
+          lazyLoader.load(property);
+        }
+      }
+
+
+    }
+
     @Override
     public Object invoke(Object enhanced, Method method, Method methodProxy, Object[] args) throws Throwable {
       final String methodName = method.getName();
@@ -146,17 +165,11 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
             }
           } else {
             if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
-              if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
-                lazyLoader.loadAll();
-              } else if (PropertyNamer.isSetter(methodName)) {
-                final String property = PropertyNamer.methodToProperty(methodName);
-                lazyLoader.remove(property);
-              } else if (PropertyNamer.isGetter(methodName)) {
-                final String property = PropertyNamer.methodToProperty(methodName);
-                if (lazyLoader.hasLoader(property)) {
-                  lazyLoader.load(property);
-                }
-              }
+
+invokeInnested(methodName);
+
+
+
             }
           }
         }
