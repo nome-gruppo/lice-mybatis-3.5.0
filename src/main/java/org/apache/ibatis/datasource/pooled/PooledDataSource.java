@@ -377,19 +377,13 @@ public class PooledDataSource implements DataSource {
                     newConn.setCreatedTimestamp(conn.getCreatedTimestamp());
                     newConn.setLastUsedTimestamp(conn.getLastUsedTimestamp());
                     conn.invalidate();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
-                    }
+                    pushConnectionIf(newConn);
                     state.notifyAll();
                 } else {
                     state.accumulatedCheckoutTime += conn.getCheckoutTime();
-                    if (!conn.getRealConnection().getAutoCommit()) {
-                        conn.getRealConnection().rollback();
-                    }
+                    pushConnectionIf2(conn);
                     conn.getRealConnection().close();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Closed connection " + conn.getRealHashCode() + ".");
-                    }
+                    pushConnectionIf3(conn);
                     conn.invalidate();
                 }
             } else {
@@ -398,6 +392,21 @@ public class PooledDataSource implements DataSource {
                 }
                 state.badConnectionCount++;
             }
+        }
+    }
+    protected void pushConnectionIf(PooledConnection newConn){
+        if (log.isDebugEnabled()) {
+            log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
+        }
+    }
+    protected void pushConnectionIf2(PooledConnection conn) throws SQLException{
+        if (!conn.getRealConnection().getAutoCommit()) {
+            conn.getRealConnection().rollback();
+        }
+    }
+    protected void pushConnectionIf3(PooledConnection conn) {
+        if (log.isDebugEnabled()) {
+            log.debug("Closed connection " + conn.getRealHashCode() + ".");
         }
     }
 
