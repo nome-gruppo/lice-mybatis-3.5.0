@@ -528,39 +528,48 @@ private void typehandlerInnested(String property, ResultSetWrapper rsw, String c
 }
 
 
+private void ForcolumnameInnested(String columnPrefix, ResultMap resultMap, MetaObject metaObject,List<String> unmappedColumnNames, ResultSetWrapper rsw,  List<UnMappedColumnAutoMapping> autoMapping) {
+  for (String columnName : unmappedColumnNames) {
+      String propertyName = columnName;
+      if (columnPrefix != null && !columnPrefix.isEmpty()) {
+          // When columnPrefix is specified,
+          // ignore columns without the prefix.
+          if (columnName.toUpperCase(Locale.ENGLISH).startsWith(columnPrefix)) {
+              propertyName = columnName.substring(columnPrefix.length());
+          } else {
+              continue;
+          }
+      }
+      final String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
+      if (property != null && metaObject.hasSetter(property)) {
+          if (resultMap.getMappedProperties().contains(property)) {
+              continue;
+          }
+          final Class<?> propertyType = metaObject.getSetterType(property);
+
+        typehandlerInnested( property, rsw,  columnName, autoMapping,  propertyType);
+
+}
+else {
+configuration.getAutoMappingUnknownColumnBehavior()
+  .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
+}
+
+  }
+}
+
+
+
+
     private List<UnMappedColumnAutoMapping> createAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String columnPrefix) throws SQLException {
         final String mapKey = resultMap.getId() + ":" + columnPrefix;
         List<UnMappedColumnAutoMapping> autoMapping = autoMappingsCache.get(mapKey);
         if (autoMapping == null) {
             autoMapping = new ArrayList<>();
             final List<String> unmappedColumnNames = rsw.getUnmappedColumnNames(resultMap, columnPrefix);
-            for (String columnName : unmappedColumnNames) {
-                String propertyName = columnName;
-                if (columnPrefix != null && !columnPrefix.isEmpty()) {
-                    // When columnPrefix is specified,
-                    // ignore columns without the prefix.
-                    if (columnName.toUpperCase(Locale.ENGLISH).startsWith(columnPrefix)) {
-                        propertyName = columnName.substring(columnPrefix.length());
-                    } else {
-                        continue;
-                    }
-                }
-                final String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
-                if (property != null && metaObject.hasSetter(property)) {
-                    if (resultMap.getMappedProperties().contains(property)) {
-                        continue;
-                    }
-                    final Class<?> propertyType = metaObject.getSetterType(property);
 
-                  typehandlerInnested( property, rsw,  columnName, autoMapping,  propertyType);  
+            ForcolumnameInnested(columnPrefix,resultMap,metaObject,unmappedColumnNames,rsw,autoMapping);
 
-}
-else {
-    configuration.getAutoMappingUnknownColumnBehavior()
-            .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
-}
-
-            }
             autoMappingsCache.put(mapKey, autoMapping);
         }
         return autoMapping;
