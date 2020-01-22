@@ -293,7 +293,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                         return new ResultSetWrapper(rs, configuration);
                     }
 
-                
+
 
         } catch (Exception e) {
             // Intentionally ignored.
@@ -513,6 +513,21 @@ valuenotnull( value, metaObject, property);
         }
     }
 
+
+private void typehandlerInnested(String property, ResultSetWrapper rsw, String columnName, List<UnMappedColumnAutoMapping> autoMapping, Class<?> propertyType) {
+
+
+      if (typeHandlerRegistry.hasTypeHandler(propertyType, rsw.getJdbcType(columnName))) {
+          final TypeHandler<?> typeHandler = rsw.getTypeHandler(propertyType, columnName);
+          autoMapping.add(new UnMappedColumnAutoMapping(columnName, property, typeHandler, propertyType.isPrimitive()));
+      } else {
+          configuration.getAutoMappingUnknownColumnBehavior()
+                  .doAction(mappedStatement, columnName, property, propertyType);
+      }
+
+}
+
+
     private List<UnMappedColumnAutoMapping> createAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String columnPrefix) throws SQLException {
         final String mapKey = resultMap.getId() + ":" + columnPrefix;
         List<UnMappedColumnAutoMapping> autoMapping = autoMappingsCache.get(mapKey);
@@ -536,17 +551,15 @@ valuenotnull( value, metaObject, property);
                         continue;
                     }
                     final Class<?> propertyType = metaObject.getSetterType(property);
-                    if (typeHandlerRegistry.hasTypeHandler(propertyType, rsw.getJdbcType(columnName))) {
-                        final TypeHandler<?> typeHandler = rsw.getTypeHandler(propertyType, columnName);
-                        autoMapping.add(new UnMappedColumnAutoMapping(columnName, property, typeHandler, propertyType.isPrimitive()));
-                    } else {
-                        configuration.getAutoMappingUnknownColumnBehavior()
-                                .doAction(mappedStatement, columnName, property, propertyType);
-                    }
-                } else {
-                    configuration.getAutoMappingUnknownColumnBehavior()
-                            .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
-                }
+
+                  typehandlerInnested( property, rsw,  columnName, autoMapping,  propertyType);  
+
+}
+else {
+    configuration.getAutoMappingUnknownColumnBehavior()
+            .doAction(mappedStatement, columnName, (property != null) ? property : propertyName, null);
+}
+
             }
             autoMappingsCache.put(mapKey, autoMapping);
         }
