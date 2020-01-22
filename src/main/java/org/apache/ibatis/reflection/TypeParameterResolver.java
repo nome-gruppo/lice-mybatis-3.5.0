@@ -169,7 +169,7 @@ public class TypeParameterResolver {
     return Object.class;
   }
 
-  
+
 
   private static Type scanSuperTypes(TypeVariable<?> typeVar, Type srcType, Class<?> declaringClass, Class<?> clazz, Type superclass) {
     if (superclass instanceof ParameterizedType) {
@@ -179,13 +179,13 @@ public class TypeParameterResolver {
       if (srcType instanceof ParameterizedType) {
         parentAsType = translateParentTypeVars((ParameterizedType) srcType, clazz, parentAsType);
       }
-      if (declaringClass == parentAsClass) {
+
         for (int i = 0; i < parentTypeVars.length; i++) {
           if (typeVar == parentTypeVars[i]) {
             return parentAsType.getActualTypeArguments()[i];
           }
         }
-      }
+      
       if (declaringClass.isAssignableFrom(parentAsClass)) {
         return resolveTypeVar(typeVar, parentAsType, declaringClass);
       }
