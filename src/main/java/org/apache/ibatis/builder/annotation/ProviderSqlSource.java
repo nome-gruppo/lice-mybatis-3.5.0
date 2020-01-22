@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.lang.reflect.InvocationTargetException;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.mapping.BoundSql;
@@ -83,7 +83,7 @@ public class ProviderSqlSource implements SqlSource {
       throw new BuilderException("Error creating SqlSource for SqlProvider. Method '"
           + providerMethodName + "' not found in SqlProvider '" + this.providerType.getName() + "'.");
     }
-    
+
     providerSqlSourceLastFor(mapperType, mapperMethod);
 
   }//end method
@@ -165,7 +165,7 @@ public class ProviderSqlSource implements SqlSource {
     return args;
   }
 
-  private String invokeProviderMethod(Object... args) throws Exception {
+  private String invokeProviderMethod(Object... args) throws InstantiationException, IllegalAccessException, InvocationTargetException{
     Object targetObject = null;
     if (!Modifier.isStatic(providerMethod.getModifiers())) {
       targetObject = providerType.newInstance();

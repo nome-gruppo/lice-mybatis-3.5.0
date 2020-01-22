@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Properties;
 import javax.sql.DataSource;
+import java.io.*;
+import java.sql.SQLException;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
@@ -198,7 +200,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析<plugin></plugin>
-    private void pluginElement(XNode parent)throws Exception  {
+    private void pluginElement(XNode parent) throws InstantiationException, IllegalAccessException  {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
                 String interceptor = child.getStringAttribute("interceptor");
@@ -210,7 +212,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-    private void objectFactoryElement(XNode context) throws Exception {
+    private void objectFactoryElement(XNode context)throws InstantiationException, IllegalAccessException {
         if (context != null) {
             String type = context.getStringAttribute("type");
             Properties properties = context.getChildrenAsProperties();
@@ -220,7 +222,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-    private void objectWrapperFactoryElement(XNode context) throws Exception {
+    private void objectWrapperFactoryElement(XNode context) throws InstantiationException, IllegalAccessException  {
         if (context != null) {
             String type = context.getStringAttribute("type");
             ObjectWrapperFactory factory = (ObjectWrapperFactory) resolveClass(type).newInstance();
@@ -228,7 +230,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-    private void reflectorFactoryElement(XNode context) throws Exception {
+    private void reflectorFactoryElement(XNode context)  throws InstantiationException, IllegalAccessException {
         if (context != null) {
             String type = context.getStringAttribute("type");
             ReflectorFactory factory = (ReflectorFactory) resolveClass(type).newInstance();
@@ -237,7 +239,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析<properties></properties>
-    private void propertiesElement(XNode context) throws Exception {
+    private void propertiesElement(XNode context) throws IOException {
         if (context != null) {
             Properties defaults = context.getChildrenAsProperties();
             String resource = context.getStringAttribute("resource");
@@ -292,7 +294,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析<environments></environments>
-    private void environmentsElement(XNode context) throws Exception {
+    private void environmentsElement(XNode context) throws SQLException, InstantiationException, IllegalAccessException  {
         if (context != null) {
             if (environment == null) {
                 environment = context.getStringAttribute("default");
@@ -313,7 +315,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //数据库连接提供者模式
-    private void databaseIdProviderElement(XNode context) throws Exception {
+    private void databaseIdProviderElement(XNode context) throws InstantiationException, SQLException, IllegalAccessException {
         DatabaseIdProvider databaseIdProvider = null;
         if (context != null) {
             String type = context.getStringAttribute("type");
@@ -333,7 +335,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析事务管理器TransactionManager
-    private TransactionFactory transactionManagerElement(XNode context) throws Exception {
+    private TransactionFactory transactionManagerElement(XNode context) throws InstantiationException, IllegalAccessException {
         if (context != null) {
             String type = context.getStringAttribute("type");
             Properties props = context.getChildrenAsProperties();
@@ -345,7 +347,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析DataSource连接数据库驱动资源
-    private DataSourceFactory dataSourceElement(XNode context) throws Exception {
+    private DataSourceFactory dataSourceElement(XNode context) throws InstantiationException, IllegalAccessException  {
         if (context != null) {
             String type = context.getStringAttribute("type");
             Properties props = context.getChildrenAsProperties();
@@ -403,7 +405,7 @@ private void exceptioninn(String resource,String url, String mapperClass) {
 }
 
     //解析mybatis.cfg.xml中mapper.xml的引入
-    private void mapperElement(XNode parent) throws Exception {
+    private void mapperElement(XNode parent) throws InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
               childgetsattribute(child);
