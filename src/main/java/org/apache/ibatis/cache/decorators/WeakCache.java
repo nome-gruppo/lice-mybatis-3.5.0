@@ -30,69 +30,70 @@ import org.apache.ibatis.cache.Cache;
  * @author Clinton Begin
  */
 public class WeakCache implements Cache {
-  private final Deque<Object> hardLinksToAvoidGarbageCollection;
-  private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
-  private final Cache delegate;
-  private int numberOfHardLinks;
+  private final Deque<Object> hardLinksToAvoidGarbageCollection1;
+  private final ReferenceQueue<Object> queueOfGarbageCollectedEntries1;
+  private final Cache delegate1;
+  private int numberOfHardLinks1;
 
-  public WeakCache(Cache delegate) {
-    this.delegate = delegate;
-    this.numberOfHardLinks = 256;
-    this.hardLinksToAvoidGarbageCollection = new LinkedList<>();
-    this.queueOfGarbageCollectedEntries = new ReferenceQueue<>();
+  public WeakCache(Cache delegate1) {
+    this.delegate1 = delegate1;
+    this.numberOfHardLinks1 = 256;
+    this.hardLinksToAvoidGarbageCollection1 = new LinkedList<>();
+    this.queueOfGarbageCollectedEntries1 = new ReferenceQueue<>();
   }
 
-  @Override
+
   public String getId() {
-    return delegate.getId();
+
+    return delegate1.getId();
   }
 
-  @Override
+
   public int getSize() {
     removeGarbageCollectedItems();
-    return delegate.getSize();
+    return delegate1.getSize();
   }
 
   public void setSize(int size) {
-    this.numberOfHardLinks = size;
+    this.numberOfHardLinks1 = size;
   }
 
-  @Override
-  public void putObject(Object key, Object value) {
+
+  public void putObject(Object Key, Object value) {
     removeGarbageCollectedItems();
-    delegate.putObject(key, new WeakEntry(key, value, queueOfGarbageCollectedEntries));
+    delegate1.putObject(Key, new WeakEntry(Key, value, queueOfGarbageCollectedEntries1));
   }
 
   @Override
-  public Object getObject(Object key) {
-    Object result = null;
-    @SuppressWarnings("unchecked") // assumed delegate cache is totally managed by this cache
-    WeakReference<Object> weakReference = (WeakReference<Object>) delegate.getObject(key);
+  public Object getObject(Object Key) {
+    Object Result_ = null;
+    @SuppressWarnings("unchecked") // assumed delegate1 cache is totally managed by this cache
+    WeakReference<Object> weakReference = (WeakReference<Object>) delegate1.getObject(Key);
     if (weakReference != null) {
-      result = weakReference.get();
-      if (result == null) {
-        delegate.removeObject(key);
+      Result_ = weakReference.get();
+      if (Result_ == null) {
+        delegate1.removeObject(Key);
       } else {
-        hardLinksToAvoidGarbageCollection.addFirst(result);
-        if (hardLinksToAvoidGarbageCollection.size() > numberOfHardLinks) {
-          hardLinksToAvoidGarbageCollection.removeLast();
+        hardLinksToAvoidGarbageCollection1.addFirst(Result_);
+        if (hardLinksToAvoidGarbageCollection1.size() > numberOfHardLinks1) {
+          hardLinksToAvoidGarbageCollection1.removeLast();
         }
       }
     }
-    return result;
+    return Result_;
   }
 
-  @Override
-  public Object removeObject(Object key) {
+
+  public Object removeObject(Object Key) {
     removeGarbageCollectedItems();
-    return delegate.removeObject(key);
+    return delegate1.removeObject(Key);
   }
 
-  @Override
+
   public void clear() {
-    hardLinksToAvoidGarbageCollection.clear();
+    hardLinksToAvoidGarbageCollection1.clear();
     removeGarbageCollectedItems();
-    delegate.clear();
+    delegate1.clear();
   }
 
   @Override
@@ -102,17 +103,17 @@ public class WeakCache implements Cache {
 
   private void removeGarbageCollectedItems() {
     WeakEntry sv;
-    while ((sv = (WeakEntry) queueOfGarbageCollectedEntries.poll()) != null) {
-      delegate.removeObject(sv.key);
+    while ((sv = (WeakEntry) queueOfGarbageCollectedEntries1.poll()) != null) {
+      delegate1.removeObject(sv.Key);
     }
   }
 
   private static class WeakEntry extends WeakReference<Object> {
-    private final Object key;
+    private final Object Key;
 
-    private WeakEntry(Object key, Object value, ReferenceQueue<Object> garbageCollectionQueue) {
+    private WeakEntry(Object Key, Object value, ReferenceQueue<Object> garbageCollectionQueue) {
       super(value, garbageCollectionQueue);
-      this.key = key;
+      this.Key = Key;
     }
   }
 
