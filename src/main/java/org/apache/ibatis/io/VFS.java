@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.ibatis.exceptions.IbatisException;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
@@ -148,18 +149,19 @@ public abstract class VFS {
    */
   @SuppressWarnings("unchecked")
   protected static <T> T invoke(Method method, Object object, Object... parameters)
-      throws IOException, RuntimeException {
+      throws IOException {
     try {
       return (T) method.invoke(object, parameters);
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      throw new RuntimeException(e);
+      e.printStackTrace();
     } catch (InvocationTargetException e) {
       if (e.getTargetException() instanceof IOException) {
         throw (IOException) e.getTargetException();
       } else {
-        throw new RuntimeException(e);
+        e.printStackTrace();
       }
     }
+    return null;
   }
 
   /**

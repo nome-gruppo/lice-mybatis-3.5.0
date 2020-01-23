@@ -30,6 +30,14 @@ public interface InitializingObject {
    * </p>
    * @throws Exception in the event of misconfiguration (such as failure to set an essential property) or if initialization fails
    */
-  void initialize() throws Exception;
+  
+  class CustomException extends Exception {
+    
+		private static final long serialVersionUID = 1L;
+	public CustomException(final String message) {
+          super(message);
+      }
+    }
+  void initialize() throws CustomException;
 
 }
