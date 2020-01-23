@@ -57,12 +57,12 @@ public class CglibProxyFactory implements ProxyFactory {
   }
 
   @Override
-  public Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    return EnhancedResultObjectProxyImpl.createProxy(target, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
+  public Object createProxy(Object target, ResultLoaderMap lazy_loader, Configuration configuration, ObjectFactory object_factory, List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+    return EnhancedResultObjectProxyImpl.createProxy(target, lazy_loader, configuration, object_factory, constructorArg_Types, constructorArgs_);
   }
 
-  public Object createDeserializationProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    return EnhancedDeserializationProxyImpl.createProxy(target, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
+  public Object createDeserializationProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory object_factory, List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+    return EnhancedDeserializationProxyImpl.createProxy(target, unloadedProperties, object_factory, constructorArg_Types, constructorArgs_);
   }
 
   @Override
@@ -70,80 +70,80 @@ public class CglibProxyFactory implements ProxyFactory {
       // Not Implemented
   }
 
-  static Object crateProxy(Class<?> type, Callback callback, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    Enhancer enhancer = new Enhancer();
-    enhancer.setCallback(callback);
-    enhancer.setSuperclass(type);
+  static Object crateProxy(Class<?> type_1_1, Callback callback, List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+    Enhancer enhancer_1 = new Enhancer();
+    enhancer_1.setCallback(callback);
+    enhancer_1.setSuperclass(type_1_1);
     try {
-      type.getDeclaredMethod(WRITE_REPLACE_METHOD);
+      type_1_1.getDeclaredMethod(WRITE_REPLACE_METHOD);
       // ObjectOutputStream will call writeReplace of objects returned by writeReplace
       if (LogHolder.log.isDebugEnabled()) {
-        LogHolder.log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
+        LogHolder.log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type_1_1 + ", make sure it returns this");
       }
     } catch (NoSuchMethodException e) {
-      enhancer.setInterfaces(new Class[]{WriteReplaceInterface.class});
+      enhancer_1.setInterfaces(new Class[]{WriteReplaceInterface.class});
     } catch (SecurityException e) {
       // nothing to do here
     }
     Object enhanced;
-    if (constructorArgTypes.isEmpty()) {
-      enhanced = enhancer.create();
+    if (constructorArg_Types.isEmpty()) {
+      enhanced = enhancer_1.create();
     } else {
-      Class<?>[] typesArray = constructorArgTypes.toArray(new Class[constructorArgTypes.size()]);
-      Object[] valuesArray = constructorArgs.toArray(new Object[constructorArgs.size()]);
-      enhanced = enhancer.create(typesArray, valuesArray);
+      Class<?>[] type_1_1sArray = constructorArg_Types.toArray(new Class[constructorArg_Types.size()]);
+      Object[] valuesArray = constructorArgs_.toArray(new Object[constructorArgs_.size()]);
+      enhanced = enhancer_1.create(type_1_1sArray, valuesArray);
     }
     return enhanced;
   }
 
   private static class EnhancedResultObjectProxyImpl implements MethodInterceptor {
 
-    private final Class<?> type;
-    private final ResultLoaderMap lazyLoader;
+    private final Class<?> type_1_1;
+    private final ResultLoaderMap lazy_loader;
     private final boolean aggressive;
-    private final Set<String> lazyLoadTriggerMethods;
-    private final ObjectFactory objectFactory;
-    private final List<Class<?>> constructorArgTypes;
-    private final List<Object> constructorArgs;
+    private final Set<String> lazyLoadTrigger_Methods;
+    private final ObjectFactory object_factory;
+    private final List<Class<?>> constructorArg_Types;
+    private final List<Object> constructorArgs_;
 
-    private EnhancedResultObjectProxyImpl(Class<?> type, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-      this.type = type;
-      this.lazyLoader = lazyLoader;
+    private EnhancedResultObjectProxyImpl(Class<?> type_1_1, ResultLoaderMap lazy_loader, Configuration configuration, ObjectFactory object_factory, List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+      this.type_1_1 = type_1_1;
+      this.lazy_loader = lazy_loader;
       this.aggressive = configuration.isAggressiveLazyLoading();
-      this.lazyLoadTriggerMethods = configuration.getLazyLoadTriggerMethods();
-      this.objectFactory = objectFactory;
-      this.constructorArgTypes = constructorArgTypes;
-      this.constructorArgs = constructorArgs;
+      this.lazyLoadTrigger_Methods = configuration.getLazyLoadTriggerMethods();
+      this.object_factory = object_factory;
+      this.constructorArg_Types = constructorArg_Types;
+      this.constructorArgs_ = constructorArgs_;
     }
 
-    public static Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-      final Class<?> type = target.getClass();
-      EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
-      Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
-      PropertyCopier.copyBeanProperties(type, target, enhanced);
+    public static Object createProxy(Object target, ResultLoaderMap lazy_loader, Configuration configuration, ObjectFactory object_factory, List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+      final Class<?> type_1_1 = target.getClass();
+      EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type_1_1, lazy_loader, configuration, object_factory, constructorArg_Types, constructorArgs_);
+      Object enhanced = crateProxy(type_1_1, callback, constructorArg_Types, constructorArgs_);
+      PropertyCopier.copyBeanProperties(type_1_1, target, enhanced);
       return enhanced;
     }
 
-    @Override
+
     public Object intercept(Object enhanced, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-      final String methodName = method.getName();
+      final String method_Name = method.getName();
       try {
-        synchronized (lazyLoader) {
-          if (WRITE_REPLACE_METHOD.equals(methodName)) {
-            Object original;
-            if (constructorArgTypes.isEmpty()) {
-              original = objectFactory.create(type);
+        synchronized (lazy_loader) {
+          if (WRITE_REPLACE_METHOD.equals(method_Name)) {
+            Object original_;
+            if (constructorArg_Types.isEmpty()) {
+              original_ = object_factory.create(type_1_1);
             } else {
-              original = objectFactory.create(type, constructorArgTypes, constructorArgs);
+              original_ = object_factory.create(type_1_1, constructorArg_Types, constructorArgs_);
             }
-            PropertyCopier.copyBeanProperties(type, enhanced, original);
-            if (lazyLoader.size() > 0) {
-              return new CglibSerialStateHolder(original, lazyLoader.getProperties(), objectFactory, constructorArgTypes, constructorArgs);
+            PropertyCopier.copyBeanProperties(type_1_1, enhanced, original_);
+            if (lazy_loader.size() > 0) {
+              return new CglibSerialStateHolder(original_, lazy_loader.getProperties(), object_factory, constructorArg_Types, constructorArgs_);
             } else {
-              return original;
+              return original_;
             }
           } else {
-            interceptElse(lazyLoader, methodName);
+            interceptElse(lazy_loader, method_Name);
           }
         }
         return methodProxy.invokeSuper(enhanced, args);
@@ -152,17 +152,17 @@ public class CglibProxyFactory implements ProxyFactory {
       }
     }// end method
 
-    private void  interceptElse(ResultLoaderMap lazyLoader, String methodName) throws Throwable{
-      if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
-        if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
-          lazyLoader.loadAll();
-        } else if (PropertyNamer.isSetter(methodName)) {
-          final String property = PropertyNamer.methodToProperty(methodName);
-          lazyLoader.remove(property);
-        } else if (PropertyNamer.isGetter(methodName)) {
-          final String property = PropertyNamer.methodToProperty(methodName);
-          if (lazyLoader.hasLoader(property)) {
-            lazyLoader.load(property);
+    private void  interceptElse(ResultLoaderMap lazy_loader, String method_Name) throws Throwable{
+      if (lazy_loader.size() > 0 && !FINALIZE_METHOD.equals(method_Name)) {
+        if (aggressive || lazyLoadTrigger_Methods.contains(method_Name)) {
+          lazy_loader.loadAll();
+        } else if (PropertyNamer.isSetter(method_Name)) {
+          final String property = PropertyNamer.methodToProperty(method_Name);
+          lazy_loader.remove(property);
+        } else if (PropertyNamer.isGetter(method_Name)) {
+          final String property = PropertyNamer.methodToProperty(method_Name);
+          if (lazy_loader.hasLoader(property)) {
+            lazy_loader.load(property);
           }
         }
       }
@@ -170,21 +170,21 @@ public class CglibProxyFactory implements ProxyFactory {
 
   }// end inner class
 
-  
+
 
   private static class EnhancedDeserializationProxyImpl extends AbstractEnhancedDeserializationProxy implements MethodInterceptor {
 
-    private EnhancedDeserializationProxyImpl(Class<?> type, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-      super(type, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
+    private EnhancedDeserializationProxyImpl(Class<?> type_1_1, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory object_factory,
+            List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+      super(type_1_1, unloadedProperties, object_factory, constructorArg_Types, constructorArgs_);
     }
 
-    public static Object createProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-      final Class<?> type = target.getClass();
-      EnhancedDeserializationProxyImpl callback = new EnhancedDeserializationProxyImpl(type, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
-      Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
-      PropertyCopier.copyBeanProperties(type, target, enhanced);
+    public static Object createProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory object_factory,
+            List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+      final Class<?> type_1_1 = target.getClass();
+      EnhancedDeserializationProxyImpl callback = new EnhancedDeserializationProxyImpl(type_1_1, unloadedProperties, object_factory, constructorArg_Types, constructorArgs_);
+      Object enhanced = crateProxy(type_1_1, callback, constructorArg_Types, constructorArgs_);
+      PropertyCopier.copyBeanProperties(type_1_1, target, enhanced);
       return enhanced;
     }
 
@@ -195,9 +195,9 @@ public class CglibProxyFactory implements ProxyFactory {
     }
 
     @Override
-    protected AbstractSerialStateHolder newSerialStateHolder(Object userBean, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory,
-            List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-      return new CglibSerialStateHolder(userBean, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
+    protected AbstractSerialStateHolder newSerialStateHolder(Object userBean, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory object_factory,
+            List<Class<?>> constructorArg_Types, List<Object> constructorArgs_) {
+      return new CglibSerialStateHolder(userBean, unloadedProperties, object_factory, constructorArg_Types, constructorArgs_);
     }
   }
 
