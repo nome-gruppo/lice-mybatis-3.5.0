@@ -82,9 +82,9 @@ public class CacheBuilderTest {
       super(id);
     }
 
-    @Override
-    public void initialize() throws Exception {
-      throw new IllegalStateException("error");
+  @Override
+    public void initialize() throws CustomException {
+      throw new CustomException("error");
     }
 
   }
