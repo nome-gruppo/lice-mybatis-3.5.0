@@ -106,10 +106,16 @@ public class XMLStatementBuilder extends BaseBuilder {
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
 
-    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
-        fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
-        resultSetTypeEnum, flushCache, useCache, resultOrdered,
-        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
+    builderAssistant.setLanguageDriver(langDriver);
+    builderAssistant.setSqlSource(sqlSource);
+    builderAssistant.setKeyGenerator(keyGenerator);
+    builderAssistant.addMappedStatement(
+      builderAssistant.passStringAddMappedStatement(id, parameterMap, resultMap, keyProperty, keyColumn, databaseId, resultSets),
+        statementType, sqlCommandType,
+        builderAssistant.passIntegerAddMappedStatement(fetchSize, timeout),
+        builderAssistant.passClassAddMappedStatement(parameterTypeClass, resultTypeClass),
+        resultSetTypeEnum,
+        builderAssistant.passBooleanAddMappedStatement(flushCache, useCache, resultOrdered));
   }
 
   private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
@@ -153,10 +159,16 @@ public class XMLStatementBuilder extends BaseBuilder {
     SqlSource sqlSource = langDriver.createSqlSource(configuration, nodeToHandle, parameterTypeClass);
     SqlCommandType sqlCommandType = SqlCommandType.SELECT;
 
-    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
-        fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
-        resultSetTypeEnum, flushCache, useCache, resultOrdered,
-        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, null);
+    builderAssistant.setLanguageDriver(langDriver);
+    builderAssistant.setSqlSource(sqlSource);
+    builderAssistant.setKeyGenerator(keyGenerator);
+    builderAssistant.addMappedStatement(
+      builderAssistant.passStringAddMappedStatement(id, parameterMap, resultMap, keyProperty, keyColumn, databaseId, null),
+        statementType, sqlCommandType,
+        builderAssistant.passIntegerAddMappedStatement(fetchSize, timeout),
+        builderAssistant.passClassAddMappedStatement(parameterTypeClass, resultTypeClass),
+        resultSetTypeEnum, 
+        builderAssistant.passBooleanAddMappedStatement(flushCache, useCache, resultOrdered));
 
     id = builderAssistant.applyCurrentNamespace(id, false);
 

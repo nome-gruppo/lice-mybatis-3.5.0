@@ -420,13 +420,15 @@ public class PooledDataSource implements DataSource {
             synchronized (state) {
                 if (!state.idleConnections.isEmpty()) {
 
-                    conn=popConnectionSupport(conn);
+                    conn = state.idleConnections.remove(0);
+                    popConnectionSupport(conn);
 
                 } else {
                     // Pool does not have available connection
                     if (state.activeConnections.size() < poolMaximumActiveConnections) {
 
-                      conn=popConnectionSupportTwo(conn);
+                        conn = new PooledConnection(dataSource.getConnection(), this);
+                      popConnectionSupportTwo(conn);
 
                     } else {
                         // Cannot create new connection
@@ -434,7 +436,9 @@ public class PooledDataSource implements DataSource {
                         long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
                         if (longestCheckoutTime > poolMaximumCheckoutTime) {
 
-                          conn=popConnectionSupportFour(conn, oldestActiveConnection, longestCheckoutTime);
+                          popConnectionSupportFour(conn, oldestActiveConnection, longestCheckoutTime);
+                          conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
+                          privateSupportFour(conn, oldestActiveConnection);
 
                         } else {
                             // Must wait
@@ -493,20 +497,17 @@ public class PooledDataSource implements DataSource {
         return conn;
     }
 
-    private PooledConnection popConnectionSupport(PooledConnection conn){
-      conn = state.idleConnections.remove(0);
+    private void popConnectionSupport(PooledConnection conn){
       if (log.isDebugEnabled()) {
           log.debug("Checked out connection " + conn.getRealHashCode() + " from pool.");
       }
-      return conn;
+      
     }
 
-    private PooledConnection popConnectionSupportTwo(PooledConnection conn)throws SQLException{
-      conn = new PooledConnection(dataSource.getConnection(), this);
+    private void popConnectionSupportTwo(PooledConnection conn)throws SQLException{
       if (log.isDebugEnabled()) {
           log.debug("Created connection " + conn.getRealHashCode() + ".");
       }
-      return conn;
     }
 
     private PooledConnection popConnectionSupportThree(PooledConnection conn,String username, String password, long t)throws SQLException{
@@ -522,7 +523,7 @@ public class PooledDataSource implements DataSource {
       return conn;
     }
 
-    private PooledConnection popConnectionSupportFour(PooledConnection conn, PooledConnection oldestActiveConnection, long longestCheckoutTime)throws SQLException{
+    private void popConnectionSupportFour(PooledConnection conn, PooledConnection oldestActiveConnection, long longestCheckoutTime)throws SQLException{
       // Can claim overdue connection
       state.claimedOverdueConnectionCount++;
       state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
@@ -536,14 +537,18 @@ public class PooledDataSource implements DataSource {
               log.debug("Bad connection. Could not roll back");
           }
       }
-      conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
-      conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
-      conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
-      oldestActiveConnection.invalidate();
-      if (log.isDebugEnabled()) {
-          log.debug("Claimed overdue connection " + conn.getRealHashCode() + ".");
-      }
-      return conn;
+      
+     
+     
+    }
+
+    private void privateSupportFour(PooledConnection conn, PooledConnection oldestActiveConnection){
+        conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
+        conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
+        oldestActiveConnection.invalidate();
+        if (log.isDebugEnabled()) {
+            log.debug("Claimed overdue connection " + conn.getRealHashCode() + ".");
+        }
     }
 
     /**
