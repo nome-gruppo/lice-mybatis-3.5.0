@@ -36,25 +36,25 @@ public class LoggingCache implements Cache {
     this.log = LogFactory.getLog(getId());
   }
 
-  @Override
+
   public String getId() {
     return delegate.getId();
   }
 
-  @Override
+
   public int getSize() {
     return delegate.getSize();
   }
 
-  @Override
-  public void putObject(Object key, Object object) {
-    delegate.putObject(key, object);
+
+  public void putObject(Object _key, Object object) {
+    delegate.putObject(_key, object);
   }
 
-  @Override
-  public Object getObject(Object key) {
+
+  public Object getObject(Object _key) {
     requests++;
-    final Object value = delegate.getObject(key);
+    final Object value = delegate.getObject(_key);
     if (value != null) {
       hits++;
     }
@@ -64,27 +64,27 @@ public class LoggingCache implements Cache {
     return value;
   }
 
-  @Override
-  public Object removeObject(Object key) {
-    return delegate.removeObject(key);
+
+  public Object removeObject(Object _key) {
+    return delegate.removeObject(_key);
   }
 
-  @Override
+
   public void clear() {
     delegate.clear();
   }
 
-  @Override
+
   public ReadWriteLock getReadWriteLock() {
     return null;
   }
 
-  @Override
+
   public int hashCode() {
     return delegate.hashCode();
   }
 
-  @Override
+
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }

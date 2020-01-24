@@ -317,50 +317,37 @@ public class MapperAnnotationBuilder {
       KeyGenerator keyGenerator;
       String keyProperty = null;
       String keyColumn = null;
+      MapperAnnotationBuilderSupport mapperSupport;
       if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
-        // first check for SelectKey annotation - that overrides everything else
-        SelectKey selectKey = method.getAnnotation(SelectKey.class);
-        if (selectKey != null) {
-          keyGenerator = handleSelectKeyAnnotation(selectKey, mappedStatementId, getParameterType(method),
-              languageDriver);
-          keyProperty = selectKey.keyProperty();
-        } else if (options == null) {
-          keyGenerator = configuration.isUseGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
-        } else {
-          keyGenerator = options.useGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
-          keyProperty = options.keyProperty();
-          keyColumn = options.keyColumn();
-        }
+
+        mapperSupport=parseStatementSupport(keyProperty,keyColumn,method,languageDriver,options,mappedStatementId);
+        keyGenerator=mapperSupport.getKeyGenerator();
+        keyProperty=mapperSupport.getKeyProperty();
+        keyColumn=mapperSupport.getKeyColumn();
+
+
       } else {
         keyGenerator = NoKeyGenerator.INSTANCE;
       }
 
       if (options != null) {
-        if (FlushCachePolicy.TRUE.equals(options.flushCache())) {
-          flushCache = true;
-        } else if (FlushCachePolicy.FALSE.equals(options.flushCache())) {
-          flushCache = false;
-        }
-        useCache = options.useCache();
-        fetchSize = options.fetchSize() > -1 || options.fetchSize() == Integer.MIN_VALUE ? options.fetchSize() : null; // issue
-                                                                                                                       // #348
-        timeout = options.timeout() > -1 ? options.timeout() : null;
-        statementType = options.statementType();
-        resultSetType = options.resultSetType();
+
+        mapperSupport=parseStatementSupportTwo(flushCache,options,useCache,fetchSize,timeout,statementType,resultSetType);
+        flushCache=mapperSupport.getFlush();
+        useCache=mapperSupport.getUse();
+        fetchSize=mapperSupport.getFetch();
+        timeout=mapperSupport.getTimeout();
+        statementType=mapperSupport.getStatement();
+        resultSetType=mapperSupport.getResultSetType();
+
       }
 
       String resultMapId = null;
       ResultMap resultMapAnnotation = method.getAnnotation(ResultMap.class);
       if (resultMapAnnotation != null) {
-        String[] resultMaps = resultMapAnnotation.value();
-        StringBuilder sb = new StringBuilder();
-        for (String resultMap : resultMaps) {
-          if (sb.length() > 0) {
-            sb.append(",");
-          }
-          sb.append(resultMap);
-        }
-        resultMapId = sb.toString();
+
+        resultMapId=parseStatementSupportThree(resultMapId,resultMapAnnotation);
+
       } else if (isSelect) {
         resultMapId = parseResultMap(method);
       }
@@ -378,6 +365,52 @@ public class MapperAnnotationBuilder {
           assistant.passBooleanAddMappedStatement(flushCache, useCache, false));
 
     }
+  }
+
+  private MapperAnnotationBuilderSupport parseStatementSupport(String keyProperty, String keyColumn, Method method,LanguageDriver languageDriver,Options options,String mappedStatementId){
+    // first check for SelectKey annotation - that overrides everything else
+    SelectKey selectKey = method.getAnnotation(SelectKey.class);
+    KeyGenerator keyGenerator;
+    if (selectKey != null) {
+      keyGenerator = handleSelectKeyAnnotation(selectKey, mappedStatementId, getParameterType(method), languageDriver);
+      keyProperty = selectKey.keyProperty();
+    } else if (options == null) {
+      keyGenerator = configuration.isUseGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+    } else {
+      keyGenerator = options.useGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+      keyProperty = options.keyProperty();
+      keyColumn = options.keyColumn();
+    }
+    MapperAnnotationBuilderSupport mapperSupport=new MapperAnnotationBuilderSupport(keyGenerator,keyProperty,keyColumn);
+    return mapperSupport;
+  }
+
+  private MapperAnnotationBuilderSupport parseStatementSupportTwo(boolean flushCache,Options options, boolean useCache,Integer fetchSize, Integer timeout,StatementType statementType, ResultSetType resultSetType){
+    if (FlushCachePolicy.TRUE.equals(options.flushCache())) {
+      flushCache = true;
+    } else if (FlushCachePolicy.FALSE.equals(options.flushCache())) {
+      flushCache = false;
+    }
+    useCache = options.useCache();
+    fetchSize = options.fetchSize() > -1 || options.fetchSize() == Integer.MIN_VALUE ? options.fetchSize() : null; //issue #348
+    timeout = options.timeout() > -1 ? options.timeout() : null;
+    statementType = options.statementType();
+    resultSetType = options.resultSetType();
+    MapperAnnotationBuilderSupport mapperSupport=new MapperAnnotationBuilderSupport(flushCache,useCache,fetchSize,timeout,resultSetType,statementType);
+    return mapperSupport;
+  }
+
+  private String parseStatementSupportThree(String resultMapId,ResultMap resultMapAnnotation){
+    String[] resultMaps = resultMapAnnotation.value();
+    StringBuilder sb = new StringBuilder();
+    for (String resultMap : resultMaps) {
+      if (sb.length() > 0) {
+        sb.append(",");
+      }
+      sb.append(resultMap);
+    }
+    resultMapId = sb.toString();
+    return resultMapId;
   }
 
   private LanguageDriver getLanguageDriver(Method method) {
