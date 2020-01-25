@@ -294,7 +294,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     //解析<environments></environments>
-    private void environmentsElement(XNode context) throws SQLException, InstantiationException, IllegalAccessException  {
+    private void environmentsElement(XNode context) throws InstantiationException, IllegalAccessException  {
         if (context != null) {
             if (environment == null) {
                 environment = context.getStringAttribute("default");
@@ -405,7 +405,7 @@ private void exceptioninn(String resource,String url, String mapperClass) {
 }
 
     //解析mybatis.cfg.xml中mapper.xml的引入
-    private void mapperElement(XNode parent) throws InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
+    private void mapperElement(XNode parent) throws IOException, ClassNotFoundException {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
               childgetsattribute(child);

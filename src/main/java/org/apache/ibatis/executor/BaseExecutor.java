@@ -97,6 +97,10 @@ public abstract class BaseExecutor implements Executor {
         this.wrapper = this;
     }
 
+    protected BaseExecutor(){
+        //do something
+    }
+
     //获取事务对象
     @Override
     public Transaction getTransaction() {

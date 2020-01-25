@@ -47,14 +47,14 @@ public class LoggingCache implements Cache {
   }
 
 
-  public void putObject(Object _key, Object object) {
-    delegate.putObject(_key, object);
+  public void putObject(Object mKey, Object object) {
+    delegate.putObject(mKey, object);
   }
 
 
-  public Object getObject(Object _key) {
+  public Object getObject(Object mKey) {
     requests++;
-    final Object value = delegate.getObject(_key);
+    final Object value = delegate.getObject(mKey);
     if (value != null) {
       hits++;
     }
@@ -65,8 +65,8 @@ public class LoggingCache implements Cache {
   }
 
 
-  public Object removeObject(Object _key) {
-    return delegate.removeObject(_key);
+  public Object removeObject(Object mKey) {
+    return delegate.removeObject(mKey);
   }
 
 

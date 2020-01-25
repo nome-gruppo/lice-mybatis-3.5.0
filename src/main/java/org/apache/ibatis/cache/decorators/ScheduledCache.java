@@ -28,10 +28,13 @@ public class ScheduledCache implements Cache {
   protected long clearInterval;
   protected long lastClear;
 
+  private SerializedCache sDelegate;
+
   public ScheduledCache(Cache delegate) {
     this.delegate = delegate;
     this.clearInterval = 60 * 60 * 1000; // 1 hour
     this.lastClear = System.currentTimeMillis();
+    this.sDelegate = new SerializedCache(delegate);
   }
 
   public void setClearInterval(long clearInterval) {
@@ -74,7 +77,7 @@ public class ScheduledCache implements Cache {
 
   @Override
   public ReadWriteLock getReadWriteLock() {
-    return null;
+    return this.sDelegate.getReadWriteLock();
   }
 
   @Override
