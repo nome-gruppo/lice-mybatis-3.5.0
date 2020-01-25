@@ -132,9 +132,9 @@ return genkey;
             Object genkey = i.next();
   if (genkey != null) {
 GenkeyInnested(genkey);
-
-}
 return  Integer.parseInt(genkey.toString());
+}
+
           }
         }
       }
