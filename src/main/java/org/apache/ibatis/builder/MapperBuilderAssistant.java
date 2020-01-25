@@ -425,7 +425,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
   
   public List<Class<?>> passClassBuildResultMapping(Class<?> resultType,Class<?> javaType){
 
-    List<Class<?>> list = new ArrayList<Class<?>>();
+    List<Class<?>> list = new ArrayList<>();
     list.add(resultType);
     list.add(javaType);
 
