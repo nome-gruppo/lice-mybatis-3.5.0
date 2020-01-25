@@ -153,12 +153,12 @@ public abstract class VFS {
     try {
       return (T) method.invoke(object, parameters);
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      e.printStackTrace();
+      //ignore
     } catch (InvocationTargetException e) {
       if (e.getTargetException() instanceof IOException) {
         throw (IOException) e.getTargetException();
       } else {
-        e.printStackTrace();
+        //ignore
       }
     }
     return null;

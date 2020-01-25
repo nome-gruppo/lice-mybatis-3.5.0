@@ -140,7 +140,7 @@ public class DefaultCursor<T> implements Cursor<T> {
         resultSetHandler.handleRowValues(rsw, resultMap, objectWrapperResultHandler, RowBounds.DEFAULT, null);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      //ignore
     }
 
     T next = objectWrapperResultHandler.result;

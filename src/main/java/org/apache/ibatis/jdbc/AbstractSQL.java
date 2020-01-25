@@ -296,7 +296,7 @@ public abstract class AbstractSQL<T> {
         }
         a.append(s);
       } catch (IOException e) {
-        e.printStackTrace();
+        //ignore
       }
       return this;
     }
