@@ -436,7 +436,7 @@ public class PooledDataSource implements DataSource {
                         long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
                         if (longestCheckoutTime > poolMaximumCheckoutTime) {
 
-                          popConnectionSupportFour(conn, oldestActiveConnection, longestCheckoutTime);
+                          popConnectionSupportFour(oldestActiveConnection, longestCheckoutTime);
                           conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
                           privateSupportFour(conn, oldestActiveConnection);
 
@@ -504,7 +504,7 @@ public class PooledDataSource implements DataSource {
       
     }
 
-    private void popConnectionSupportTwo(PooledConnection conn)throws SQLException{
+    private void popConnectionSupportTwo(PooledConnection conn){
       if (log.isDebugEnabled()) {
           log.debug("Created connection " + conn.getRealHashCode() + ".");
       }
@@ -523,7 +523,7 @@ public class PooledDataSource implements DataSource {
       return conn;
     }
 
-    private void popConnectionSupportFour(PooledConnection conn, PooledConnection oldestActiveConnection, long longestCheckoutTime)throws SQLException{
+    private void popConnectionSupportFour(PooledConnection oldestActiveConnection, long longestCheckoutTime)throws SQLException{
       // Can claim overdue connection
       state.claimedOverdueConnectionCount++;
       state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
@@ -536,10 +536,8 @@ public class PooledDataSource implements DataSource {
 
               log.debug("Bad connection. Could not roll back");
           }
-      }
-      
-     
-     
+      }    
+          
     }
 
     private void privateSupportFour(PooledConnection conn, PooledConnection oldestActiveConnection){
@@ -625,7 +623,7 @@ public class PooledDataSource implements DataSource {
         return conn;
     }
 
-    protected void finalized() throws Throwable {
+    protected void finalized(){
         forceCloseAll();
     }
 

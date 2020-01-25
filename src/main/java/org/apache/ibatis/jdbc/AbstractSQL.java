@@ -28,7 +28,7 @@ import java.util.List;
  */
 public abstract class AbstractSQL<T> {
 
-  private static final String AND_ = ") \nAND (";
+  private static final String AND_1 = ") \nAND (";
   private static final String OR = ") \nOR (";
   private static final String AND = " AND ";
   private static final String WHERE = "WHERE";
@@ -219,7 +219,7 @@ public abstract class AbstractSQL<T> {
   }
 
   public T AND() {
-    sql().lastList.add(AND_);
+    sql().lastList.add(AND_1);
     return getSelf();
   }
 
@@ -347,7 +347,7 @@ public abstract class AbstractSQL<T> {
         String last = "________";
         for (int i = 0, n = parts.size(); i < n; i++) {
           String part = parts.get(i);
-          if (i > 0 && !part.equals(AND_) && !part.equals(OR) && !last.equals(AND_) && !last.equals(OR)) {
+          if (i > 0 && !part.equals(AND_1) && !part.equals(OR) && !last.equals(AND_1) && !last.equals(OR)) {
             builder.append(conjunction);
           }
           builder.append(part);

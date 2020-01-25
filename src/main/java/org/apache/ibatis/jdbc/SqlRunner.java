@@ -93,7 +93,7 @@ public class SqlRunner {
 
 
 
-public Object GenkeyInnested(Object genkey) {
+public Object genkeyInnested(Object genkey) {
 
 
     try {
@@ -131,7 +131,7 @@ return genkey;
           if (i.hasNext()) {
             Object genkey = i.next();
   if (genkey != null) {
-GenkeyInnested(genkey);
+genkeyInnested(genkey);
 
 }
 return  Integer.parseInt(genkey.toString());

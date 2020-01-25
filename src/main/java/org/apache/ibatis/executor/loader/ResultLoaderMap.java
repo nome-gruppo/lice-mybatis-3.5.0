@@ -114,10 +114,7 @@ public class ResultLoaderMap {
      * Name of factory method which returns database connection.
      */
     private static final String FACTORY_METHOD = "getConfiguration";
-    /**
-     * Object to check whether we went through serialization..
-     */
-    private final transient Object serializationCheck = new Object();
+    
     /**
      * Meta object which sets loaded properties.
      */

@@ -16,6 +16,7 @@
 package org.apache.ibatis.executor.loader.javassist;
 
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,25 +52,31 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
     try {
       Resources.classForName("javassist.util.proxy.ProxyFactory");
     } catch (Throwable e) {
-      throw new IllegalStateException("Cannot enable lazy loading because Javassist is not available. Add Javassist to your classpath.", e);
+      throw new IllegalStateException(
+          "Cannot enable lazy loading because Javassist is not available. Add Javassist to your classpath.", e);
     }
   }
 
   @Override
-  public Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    return EnhancedResultObjectProxyImpl.createProxy(target, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
+  public Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration,
+      ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    return EnhancedResultObjectProxyImpl.createProxy(target, lazyLoader, configuration, objectFactory,
+        constructorArgTypes, constructorArgs);
   }
 
-  public Object createDeserializationProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    return EnhancedDeserializationProxyImpl.createProxy(target, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
+  public Object createDeserializationProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties,
+      ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    return EnhancedDeserializationProxyImpl.createProxy(target, unloadedProperties, objectFactory, constructorArgTypes,
+        constructorArgs);
   }
 
   @Override
   public void setProperties(Properties properties) {
-      // Not Implemented
+    // Not Implemented
   }
 
-  static Object crateProxy(Class<?> type, MethodHandler callback, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+  static Object crateProxy(Class<?> type, MethodHandler callback, List<Class<?>> constructorArgTypes,
+      List<Object> constructorArgs) {
 
     ProxyFactory enhancer = new ProxyFactory();
     enhancer.setSuperclass(type);
@@ -81,7 +88,7 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
         LogHolder.log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
       }
     } catch (NoSuchMethodException e) {
-      enhancer.setInterfaces(new Class[]{WriteReplaceInterface.class});
+      enhancer.setInterfaces(new Class[] { WriteReplaceInterface.class });
     } catch (SecurityException e) {
       // nothing to do here
     }
@@ -108,7 +115,8 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
     private final List<Class<?>> constructorArgTypes;
     private final List<Object> constructorArgs;
 
-    private EnhancedResultObjectProxyImpl(Class<?> type, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    private EnhancedResultObjectProxyImpl(Class<?> type, ResultLoaderMap lazyLoader, Configuration configuration,
+        ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       this.type = type;
       this.lazyLoader = lazyLoader;
       this.aggressive = configuration.isAggressiveLazyLoading();
@@ -118,17 +126,17 @@ public class JavassistProxyFactory implements org.apache.ibatis.executor.loader.
       this.constructorArgs = constructorArgs;
     }
 
-    public static Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration, ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+    public static Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration,
+        ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
       final Class<?> type = target.getClass();
-      EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type, lazyLoader, configuration, objectFactory, constructorArgTypes, constructorArgs);
+      EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type, lazyLoader, configuration,
+          objectFactory, constructorArgTypes, constructorArgs);
       Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
       PropertyCopier.copyBeanProperties(type, target, enhanced);
       return enhanced;
     }
 
-
-
-    public void invokeInnested(String methodName) throws Exception{
+    public void invokeInnested(String methodName) throws SQLException {
 
       if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
         lazyLoader.loadAll();

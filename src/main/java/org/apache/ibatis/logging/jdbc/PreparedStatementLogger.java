@@ -41,7 +41,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
     this.statement = stmt;
   }
 
-public void setcolumn(Object[] params, Method method) {
+public void setColumn(Object[] params, Method method) {
   if ("setNull".equals(method.getName())) {
     setColumn(params[0], null);
   } else {
@@ -79,7 +79,7 @@ public void updatecount(int updateCount) {
         }
       } else if (SET_METHODS.contains(method.getName())) {
 
-          setcolumn(params, method);
+          setColumn(params, method);
 
 
         return method.invoke(statement, params);

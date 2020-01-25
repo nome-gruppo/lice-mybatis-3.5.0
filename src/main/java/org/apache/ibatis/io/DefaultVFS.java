@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -175,7 +174,7 @@ public class DefaultVFS extends VFS {
         children.addAll(lines);
       }
     } catch (Exception e) {
-
+      //do something
     } finally {
       is.close();
 
@@ -298,7 +297,11 @@ public class DefaultVFS extends VFS {
             return testUrl;
           }
         } else {
-          findJarForResourceTry(file, jarUrl);
+          try {
+            file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Unsupported encoding?  UTF-8?  That's unpossible.");
+          }
         }
       }
     } catch (MalformedURLException e) {
@@ -310,34 +313,27 @@ public class DefaultVFS extends VFS {
     return null;
   }// end method findJarForResource
 
-  private void findJarForResourceIf1(URL url) throws MalformedURLException {
+  private void findJarForResourceIf1(URL url){
     if (log.isDebugEnabled()) {
       log.debug("Find JAR URL: " + url);
     }
   }
 
-  private void findJarForResourceIf2(int index, StringBuilder jarUrl) throws MalformedURLException {
+  private void findJarForResourceIf2(int index, StringBuilder jarUrl){
     jarUrl.setLength(index + 4);
     if (log.isDebugEnabled()) {
       log.debug("Extracted JAR URL: " + jarUrl);
     }
   }
 
-  private void findJarForResourceIf3(StringBuilder jarUrl) throws MalformedURLException {
+  private void findJarForResourceIf3(StringBuilder jarUrl){
     if (log.isDebugEnabled()) {
       log.debug("Not a JAR: " + jarUrl);
     }
   }
 
-  private void findJarForResourceTry(File file, StringBuilder jarUrl) throws MalformedURLException {
-    try {
-      file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalArgumentException("Unsupported encoding?  UTF-8?  That's unpossible.");
-    }
-  }
 
-  private void findJarForResourceIfLast(File file) throws MalformedURLException {
+  private void findJarForResourceIfLast(File file){
     if (log.isDebugEnabled()) {
       log.debug("Trying real file: " + file.getAbsolutePath());
     }
