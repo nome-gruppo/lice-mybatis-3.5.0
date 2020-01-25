@@ -86,30 +86,29 @@ public class SqlRunner {
       try {
         ps.close();
       } catch (SQLException e) {
-        //ignore
+        // ignore
       }
     }
   }
 
-
-
-public Object genkeyInnested(Object genkey) {
-
+  public Object genkeyInnested(Object genkey) {
 
     try {
       return Integer.parseInt(genkey.toString());
     } catch (NumberFormatException e) {
-      //ignore, no numeric key support
+      // ignore, no numeric key support
     }
-return genkey;
+    return genkey;
 
-}
+  }
+
   /**
    * Executes an INSERT statement.
    *
    * @param sql  The SQL
    * @param args The arguments to be set on the statement.
-   * @return The number of rows impacted or BATCHED_RESULTS if the statements are being batched.
+   * @return The number of rows impacted or BATCHED_RESULTS if the statements are
+   *         being batched.
    * @throws SQLException If statement preparation or execution fails
    */
   public int insert(String sql, Object... args) throws SQLException {
@@ -130,20 +129,24 @@ return genkey;
           Iterator<Object> i = key.values().iterator();
           if (i.hasNext()) {
             Object genkey = i.next();
-  if (genkey != null) {
-genkeyInnested(genkey);
+            if (genkey != null) {
+              genkeyInnested(genkey);
 
-}
-return  Integer.parseInt(genkey.toString());
+            }
+            return Integer.parseInt(genkey.toString());
           }
+
         }
+
       }
       return NO_GENERATED_KEY;
-    } finally {
+    } finally
+
+    {
       try {
         ps.close();
       } catch (SQLException e) {
-        //ignore
+        // ignore
       }
     }
   }
@@ -153,7 +156,8 @@ return  Integer.parseInt(genkey.toString());
    *
    * @param sql  The SQL
    * @param args The arguments to be set on the statement.
-   * @return The number of rows impacted or BATCHED_RESULTS if the statements are being batched.
+   * @return The number of rows impacted or BATCHED_RESULTS if the statements are
+   *         being batched.
    * @throws SQLException If statement preparation or execution fails
    */
   public int update(String sql, Object... args) throws SQLException {
@@ -165,7 +169,7 @@ return  Integer.parseInt(genkey.toString());
       try {
         ps.close();
       } catch (SQLException e) {
-        //ignore
+        // ignore
       }
     }
   }
@@ -175,7 +179,8 @@ return  Integer.parseInt(genkey.toString());
    *
    * @param sql  The SQL
    * @param args The arguments to be set on the statement.
-   * @return The number of rows impacted or BATCHED_RESULTS if the statements are being batched.
+   * @return The number of rows impacted or BATCHED_RESULTS if the statements are
+   *         being batched.
    * @throws SQLException If statement preparation or execution fails
    */
   public int delete(String sql, Object... args) throws SQLException {
@@ -183,8 +188,7 @@ return  Integer.parseInt(genkey.toString());
   }
 
   /**
-   * Executes any string as a JDBC Statement.
-   * Good for DDL
+   * Executes any string as a JDBC Statement. Good for DDL
    *
    * @param sql The SQL
    * @throws SQLException If statement preparation or execution fails
@@ -197,7 +201,7 @@ return  Integer.parseInt(genkey.toString());
       try {
         stmt.close();
       } catch (SQLException e) {
-        //ignore
+        // ignore
       }
     }
   }
@@ -206,14 +210,15 @@ return  Integer.parseInt(genkey.toString());
     try {
       connection.close();
     } catch (SQLException e) {
-      //ignore
+      // ignore
     }
   }
 
   private void setParameters(PreparedStatement ps, Object... args) throws SQLException {
     for (int i = 0, n = args.length; i < n; i++) {
       if (args[i] == null) {
-        throw new SQLException("SqlRunner requires an instance of Null to represent typed null values for JDBC compatibility");
+        throw new SQLException(
+            "SqlRunner requires an instance of Null to represent typed null values for JDBC compatibility");
       } else if (args[i] instanceof Null) {
         ((Null) args[i]).getTypeHandler().setParameter(ps, i + 1, null, ((Null) args[i]).getJdbcType());
       } else {
@@ -259,7 +264,7 @@ return  Integer.parseInt(genkey.toString());
     } finally {
       if (rs != null) {
         try {
-            rs.close();
+          rs.close();
         } catch (Exception e) {
           // ignore
         }

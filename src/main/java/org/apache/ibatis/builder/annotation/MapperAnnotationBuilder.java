@@ -332,7 +332,7 @@ public class MapperAnnotationBuilder {
 
       if (options != null) {
 
-        mapperSupport=parseStatementSupportTwo(flushCache,options,useCache,fetchSize,timeout,statementType,resultSetType);
+        mapperSupport=parseStatementSupportTwo(flushCache,options);
         flushCache=mapperSupport.getFlush();
         useCache=mapperSupport.getUse();
         fetchSize=mapperSupport.getFetch();
@@ -346,7 +346,7 @@ public class MapperAnnotationBuilder {
       ResultMap resultMapAnnotation = method.getAnnotation(ResultMap.class);
       if (resultMapAnnotation != null) {
 
-        resultMapId=parseStatementSupportThree(resultMapId,resultMapAnnotation);
+        resultMapId=parseStatementSupportThree(resultMapAnnotation);
 
       } else if (isSelect) {
         resultMapId = parseResultMap(method);
@@ -385,12 +385,17 @@ public class MapperAnnotationBuilder {
     return mapperSupport;
   }
 
-  private MapperAnnotationBuilderSupport parseStatementSupportTwo(boolean flushCache,Options options, boolean useCache,Integer fetchSize, Integer timeout,StatementType statementType, ResultSetType resultSetType){
+  private MapperAnnotationBuilderSupport parseStatementSupportTwo(boolean flushCache,Options options){
     if (FlushCachePolicy.TRUE.equals(options.flushCache())) {
       flushCache = true;
     } else if (FlushCachePolicy.FALSE.equals(options.flushCache())) {
       flushCache = false;
     }
+    boolean useCache;
+    Integer fetchSize;
+    Integer timeout;
+    StatementType statementType;
+    ResultSetType resultSetType;
     useCache = options.useCache();
     fetchSize = options.fetchSize() > -1 || options.fetchSize() == Integer.MIN_VALUE ? options.fetchSize() : null; //issue #348
     timeout = options.timeout() > -1 ? options.timeout() : null;
@@ -400,9 +405,10 @@ public class MapperAnnotationBuilder {
     return mapperSupport;
   }
 
-  private String parseStatementSupportThree(String resultMapId,ResultMap resultMapAnnotation){
+  private String parseStatementSupportThree(ResultMap resultMapAnnotation){
     String[] resultMaps = resultMapAnnotation.value();
     StringBuilder sb = new StringBuilder();
+    String resultMapId;
     for (String resultMap : resultMaps) {
       if (sb.length() > 0) {
         sb.append(",");
@@ -478,7 +484,7 @@ public class MapperAnnotationBuilder {
   }
 
   private Class<?> getReturnTypeSupport(Type resolvedReturnType, Method method) {
-    
+
     Class<?> mReturnType = (Class<?>) resolvedReturnType;
     if (mReturnType.isArray()) {
       mReturnType = mReturnType.getComponentType();
@@ -595,9 +601,9 @@ public class MapperAnnotationBuilder {
       Class<? extends TypeHandler<?>> typeHandler = (Class<? extends TypeHandler<?>>) ((result
           .typeHandler() == UnknownTypeHandler.class) ? null : result.typeHandler());
       ResultMapping resultMapping = assistant.buildResultMapping(
-          assistant.passClassBuildResultMapping(resultType,  result.javaType() == void.class ? null : result.javaType()),       
-          assistant.passStringBuildResultMapping(nullOrEmpty(result.property()), nullOrEmpty(result.column()), 
-          hasNestedSelect(result) ? nestedSelectId(result) : null, null, null, null, null),         
+          assistant.passClassBuildResultMapping(resultType,  result.javaType() == void.class ? null : result.javaType()),
+          assistant.passStringBuildResultMapping(nullOrEmpty(result.property()), nullOrEmpty(result.column()),
+          hasNestedSelect(result) ? nestedSelectId(result) : null, null, null, null, null),
           result.jdbcType() == JdbcType.UNDEFINED ? null : result.jdbcType(),
           typeHandler, flags, null,
           isLazy(result));
@@ -646,8 +652,8 @@ public class MapperAnnotationBuilder {
       ResultMapping resultMapping = assistant.buildResultMapping(
           assistant.passClassBuildResultMapping(resultType, arg.javaType() == void.class ? null : arg.javaType()),
           assistant.passStringBuildResultMapping(nullOrEmpty(arg.name()), nullOrEmpty(arg.column()), nullOrEmpty(arg.select()),
-          nullOrEmpty(arg.resultMap()), null, nullOrEmpty(arg.columnPrefix()), null),          
-          arg.jdbcType() == JdbcType.UNDEFINED ? null : arg.jdbcType(),           
+          nullOrEmpty(arg.resultMap()), null, nullOrEmpty(arg.columnPrefix()), null),
+          arg.jdbcType() == JdbcType.UNDEFINED ? null : arg.jdbcType(),
           typeHandler, flags, null, false);
       resultMappings.add(resultMapping);
     }
@@ -692,11 +698,11 @@ public class MapperAnnotationBuilder {
     assistant.setKeyGenerator(keyGenerator);
     assistant.setSqlSource(sqlSource);
     assistant.addMappedStatement(
-        assistant.passStringAddMappedStatement(id, parameterMap, resultMap, keyProperty, keyColumn, null, null), 
+        assistant.passStringAddMappedStatement(id, parameterMap, resultMap, keyProperty, keyColumn, null, null),
         statementType, sqlCommandType,
         assistant.passIntegerAddMappedStatement(fetchSize, timeout),
         assistant.passClassAddMappedStatement(parameterTypeClass, resultTypeClass),
-        resultSetTypeEnum, 
+        resultSetTypeEnum,
         assistant.passBooleanAddMappedStatement(flushCache, useCache, false));
 
     id = assistant.applyCurrentNamespace(id, false);

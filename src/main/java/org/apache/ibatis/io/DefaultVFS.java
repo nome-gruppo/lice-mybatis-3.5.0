@@ -63,18 +63,18 @@ public class DefaultVFS extends VFS {
       URL jarUrl = findJarForResource(url);
       if (jarUrl != null) {
 
-        resources = listSupport(resources, is, jarUrl, url, path);
+        resources = listSupport(jarUrl, url, path);
 
       } else {
         List<String> children = new ArrayList<>();
         try {
           if (isJar(url)) {
 
-            children = listSupportTwo(children, is, url);
+            children = listSupportTwo(children, url);
 
           } else {
 
-            children = listSupportThree(children, is, url, path);
+            children = listSupportThree(children, url, path);
 
           }
         } catch (FileNotFoundException e) {
@@ -114,8 +114,10 @@ public class DefaultVFS extends VFS {
     }
   }
 
-  public List<String> listSupport(List<String> resources, InputStream is, URL jarUrl, URL url, String path)
+  public List<String> listSupport(URL jarUrl, URL url, String path)
       throws IOException {
+    InputStream is;
+    List<String> resources;
     is = jarUrl.openStream();
     if (log.isDebugEnabled()) {
       log.debug("Listing " + url);
@@ -124,9 +126,10 @@ public class DefaultVFS extends VFS {
     return resources;
   }
 
-  public List<String> listSupportTwo(List<String> children, InputStream is, URL url) throws IOException {
+  public List<String> listSupportTwo(List<String> children, URL url) throws IOException {
     // Some versions of JBoss VFS might give a JAR stream even if the resource
     // referenced by the URL isn't actually a JAR
+    InputStream is;
     is = url.openStream();
     try (JarInputStream jarInput = new JarInputStream(is)) {
       if (log.isDebugEnabled()) {
@@ -142,7 +145,7 @@ public class DefaultVFS extends VFS {
     return children;
   }
 
-  public List<String> listSupportThree(List<String> children, InputStream is, URL url, String path) throws IOException {
+  public List<String> listSupportThree(List<String> children,  URL url, String path) throws IOException {
     /*
      * Some servlet containers allow reading from directory resources like a text
      * file, listing the child resources one per line. However, there is no way to
@@ -151,6 +154,7 @@ public class DefaultVFS extends VFS {
      * loader as a child of the current resource. If any line fails then we assume
      * the current resource is not a directory.
      */
+    InputStream is;
     is = url.openStream();
 
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
