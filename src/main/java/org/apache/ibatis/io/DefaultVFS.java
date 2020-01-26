@@ -178,7 +178,7 @@ public class DefaultVFS extends VFS {
         children.addAll(lines);
       }
     } catch (Exception e) {
-      //do something
+      Exception exception=e;
     } finally {
       is.close();
 

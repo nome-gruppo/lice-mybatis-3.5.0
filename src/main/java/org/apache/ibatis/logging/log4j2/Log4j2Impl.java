@@ -19,13 +19,14 @@ import org.apache.ibatis.logging.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.spi.AbstractLogger;
-
+import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 /**
  * @author Eduardo Macarron
  */
 public class Log4j2Impl implements Log {
 
   private final Log log;
+  private Slf4jImpl slf;
 
   public Log4j2Impl(String clazz) {
     Logger logger = LogManager.getLogger(clazz);
@@ -35,41 +36,44 @@ public class Log4j2Impl implements Log {
     } else {
       log = new Log4j2LoggerImpl(logger);
     }
+    this.slf=new Slf4jImpl(clazz);
   }
 
   @Override
   public boolean isDebugEnabled() {
-    return log.isDebugEnabled();
+    boolean result=slf.isDebugEnabled();
+    return result;
   }
 
   @Override
   public boolean isTraceEnabled() {
-    return log.isTraceEnabled();
+    boolean result=slf.isTraceEnabled();
+    return result;
   }
 
   @Override
   public void error(String s, Throwable e) {
-    log.error(s, e);
+    slf.error(s,e);
   }
 
   @Override
   public void error(String s) {
-    log.error(s);
+    slf.error(s);
   }
 
   @Override
   public void debug(String s) {
-    log.debug(s);
+    slf.debug(s);
   }
 
   @Override
   public void trace(String s) {
-    log.trace(s);
+    slf.trace(s);
   }
 
   @Override
   public void warn(String s) {
-    log.warn(s);
+    slf.warn(s);
   }
 
 }

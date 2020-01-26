@@ -34,11 +34,13 @@ public class ParameterMap {
 
   public static class Builder {
     private ParameterMap parameterMap = new ParameterMap();
+    private Configuration configuration;
 
     public Builder(Configuration configuration, String id, Class<?> type, List<ParameterMapping> parameterMappings) {
       parameterMap.id = id;
       parameterMap.type = type;
       parameterMap.parameterMappings = parameterMappings;
+      this.configuration=configuration;
     }
 
     public Class<?> type() {

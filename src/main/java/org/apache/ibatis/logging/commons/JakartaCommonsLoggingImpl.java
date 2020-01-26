@@ -15,53 +15,53 @@
  */
 package org.apache.ibatis.logging.commons;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 
 /**
  * @author Clinton Begin
  */
 public class JakartaCommonsLoggingImpl implements org.apache.ibatis.logging.Log {
 
-  private final Log log;
+  
+  private Slf4jImpl slf;
 
   public JakartaCommonsLoggingImpl(String clazz) {
-    log = LogFactory.getLog(clazz);
+    this.slf=new Slf4jImpl(clazz);
   }
 
   @Override
   public boolean isDebugEnabled() {
-    return log.isDebugEnabled();
+    return slf.isDebugEnabled();
   }
 
   @Override
   public boolean isTraceEnabled() {
-    return log.isTraceEnabled();
+    return slf.isTraceEnabled();
   }
 
   @Override
   public void error(String s, Throwable e) {
-    log.error(s, e);
+    slf.error(s,e);
   }
 
   @Override
   public void error(String s) {
-    log.error(s);
+    slf.error(s);
   }
 
   @Override
   public void debug(String s) {
-    log.debug(s);
+    slf.debug(s);
   }
 
   @Override
   public void trace(String s) {
-    log.trace(s);
+    slf.trace(s);
   }
 
   @Override
   public void warn(String s) {
-    log.warn(s);
+    slf.warn(s);
   }
 
 }

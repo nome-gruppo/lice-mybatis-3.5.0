@@ -89,7 +89,8 @@ public class GenericTokenParser {
       offset = src.length;
     } else {
       builder.append(handler.handleToken(expression.toString()));
-      offset = end + closeToken.length();
+      offset = end;
+      offset+= closeToken.length();
     }
     return offset;
   }

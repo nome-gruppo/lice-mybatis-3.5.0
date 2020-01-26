@@ -27,6 +27,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.lang.InstantiationException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.Reflector;
@@ -62,7 +64,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         try {
-          return constructor.newInstance();
+          return trySupport(constructor);
         } catch (IllegalAccessException e) {
           if (Reflector.canControlMemberAccessible()) {
             constructor.setAccessible(true);
@@ -74,7 +76,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       }
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
       try {
-        return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
+        return trySupportTwo(constructor,constructorArgs);
       } catch (IllegalAccessException e) {
         if (Reflector.canControlMemberAccessible()) {
           constructor.setAccessible(true);
@@ -95,6 +97,14 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
       throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
     }
+  }
+
+  private <T> T trySupport(Constructor<T>constructor) throws IllegalAccessException, InstantiationException, InvocationTargetException{
+    return constructor.newInstance();
+  }
+
+  private <T> T trySupportTwo(Constructor<T>constructor, List<Object>constructorArgs) throws IllegalAccessException, InstantiationException, InvocationTargetException{
+    return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
   }
 
   private void instantiateClassSupport(List<Class<?>>constructorArgTypes, StringBuilder argTypes){

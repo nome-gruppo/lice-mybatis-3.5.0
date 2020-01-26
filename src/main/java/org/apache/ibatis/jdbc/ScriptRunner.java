@@ -166,7 +166,7 @@ public class ScriptRunner {
       if (autoCommit != connection.getAutoCommit()) {
         connection.setAutoCommit(autoCommit);
       }
-    } catch (Throwable t) {
+    } catch (Exception t) {
       throw new RuntimeSqlException("Could not set AutoCommit to " + autoCommit + CAUSE + t, t);
     }
   }
@@ -176,7 +176,7 @@ public class ScriptRunner {
       if (!connection.getAutoCommit()) {
         connection.commit();
       }
-    } catch (Throwable t) {
+    } catch (Exception t) {
       throw new RuntimeSqlException("Could not commit transaction. Cause: " + t, t);
     }
   }
@@ -186,7 +186,7 @@ public class ScriptRunner {
       if (!connection.getAutoCommit()) {
         connection.rollback();
       }
-    } catch (Throwable t) {
+    } catch (Exception t) {
       // ignore
     }
   }

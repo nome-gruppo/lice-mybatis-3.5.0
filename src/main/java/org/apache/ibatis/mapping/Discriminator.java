@@ -33,10 +33,12 @@ public class Discriminator {
 
   public static class Builder {
     private Discriminator discriminator = new Discriminator();
+    private Configuration configuration;
 
-    public Builder(Configuration configuration, ResultMapping resultMapping, Map<String, String> discriminatorMap) {
+    public Builder(Configuration  configuration, ResultMapping resultMapping, Map<String, String> discriminatorMap) {
       discriminator.resultMapping = resultMapping;
       discriminator.discriminatorMap = discriminatorMap;
+      this.configuration=configuration;
     }
 
     public Discriminator build() {
