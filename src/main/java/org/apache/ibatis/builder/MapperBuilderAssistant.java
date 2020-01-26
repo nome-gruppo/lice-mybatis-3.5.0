@@ -50,7 +50,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
- * MapperBuilderAssistant ç”¨äºŽç¼“å­˜ã€�sqlå�‚æ•°ã€�æŸ¥è¯¢è¿”å›žçš„ç»“æžœé›†çš„å¤„ç�†
+ * MapperBuilderAssistant 
  * @author Clinton Begin
  */
 public class MapperBuilderAssistant extends BaseBuilder {
@@ -58,7 +58,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
   private String currentNamespace;
   private final String resource;
   private Cache currentCache;
-  //æ˜¯å�¦ä¸�èƒ½è§£æž�CacheRefçš„æ ‡è®°ï¼Œå­˜åœ¨#676çš„é—®é¢˜
+  
   private boolean unresolvedCacheRef; // issue #676
 
   private KeyGenerator mKeyGenerator;

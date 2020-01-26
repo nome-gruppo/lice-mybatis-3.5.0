@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
  * PreparedStatement proxy to add logging
@@ -63,7 +62,7 @@ public void updatecount(int updateCount) {
 
 
   @Override
-  public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object[] params) throws Exception {
     try {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, params);
@@ -95,8 +94,8 @@ public void updatecount(int updateCount) {
       } else {
         return method.invoke(statement, params);
       }
-    } catch (Throwable t) {
-      throw ExceptionUtil.unwrapThrowable(t);
+    } catch (Exception t) {
+      throw t;
     }
   }
 

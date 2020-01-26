@@ -64,7 +64,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * DefaultResultSetHandler:ResultSetHandlerçš„å®žçŽ°ç±»ï¼Œä¸»è¦�å¤„ç�†Statementå¤„ç�†SQLå�Žï¼Œè¿”å›žçš„ç»“æžœé›†ã€‚
+ * DefaultResultSetHandler:ResultSetHandlerçš
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -74,46 +74,38 @@ import java.util.Set;
  */
 public class DefaultResultSetHandler implements ResultSetHandler {
 
-    // deferredå»¶è¿Ÿå¯¹è±¡
+    // deferredå
     private static final Object DEFERRED = new Object();
 
-    // æ‰§è¡Œå™¨
+    
     private final Executor executor;
-    // æ ¸å¿ƒé…�ç½®å¯¹è±¡
     private final Configuration configuration;
-    // MappedStatementï¼ŒSQLç‰‡æ®µå¯¹è±¡
     private final MappedStatement mappedStatement;
-    // åˆ†é¡µå¤„ç�†å¯¹è±¡
     private final RowBounds rowBounds;
-    // å°†å� ä½�ç¬¦è½¬æˆ�å®žå�‚çš„å¯¹è±¡
     private final ParameterHandler parameterHandler;
-    // ç»“æžœå¤„ç�†
     private final ResultHandler<?> resultHandler;
-    // å¤„ç�†å�Žçš„SQLè¯­å�¥
     private final BoundSql boundSql;
 
-    // ç±»åž‹å¤„ç�†å™¨æ³¨å†Œå™¨
     private final TypeHandlerRegistry typeHandlerRegistry;
-    // Objectå·¥åŽ‚ï¼Œç”¨äºŽåˆ›å»ºç»“æžœç±»åž‹çš„å¯¹è±¡ï¼Œåº”è¯¥æ˜¯æ‰§è¡Œçš„SQLï¼Œè¿”å›žçš„ç»“æžœé›†ï¼Œé€šè¿‡é…�ç½®æ�¥åˆ›å»ºç›¸åº”çš„Pojoå®žä½“å¯¹è±¡æ�¥è¿›è¡Œæ˜ å°„
+    // Object
     private final ObjectFactory objectFactory;
-    // ReflectorFactoryè¿”å›žå·¥åŽ‚
+    // ReflectorFactory
     private final ReflectorFactory reflectorFactory;
 
-    // nested resultmaps--åµŒå¥—resultmaps
+    // nested resultmaps resultmaps
     private final Map<CacheKey, Object> nestedResultObjects = new HashMap<>();
     private final Map<String, Object> ancestorObjects = new HashMap<>();
     private Object previousRowValue;
 
-    // multiple resultsets --å¤šä¸ªç»“æžœé›†
+    // multiple resultsets 
     private final Map<String, ResultMapping> nextResultMaps = new HashMap<>();
     private final Map<CacheKey, List<PendingRelation>> pendingRelations = new HashMap<>();
 
-    // Cached Automappings --ç¼“å­˜Automappings
+    // Cached Automappings --Automappings
     private final Map<String, List<UnMappedColumnAutoMapping>> autoMappingsCache = new HashMap<>();
 
     // temporary marking flag that indicate using constructor mapping (use field to
     // reduce memory usage)
-    // ä¸´æ—¶æ ‡è®°æ ‡å¿—ï¼ŒæŒ‡ç¤ºä½¿ç”¨æž„é€ å‡½æ•°æ˜ å°„(ä½¿ç”¨å­—æ®µæ�¥å‡�å°‘å†…å­˜ä½¿ç”¨)
     private boolean useConstructorMappings;
 
     private static final CacheKey TEMP = new NullCacheKey();
@@ -197,34 +189,26 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     //
-    // HANDLE RESULT SETS --å¤„ç�†ç»“æžœé›†
+    // HANDLE RESULT SETS -
     //
     @Override
     public List<Object> handleResultSets(Statement stmt) throws SQLException {
         ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
 
-        // ç”¨äºŽå­˜å‚¨
         final List<Object> multipleResults = new ArrayList<>();
 
         int resultSetCount = 0;
-        // ç»“æžœé›†çš„ç¬¬ä¸€ä¸ªç»“æžœ
         ResultSetWrapper rsw = getFirstResultSet(stmt);
 
-        // èŽ·å�–mapper.xmlä¸­çš„resultMapæ ‡ç­¾çš„pojoç±»åž‹
         List<ResultMap> resultMaps = mappedStatement.getResultMaps();
-        // é›†å�ˆçš„æ€»æ•°
         int resultMapCount = resultMaps.size();
-        // å¯¹æ¯”æ£€éªŒï¼Œä¸�åŒ¹é…�æŠ›ExecutorException
+        // ExecutorException
         validateResultMapsCount(rsw, resultMapCount);
-        // åŒ¹é…�
         while (rsw != null && resultMapCount > resultSetCount) {
             ResultMap resultMap = resultMaps.get(resultSetCount);
-            // æ ¹æ�®resultMapå¤„ç�†rswç”Ÿæˆ�javaå¯¹è±¡
             handleResultSet(rsw, resultMap, multipleResults, null);
-            // èŽ·å�–ç»“æžœé›†çš„ä¸‹ä¸€ä¸ªç»“æžœ
             rsw = getNextResultSet(stmt);
             cleanUpAfterHandlingResultSet();
-            // å¤„ç�†å®Œä¸€æ�¡ç»“æžœè®°å½•ï¼ŒresultSetCountè‡ªå¢ž1
             resultSetCount++;
         }
 
@@ -264,7 +248,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return new DefaultCursor<>(this, resultMap, rsw, rowBounds);
     }
 
-    // èŽ·å�–ç»“æžœé›†çš„ç¬¬ä¸€æ�¡è®°å½•
     private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();
         while (rs == null) {

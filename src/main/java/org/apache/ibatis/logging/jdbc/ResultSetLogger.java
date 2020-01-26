@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
  * ResultSet proxy to add logging
@@ -60,7 +59,7 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
   }
 
   @Override
-  public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object[] params) throws Exception {
     try {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, params);
@@ -84,8 +83,8 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
       }
       clearColumnInfo();
       return o;
-    } catch (Throwable t) {
-      throw ExceptionUtil.unwrapThrowable(t);
+    } catch (Exception t) {
+      throw t;
     }
   }
 

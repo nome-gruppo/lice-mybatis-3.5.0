@@ -56,14 +56,14 @@ import org.apache.ibatis.type.TypeHandler;
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
-  // XPathParserï¼šXMLèŠ‚ç‚¹è§£æž�
+  // XPathParser
   private final XPathParser parser;
 
   private final MapperBuilderAssistant builderAssistant;
-  // å°†mapper.xmlä¸­çš„sqlç‰‡æ®µå­˜å‚¨åˆ°Mapä¸­
+  
   private final Map<String, XNode> sqlFragments;
 
-  // Mapper.xmlæ–‡ä»¶
+  // Mapper.xml
   private final String resource;
 
   private static final String NAMESPACE = "namespace";
@@ -113,7 +113,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
-  // è§£æž�Mapper.xmlæ–‡ä»¶ï¼Œä»Ž<mapper>å¼€å§‹è§£æž�ã€‚è§£æž�åˆ°çš„èŠ‚ç‚¹æ•°æ�®ï¼Œå­˜å…¥åˆ°Configurationå¯¹è±¡ä¸­
+  
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
@@ -130,7 +130,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
-  // è§£æž�XNodeèŠ‚ç‚¹
+  
   private void configurationElement(XNode context) {
     try {
       String namespace = context.getStringAttribute(NAMESPACE);
@@ -240,7 +240,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
-  // å�‚æ•°ç±»åž‹
+  
   private void parameterMapElement(List<XNode> list) {
     for (XNode parameterMapNode : list) {
       String id = parameterMapNode.getStringAttribute("id");
@@ -283,7 +283,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return resultMapElement(resultMapNode, Collections.<ResultMapping>emptyList(), null);
   }
 
-  // è¿”å›žç»“æžœçš„å¤„ç�†
+  
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings,
       Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
@@ -382,7 +382,6 @@ public class XMLMapperBuilder extends BaseBuilder {
       String id = context.getStringAttribute("id");
       id = builderAssistant.applyCurrentNamespace(id, false);
       if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
-        // å°†sqlç‰‡æ®µå­˜å‚¨ï¼Œkeyä¸ºIdï¼Œvalueï¼šsqlè¯­å�¥
         sqlFragments.put(id, context);
       }
     }

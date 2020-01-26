@@ -47,13 +47,13 @@ public class PooledDataSource implements DataSource {
   
    
 
-    // OPTIONAL CONFIGURATION FIELDS---å�¯é€‰é…�ç½®å­—æ®µ
+    // OPTIONAL CONFIGURATION FIELDS---
 
-    //æœ€å¤§æ´»è·ƒçš„è¿žæŽ¥æ•°
+    
     protected int poolMaximumActiveConnections = 10;
-    //æœ€å¤§é—²ç½®è¿žæŽ¥æ•°
+    
     protected int poolMaximumIdleConnections = 5;
-    //æœ€å¤§çš„æ£€æŸ¥è¿žæŽ¥æ—¶é—´
+    
     protected int poolMaximumCheckoutTime = 20000;
     protected int poolTimeToWait = 20000;
     protected int poolMaximumLocalBadConnectionTolerance = 3;
@@ -63,7 +63,7 @@ public class PooledDataSource implements DataSource {
 
     private int expectedConnectionTypeCode;
 
-    //æž„é€ å™¨ï¼ŒèŽ·å�–æ•°æ�®åº“è¿žæŽ¥æ•°æ�®æº�
+    
     public PooledDataSource() {
         dataSource = new UnpooledDataSource();
     }
@@ -73,10 +73,10 @@ public class PooledDataSource implements DataSource {
     }
 
     /**
-     * @param driver   æ•°æ�®åº“é©±åŠ¨ç±»
-     * @param url      æ•°æ�®åº“è¿žæŽ¥url
-     * @param username ç”¨æˆ·å��
-     * @param password å¯†ç �
+     * @param driver   
+     * @param url      
+     * @param username 
+     * @param password 
      */
     public PooledDataSource(String driver, String url, String username, String password) {
         dataSource = new UnpooledDataSource(driver, url, username, password);
@@ -98,7 +98,7 @@ public class PooledDataSource implements DataSource {
         expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 
-    //èŽ·å�–Connectionä»£ç�†æ•°æ�®åº“è¿žæŽ¥å¯¹è±¡
+    
     @Override
     public Connection getConnection() throws SQLException {
         return popConnection(dataSource.getUsername(), dataSource.getPassword()).getProxyConnection();
@@ -573,11 +573,7 @@ public class PooledDataSource implements DataSource {
                             log.debug("Testing connection " + conn.getRealHashCode() + " ...");
                         }
                         Connection realConn = conn.getRealConnection();
-                        /**
-                         * try(){}:è¿™ç§�ç§°ä¸ºtry-with-resourcesè¯­å�¥ï¼Œtryè¯­å�¥åœ¨è¯¥è¯­å�¥ç»“æ�Ÿæ—¶è‡ªåŠ¨å…³é—­è¿™äº›èµ„æº�ã€‚
-                         * æ­¤å¤„çš„èµ„æº�æŒ‡å¾—æ˜¯é‚£äº›å¿…é¡»åœ¨ç¨‹åº�ç»“æ�Ÿæ—¶å¿…é¡»å…³é—­çš„èµ„æº�ï¼ˆæ¯”å¦‚æ•°æ�®åº“è¿žæŽ¥ï¼Œç½‘ç»œè¿žæŽ¥ç­‰ï¼‰ã€‚
-                         * try(){}æ˜¯jdk7å¼€å§‹çš„è¯­æ³•ã€‚
-                         */
+                        
                         try (Statement statement = realConn.createStatement()) {
                             statement.executeQuery(poolPingQuery).close();
                         }
