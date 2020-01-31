@@ -109,7 +109,7 @@ public class CglibProxyFactory implements ProxyFactory {
     private final Class<?> type11;
     private final ResultLoaderMap lazyLoader;
     private final boolean aggressive;
-    private final Set<String> lazyLoadTrigger_Methods;
+    private final Set<String> lazyLoadTriggerMethods;
     private final ObjectFactory objectFactory;
     private final List<Class<?>> constructorArgType;
     private final List<Object> mConstructorArg;
@@ -119,7 +119,7 @@ public class CglibProxyFactory implements ProxyFactory {
       this.type11 = type11;
       this.lazyLoader = lazyLoader;
       this.aggressive = configuration.isAggressiveLazyLoading();
-      this.lazyLoadTrigger_Methods = configuration.getLazyLoadTriggerMethods();
+      this.lazyLoadTriggerMethods = configuration.getLazyLoadTriggerMethods();
       this.objectFactory = objectFactory;
       this.constructorArgType = constructorArgType;
       this.mConstructorArg = mConstructorArg;
@@ -140,18 +140,18 @@ public class CglibProxyFactory implements ProxyFactory {
       try {
         synchronized (lazyLoader) {
           if (WRITE_REPLACE_METHOD.equals(methodName)) {
-            Object original_;
+            Object original;
             if (constructorArgType.isEmpty()) {
-              original_ = objectFactory.create(type11);
+              original = objectFactory.create(type11);
             } else {
-              original_ = objectFactory.create(type11, constructorArgType, mConstructorArg);
+              original = objectFactory.create(type11, constructorArgType, mConstructorArg);
             }
-            PropertyCopier.copyBeanProperties(type11, enhanced, original_);
+            PropertyCopier.copyBeanProperties(type11, enhanced, original);
             if (lazyLoader.size() > 0) {
-              return new CglibSerialStateHolder(original_, lazyLoader.getProperties(), objectFactory,
+              return new CglibSerialStateHolder(original, lazyLoader.getProperties(), objectFactory,
                   constructorArgType, mConstructorArg);
             } else {
-              return original_;
+              return original;
             }
           } else {
             interceptElse(lazyLoader, methodName);
@@ -165,7 +165,7 @@ public class CglibProxyFactory implements ProxyFactory {
 
     private void interceptElse(ResultLoaderMap lazyLoader, String methodName) throws SQLException {
       if (lazyLoader.size() > 0 && !FINALIZE_METHOD.equals(methodName)) {
-        if (aggressive || lazyLoadTrigger_Methods.contains(methodName)) {
+        if (aggressive || lazyLoadTriggerMethods.contains(methodName)) {
           lazyLoader.loadAll();
         } else if (PropertyNamer.isSetter(methodName)) {
           final String property = PropertyNamer.methodToProperty(methodName);

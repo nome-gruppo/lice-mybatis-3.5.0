@@ -40,12 +40,12 @@ import org.apache.ibatis.executor.BatchResult;
 public interface SqlSession extends Closeable {
 
 
-    //sqlSession.selectOne("com.lice.mapper.EmployeeMapper.getEmployeeById");
+
     //通过返回一个Object类型实例，也可以转成相应的实体实例
     <T> T selectOne(String statement);
 
 
-    //sqlSession.selectOne("com.lice.mapper.EmployeeMapper.getEmployeeById",1);
+    
     //parameter是接口中的参数，与XML中的parameterType="java.lang.Integer"类型对应
     <T> T selectOne(String statement, Object parameter);
 

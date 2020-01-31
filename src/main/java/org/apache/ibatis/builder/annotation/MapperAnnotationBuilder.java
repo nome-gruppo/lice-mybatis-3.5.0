@@ -178,8 +178,7 @@ public class MapperAnnotationBuilder {
         }
       }
       if (inputStream != null) {
-        XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource,
-            configuration.getSqlFragments(), type.getName());
+        XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource, configuration.getSqlFragments(), type.getName());
         xmlParser.parse();
       }
     }
@@ -191,8 +190,7 @@ public class MapperAnnotationBuilder {
       Integer size = cacheDomain.size() == 0 ? null : cacheDomain.size();
       Long flushInterval = cacheDomain.flushInterval() == 0 ? null : cacheDomain.flushInterval();
       Properties props = convertToProperties(cacheDomain.properties());
-      assistant.useNewCache(cacheDomain.implementation(), cacheDomain.eviction(), flushInterval, size,
-          cacheDomain.readWrite(), cacheDomain.blocking(), props);
+      assistant.useNewCache(cacheDomain.implementation(), cacheDomain.eviction(), flushInterval, size, cacheDomain.readWrite(), cacheDomain.blocking(), props);
     }
   }
 
@@ -202,7 +200,8 @@ public class MapperAnnotationBuilder {
     }
     Properties props = new Properties();
     for (Property property : properties) {
-      props.setProperty(property.name(), PropertyParser.parse(property.value(), configuration.getVariables()));
+      props.setProperty(property.name(),
+          PropertyParser.parse(property.value(), configuration.getVariables()));
     }
     return props;
   }
@@ -253,13 +252,12 @@ public class MapperAnnotationBuilder {
     return type.getName() + "." + method.getName() + suffix;
   }
 
-  private void applyResultMap(String resultMapId, Class<?> returnType, Arg[] args, Result[] results,
-      TypeDiscriminator discriminator) {
+  private void applyResultMap(String resultMapId, Class<?> returnType, Arg[] args, Result[] results, TypeDiscriminator discriminator) {
     List<ResultMapping> resultMappings = new ArrayList<>();
     applyConstructorArgs(args, returnType, resultMappings);
     applyResults(results, returnType, resultMappings);
     Discriminator disc = applyDiscriminator(resultMapId, returnType, discriminator);
-    // TODO add AutoMappingBehaviour
+    
     assistant.addResultMap(resultMapId, returnType, null, disc, resultMappings, null);
     createDiscriminatorResultMaps(resultMapId, returnType, discriminator);
   }
@@ -272,7 +270,7 @@ public class MapperAnnotationBuilder {
         // issue #136
         applyConstructorArgs(c.constructArgs(), resultType, resultMappings);
         applyResults(c.results(), resultType, resultMappings);
-        // TODO add AutoMappingBehaviour
+        
         assistant.addResultMap(caseResultMapId, c.type(), resultMapId, null, resultMappings, null);
       }
     }
@@ -381,8 +379,7 @@ public class MapperAnnotationBuilder {
       keyProperty = options.keyProperty();
       keyColumn = options.keyColumn();
     }
-    MapperAnnotationBuilderSupport mapperSupport=new MapperAnnotationBuilderSupport(keyGenerator,keyProperty,keyColumn);
-    return mapperSupport;
+    return new MapperAnnotationBuilderSupport(keyGenerator,keyProperty,keyColumn);
   }
 
   private MapperAnnotationBuilderSupport parseStatementSupportTwo(boolean flushCache,Options options){
@@ -401,8 +398,7 @@ public class MapperAnnotationBuilder {
     timeout = options.timeout() > -1 ? options.timeout() : null;
     statementType = options.statementType();
     resultSetType = options.resultSetType();
-    MapperAnnotationBuilderSupport mapperSupport=new MapperAnnotationBuilderSupport(flushCache,useCache,fetchSize,timeout,resultSetType,statementType);
-    return mapperSupport;
+    return new MapperAnnotationBuilderSupport(flushCache,useCache,fetchSize,timeout,resultSetType,statementType);
   }
 
   private String parseStatementSupportThree(ResultMap resultMapAnnotation){

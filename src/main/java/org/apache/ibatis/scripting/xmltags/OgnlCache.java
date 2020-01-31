@@ -50,12 +50,17 @@ public final class OgnlCache {
   }
 
   private static Object parseExpression(String expression) throws OgnlException {
-    Object node = expressionCache.get(expression);
-    if (node == null) {
-      node = Ognl.parseExpression(expression);
-      expressionCache.put(expression, node);
+      Object node = expressionCache.get(expression);
+      node=parseExpressionSupport(node,expression);
+      return node;
     }
-    return node;
-  }
+
+    private static Object parseExpressionSupport(Object node,String expression)throws OgnlException{
+      if (node == null) {
+        node = Ognl.parseExpression(expression);
+        expressionCache.put(expression, node);
+      }
+      return node;
+    }
 
 }

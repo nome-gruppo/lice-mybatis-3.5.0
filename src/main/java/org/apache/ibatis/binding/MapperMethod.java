@@ -51,22 +51,37 @@ public class MapperMethod {
     this.method = new MethodSignature(config, mapperInterface, method);
   }
 
+  public Object objectInsert(SqlSession sqlSession, Object[]args){
+    Object result;
+    Object param = method.convertArgsToSqlCommandParam(args);
+      return result = rowCountResult(sqlSession.insert(command.getName(), param));
+  }
+
+  public Object objectUpdate(SqlSession sqlSession, Object[]args){
+    Object result;
+    Object param = method.convertArgsToSqlCommandParam(args);
+    return result = rowCountResult(sqlSession.update(command.getName(), param));
+  }
+
+  public Object objectDelete(SqlSession sqlSession, Object[]args){
+    Object result;
+    Object param = method.convertArgsToSqlCommandParam(args);
+    return result = rowCountResult(sqlSession.delete(command.getName(), param));
+  }
+
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     switch (command.getType()) {
       case INSERT: {
-    	Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.insert(command.getName(), param));
+        result=objectInsert(sqlSession,args);
         break;
       }
       case UPDATE: {
-        Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.update(command.getName(), param));
+        result=objectUpdate(sqlSession,args);
         break;
       }
       case DELETE: {
-        Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.delete(command.getName(), param));
+        result=objectDelete(sqlSession,args);
         break;
       }
       case SELECT:

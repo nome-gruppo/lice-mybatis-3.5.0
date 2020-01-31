@@ -57,7 +57,7 @@ public class XNode {
 
     public XNode getParent() {
         Node parent = node.getParentNode();
-        if (parent == null || !(parent instanceof Element)) {
+        if (!(parent instanceof Element)) {
             return null;
         } else {
             return new XNode(xpathParser, parent, variables);
@@ -67,7 +67,7 @@ public class XNode {
     public String getPath() {
         StringBuilder builder = new StringBuilder();
         Node current = node;
-        while (current != null && current instanceof Element) {
+        while (current instanceof Element) {
             if (current != node) {
                 builder.insert(0, "/");
             }
@@ -296,9 +296,9 @@ public class XNode {
         NodeList nodeList = node.getChildNodes();
         if (nodeList != null) {
             for (int i = 0, n = nodeList.getLength(); i < n; i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    children.add(new XNode(xpathParser, node, variables));
+                Node mNode = nodeList.item(i);
+                if (mNode.getNodeType() == Node.ELEMENT_NODE) {
+                    children.add(new XNode(xpathParser, mNode, variables));
                 }
             }
         }
@@ -308,10 +308,10 @@ public class XNode {
     public Properties getChildrenAsProperties() {
         Properties properties = new Properties();
         for (XNode child : getChildren()) {
-            String name = child.getStringAttribute("name");
+            String mName = child.getStringAttribute("name");
             String value = child.getStringAttribute("value");
-            if (name != null && value != null) {
-                properties.setProperty(name, value);
+            if (mName != null && value != null) {
+                properties.setProperty(mName, value);
             }
         }
         return properties;
@@ -332,8 +332,8 @@ public class XNode {
         List<XNode> children = getChildren();
         if (!children.isEmpty()) {
             builder.append(">\n");
-            for (XNode node : children) {
-                builder.append(node.toString());
+            for (XNode nNode : children) {
+                builder.append(nNode.toString());
             }
             builder.append("</");
             builder.append(name);
@@ -352,16 +352,16 @@ public class XNode {
     }
 
     private Properties parseAttributes(Node n) {
-        Properties attributes = new Properties();
+        Properties mAttributes = new Properties();
         NamedNodeMap attributeNodes = n.getAttributes();
         if (attributeNodes != null) {
             for (int i = 0; i < attributeNodes.getLength(); i++) {
                 Node attribute = attributeNodes.item(i);
                 String value = PropertyParser.parse(attribute.getNodeValue(), variables);
-                attributes.put(attribute.getNodeName(), value);
+                mAttributes.put(attribute.getNodeName(), value);
             }
         }
-        return attributes;
+        return mAttributes;
     }
 
     private String parseBody(Node node) {

@@ -27,7 +27,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.lang.InstantiationException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.ibatis.reflection.ReflectionException;

@@ -55,7 +55,7 @@ public class OurSqlBuilder {
 
   public String buildGetUsersByCriteriaQuery(final User criteria) {
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (criteria.getId() != null) {
         WHERE("id = #{id}");
@@ -68,7 +68,7 @@ public class OurSqlBuilder {
 
   public String buildGetUsersByCriteriaMapQuery(final Map<String, Object> criteria) {
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (criteria.get("id") != null) {
         WHERE("id = #{id}");
@@ -81,7 +81,7 @@ public class OurSqlBuilder {
 
   public String buildGetUsersByNameQuery(final String name, final String orderByColumn) {
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (name != null) {
         WHERE("name like #{param1} || '%'");
@@ -94,7 +94,7 @@ public class OurSqlBuilder {
     final String name = String.class.cast(params.get("param1"));
     final String orderByColumn = String.class.cast(params.get("param2"));
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (name != null) {
         WHERE("name like #{param1} || '%'");
@@ -105,7 +105,7 @@ public class OurSqlBuilder {
 
   public String buildGetUsersByNameWithParamNameAndOrderByQuery(@Param("orderByColumn") final String orderByColumn, @Param("name") final String name) {
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (name != null) {
         WHERE("name like #{name} || '%'");
@@ -116,7 +116,7 @@ public class OurSqlBuilder {
 
   public String buildGetUsersByNameWithParamNameQuery(@Param("name") final String name) {
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (name != null) {
         WHERE("name like #{name} || '%'");
@@ -129,7 +129,7 @@ public class OurSqlBuilder {
     final String name = String.class.cast(params.get("name"));
     final String orderByColumn = String.class.cast(params.get("orderByColumn"));
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM("users");
       if (name != null) {
         WHERE("name like #{param1} || '%'");
@@ -154,7 +154,7 @@ public class OurSqlBuilder {
     final boolean containsLogicalDelete = context.getMapperMethod().getAnnotation(BaseMapper.ContainsLogicalDelete.class) != null;
     final String tableName = context.getMapperType().getAnnotation(BaseMapper.Meta.class).tableName();
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM(tableName);
       WHERE("id = #{id}");
       if (!containsLogicalDelete){
@@ -167,7 +167,7 @@ public class OurSqlBuilder {
     final boolean containsLogicalDelete = context.getMapperMethod().getAnnotation(BaseMapper.ContainsLogicalDelete.class) != null;
     final String tableName = context.getMapperType().getAnnotation(BaseMapper.Meta.class).tableName();
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM(tableName);
       if (name != null) {
         WHERE("name like #{name} || '%'");
@@ -182,7 +182,7 @@ public class OurSqlBuilder {
     final boolean containsLogicalDelete = context.getMapperMethod().getAnnotation(BaseMapper.ContainsLogicalDelete.class) != null;
     final String tableName = context.getMapperType().getAnnotation(BaseMapper.Meta.class).tableName();
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM(tableName);
       if (id != null) {
         WHERE("id = #{id}");
@@ -200,7 +200,7 @@ public class OurSqlBuilder {
     final boolean containsLogicalDelete = context.getMapperMethod().getAnnotation(BaseMapper.ContainsLogicalDelete.class) != null;
     final String tableName = context.getMapperType().getAnnotation(BaseMapper.Meta.class).tableName();
     return new SQL(){{
-      SELECT("*");
+      select("*");
       FROM(tableName);
       if (id != null) {
         WHERE("id = #{param1}");

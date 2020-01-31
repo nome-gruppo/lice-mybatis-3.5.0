@@ -75,8 +75,9 @@ public class BlockingCacheTest {
       PersonMapper pm = sqlSession.getMapper(PersonMapper.class);
       pm.findAll();
       try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
+
+        //Thread.sleep(500);
+      } catch (Exception e) {
         Assertions.fail(e.getMessage());
       }
     }

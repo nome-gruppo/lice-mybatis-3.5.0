@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.ibatis.logging.Log;
 
@@ -36,21 +38,22 @@ import org.apache.ibatis.logging.Log;
  */
 public final class ResultSetLogger extends BaseJdbcLogger implements InvocationHandler {
 
-  private static Set<Integer> BLOB_TYPES = new HashSet<>();
+  private static Set<Integer> blobTypes = new HashSet<>();
   private boolean first = true;
   private int rows;
   private final ResultSet rs;
   private final Set<Integer> blobColumns = new HashSet<>();
+  private Logger log = Logger.getLogger("Logger");
 
   static {
-    BLOB_TYPES.add(Types.BINARY);
-    BLOB_TYPES.add(Types.BLOB);
-    BLOB_TYPES.add(Types.CLOB);
-    BLOB_TYPES.add(Types.LONGNVARCHAR);
-    BLOB_TYPES.add(Types.LONGVARBINARY);
-    BLOB_TYPES.add(Types.LONGVARCHAR);
-    BLOB_TYPES.add(Types.NCLOB);
-    BLOB_TYPES.add(Types.VARBINARY);
+    blobTypes.add(Types.BINARY);
+    blobTypes.add(Types.BLOB);
+    blobTypes.add(Types.CLOB);
+    blobTypes.add(Types.LONGNVARCHAR);
+    blobTypes.add(Types.LONGVARBINARY);
+    blobTypes.add(Types.LONGVARCHAR);
+    blobTypes.add(Types.NCLOB);
+    blobTypes.add(Types.VARBINARY);
   }
 
   private ResultSetLogger(ResultSet rs, Log statementLog, int queryStack) {
@@ -84,6 +87,7 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
       clearColumnInfo();
       return o;
     } catch (Exception t) {
+      log.log(Level.WARNING, "exception", t);
       throw t;
     }
   }
@@ -92,7 +96,7 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
     StringBuilder row = new StringBuilder();
     row.append("   Columns: ");
     for (int i = 1; i <= columnCount; i++) {
-      if (BLOB_TYPES.contains(rsmd.getColumnType(i))) {
+      if (blobTypes.contains(rsmd.getColumnType(i))) {
         blobColumns.add(i);
       }
       String colname = rsmd.getColumnLabel(i);

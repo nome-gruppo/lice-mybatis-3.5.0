@@ -176,7 +176,8 @@ public class XMLScriptBuilder extends BaseBuilder {
       String open = nodeToHandle.getStringAttribute("open");
       String close = nodeToHandle.getStringAttribute("close");
       String separator = nodeToHandle.getStringAttribute("separator");
-      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(configuration, mixedSqlNode, collection, index, item, open, close, separator);
+      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(mixedSqlNode, collection, index, item, open, close, separator);
+      forEachSqlNode.setConfiguration(configuration);
       targetContents.add(forEachSqlNode);
     }
   }

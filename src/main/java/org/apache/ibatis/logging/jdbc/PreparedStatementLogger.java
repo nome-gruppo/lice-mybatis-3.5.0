@@ -21,6 +21,8 @@ import java.lang.reflect.Proxy;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.ibatis.logging.Log;
 
@@ -34,6 +36,7 @@ import org.apache.ibatis.logging.Log;
 public final class PreparedStatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
   private final PreparedStatement statement;
+  private Logger log = Logger.getLogger("Logger");
 
   private PreparedStatementLogger(PreparedStatement stmt, Log statementLog, int queryStack) {
     super(statementLog, queryStack);
@@ -95,6 +98,7 @@ public void updatecount(int updateCount) {
         return method.invoke(statement, params);
       }
     } catch (Exception t) {
+      log.log(Level.WARNING, "exception", t);
       throw t;
     }
   }

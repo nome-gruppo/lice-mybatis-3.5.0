@@ -51,7 +51,7 @@ public class MetaObject {
     } else if (object instanceof Map) {
       this.objectWrapper = new MapWrapper(this, (Map) object);
     } else if (object instanceof Collection) {
-      this.objectWrapper = new CollectionWrapper(this, (Collection) object);
+      this.objectWrapper = new CollectionWrapper((Collection) object);
     } else {
       this.objectWrapper = new BeanWrapper(this, object);
     }

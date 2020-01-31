@@ -140,18 +140,18 @@ public class CacheBuilder {
   }
 
 
-  private void Stringmetacache(MetaObject metaCache,   String name, String value) {
+  private void stringmetacache(MetaObject metaCache,   String name, String value) {
     if (metaCache.hasSetter(name)) {
       Class<?> type = metaCache.getSetterType(name);
-    if (String.class == type) {
-      metaCache.setValue(name, value);
-    } else if (int.class == type  || Integer.class == type) {
-      metaCache.setValue(name, Integer.valueOf(value));
-    } else if (long.class == type|| Long.class == type) {
-      metaCache.setValue(name, Long.valueOf(value));
-    } else if (short.class == type || Short.class == type) {
+      if (String.class == type) {
+        metaCache.setValue(name, value);
+      } else if (int.class == type  || Integer.class == type) {
+        metaCache.setValue(name, Integer.valueOf(value));
+      } else if (long.class == type|| Long.class == type) {
+        metaCache.setValue(name, Long.valueOf(value));
+      }else if(short.class == type || Short.class == type) {
       metaCache.setValue(name, Short.valueOf(value));
-    } else if (byte.class == type || Byte.class == type) {
+    }else if (byte.class == type || Byte.class == type) {
       metaCache.setValue(name, Byte.valueOf(value));
     } else if (float.class == type  || Float.class == type) {
       metaCache.setValue(name, Float.valueOf(value));
@@ -175,7 +175,7 @@ public class CacheBuilder {
 
 
 
-Stringmetacache(metaCache, name, value);
+stringmetacache(metaCache, name, value);
 
 
 

@@ -77,7 +77,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // deferredå
     private static final Object DEFERRED = new Object();
 
-    
+
     private final Executor executor;
     private final Configuration configuration;
     private final MappedStatement mappedStatement;
@@ -97,7 +97,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private final Map<String, Object> ancestorObjects = new HashMap<>();
     private Object previousRowValue;
 
-    // multiple resultsets 
+    // multiple resultsets
     private final Map<String, ResultMapping> nextResultMaps = new HashMap<>();
     private final Map<CacheKey, List<PendingRelation>> pendingRelations = new HashMap<>();
 
@@ -110,10 +110,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
     private static final CacheKey TEMP = new NullCacheKey();
 
-    private static class PendingRelation {
-        public MetaObject metaObject;
-        public ResultMapping propertyMapping;
-    }
+
 
     private static class UnMappedColumnAutoMapping {
         private final String column;
@@ -470,23 +467,25 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                         columnPrefix);
                 // issue #541 make property optional
                 final String property = propertyMapping.getProperty();
-                if (property == null) {
-                    continue;
-                } else if (value == DEFERRED) {
+                if (property != null) {
+                   if (value == DEFERRED) {
                     foundValues = true;
                     continue;
-                }
-                if (value != null) {
-                    foundValues = true;
-                }
+                    }
+                    foundValues = applyPropertyMappingsSupport(value, foundValues);
 
-                valuenotnull(value, metaObject, property);
-
+                    valuenotnull(value, metaObject, property);
+                 }
             }
         }
         return foundValues;
     }
-
+    private boolean applyPropertyMappingsSupport(Object value, Boolean foundValues){
+        if (value != null) {
+            foundValues = true;
+        }
+        return foundValues;
+    }
     private Object getPropertyMappingValue(ResultSet rs, MetaObject metaResultObject, ResultMapping propertyMapping,
             ResultLoaderMap lazyLoader, String columnPrefix) throws SQLException {
         if (propertyMapping.getNestedQueryId() != null) {
@@ -524,30 +523,43 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             Boolean boolean2 = Boolean.valueOf(columnPrefix != null && !columnPrefix.isEmpty()
                     && !columnName.toUpperCase(Locale.ENGLISH).startsWith(columnPrefix));
 
-            if (boolean1.booleanValue()) {
-                propertyName = columnName.substring(columnPrefix.length());
-            } else if (boolean2.booleanValue()) {
-                continue;
-            }
+            propertyName=forcolumnameInnestedSupport(propertyName,boolean1,columnName,columnPrefix);
 
-            final String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
+            if (!(boolean2.booleanValue())) {
+             
 
-            Boolean boolean3 = Boolean.valueOf(property != null && metaObject.hasSetter(property));
+                final String property = metaObject.findProperty(propertyName, configuration.isMapUnderscoreToCamelCase());
 
-            if (boolean3.booleanValue()) {
-                if (resultMap.getMappedProperties().contains(property)) {
-                    continue;
+                Boolean boolean3 = Boolean.valueOf(property != null && metaObject.hasSetter(property));
+
+                if (boolean3.booleanValue()) {
+                    if (resultMap.getMappedProperties().contains(property)) {
+                        continue;
+                    }
+                    final Class<?> propertyType = metaObject.getSetterType(property);
+
+                    typehandlerInnested(property, rsw, columnName, autoMapping, propertyType);
+
+                } else {
+                    configuration.getAutoMappingUnknownColumnBehavior().doAction(mappedStatement, columnName,
+                    forcolumnameInnestedSupport2(property, propertyName), null);
                 }
-                final Class<?> propertyType = metaObject.getSetterType(property);
-
-                typehandlerInnested(property, rsw, columnName, autoMapping, propertyType);
-
-            } else {
-                configuration.getAutoMappingUnknownColumnBehavior().doAction(mappedStatement, columnName,
-                        (property != null) ? property : propertyName, null);
             }
-
         }
+    }
+    private String  forcolumnameInnestedSupport2(String property, String propertyName){
+        if (property != null){
+            return property;
+        } else{
+            property = propertyName;
+            return property;
+        }
+    }
+    private String forcolumnameInnestedSupport(String propertyName,Boolean boolean1,String columnName,String columnPrefix){
+      if (boolean1.booleanValue()) {
+          propertyName = columnName.substring(columnPrefix.length());
+      }
+      return propertyName;
     }
 
     private List<UnMappedColumnAutoMapping> createAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap,
@@ -593,7 +605,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         if (parents != null) {
             for (PendingRelation parent : parents) {
                 if (parent != null && rowValue != null) {
-                    linkObjects(parent.metaObject, parent.propertyMapping, rowValue);
+                    linkObjects(parent.getMetaObject(), parent.getPropertyMapping(), rowValue);
                 }
             }
         }
@@ -604,8 +616,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         CacheKey cacheKey = createKeyForMultipleResults(rs, parentMapping, parentMapping.getColumn(),
                 parentMapping.getColumn());
         PendingRelation deferLoad = new PendingRelation();
-        deferLoad.metaObject = metaResultObject;
-        deferLoad.propertyMapping = parentMapping;
+        deferLoad.setMetaObject(metaResultObject);
+        deferLoad.setPropertyMapping(parentMapping);
         List<PendingRelation> relations = pendingRelations.computeIfAbsent(cacheKey, k -> new ArrayList<>());
         // issue #255
         relations.add(deferLoad);
@@ -906,7 +918,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                     break;
                 }
             } else {
-                break;
+               discriminator = null;
             }
         }
         return resultMap;
@@ -1023,7 +1035,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // NESTED RESULT MAP (JOIN MAPPING)
     //
 
-    private void IfObjectInnested(MetaObject metaObject, boolean newObject, ResultMapping resultMapping,
+    private void ifObjectInnested(MetaObject metaObject, boolean newObject, ResultMapping resultMapping,
             Object ancestorObject) {
         if (newObject) {
             linkObjects(metaObject, resultMapping, ancestorObject); // issue #385
@@ -1037,15 +1049,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             final String nestedResultMapId = resultMapping.getNestedResultMapId();
             if (nestedResultMapId != null && resultMapping.getResultSet() == null) {
                 try {
-                    final String columnPrefix = getColumnPrefix(parentPrefix, resultMapping);
-
                     if (resultMapping.getColumnPrefix() == null) {
                         // try to fill circular reference only when columnPrefix
                         // is not specified for the nested result map (issue #215)
                         Object ancestorObject = ancestorObjects.get(nestedResultMapId);
                         if (ancestorObject != null) {
 
-                            IfObjectInnested(metaObject, newObject, resultMapping, ancestorObject);
+                            ifObjectInnested(metaObject, newObject, resultMapping, ancestorObject);
 
                             continue;
                         }

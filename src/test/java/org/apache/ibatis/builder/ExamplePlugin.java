@@ -20,6 +20,7 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 @Intercepts({})
@@ -27,7 +28,8 @@ public class ExamplePlugin implements Interceptor {
   private Properties properties;
 
   @Override
-  public Object intercept(Invocation invocation) throws Throwable {
+  public Object intercept(Invocation invocation)
+      throws InvocationTargetException, IllegalAccessException {
     return invocation.proceed();
   }
 

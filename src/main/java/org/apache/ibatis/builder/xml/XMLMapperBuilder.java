@@ -16,7 +16,6 @@
 package org.apache.ibatis.builder.xml;
 
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +59,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   private final XPathParser parser;
 
   private final MapperBuilderAssistant builderAssistant;
-  
+
   private final Map<String, XNode> sqlFragments;
 
   // Mapper.xml
@@ -71,26 +70,6 @@ public class XMLMapperBuilder extends BaseBuilder {
   private static final String RESULT_MAP = "resultMap";
   private static final String PROPERTY = "property";
   private static final String TYPEHANDLER = "typeHandler";
-
-  /**
-   * @deprecated
-   */
-  @Deprecated
-  public XMLMapperBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments,
-      String namespace) {
-    this(reader, configuration, resource, sqlFragments);
-    this.builderAssistant.setCurrentNamespace(namespace);
-  }
-
-  /**
-   * @deprecated
-   */
-  @Deprecated
-  public XMLMapperBuilder(Reader reader, Configuration configuration, String resource,
-      Map<String, XNode> sqlFragments) {
-    this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()), configuration,
-        resource, sqlFragments);
-  }
 
   public XMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource,
       Map<String, XNode> sqlFragments, String namespace) {
@@ -113,7 +92,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
-  
+
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
@@ -130,7 +109,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
-  
+
   private void configurationElement(XNode context) {
     try {
       String namespace = context.getStringAttribute(NAMESPACE);
@@ -240,7 +219,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
-  
+
   private void parameterMapElement(List<XNode> list) {
     for (XNode parameterMapNode : list) {
       String id = parameterMapNode.getStringAttribute("id");
@@ -283,7 +262,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return resultMapElement(resultMapNode, Collections.<ResultMapping>emptyList(), null);
   }
 
-  
+
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings,
       Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
@@ -432,7 +411,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     Class<? extends TypeHandler<?>> typeHandlerClass = resolveClass(typeHandler);
     JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
     return builderAssistant.buildResultMapping(
-        builderAssistant.passClassBuildResultMapping(resultType, javaTypeClass), 
+        builderAssistant.passClassBuildResultMapping(resultType, javaTypeClass),
         builderAssistant.passStringBuildResultMapping(property, column, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, resultSet),
         jdbcTypeEnum,
         typeHandlerClass, flags,foreignColumn, lazy);

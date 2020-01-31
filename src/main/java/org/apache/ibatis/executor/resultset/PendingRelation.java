@@ -13,20 +13,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.plugin;
+package org.apache.ibatis.executor.resultset;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
+import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.reflection.MetaObject;
 
-/**
- * @author Clinton Begin
- */
-public interface Interceptor {
-
-  Object intercept(Invocation invocation) throws  InvocationTargetException, IllegalAccessException;
-
-  Object plugin(Object target);
-
-  void setProperties(Properties properties);
-
+public class PendingRelation {
+    private MetaObject metaObject;
+    private ResultMapping propertyMapping;
+ 
+    public MetaObject getMetaObject(){
+      return metaObject;
+    }
+    public ResultMapping getPropertyMapping(){
+      return propertyMapping;
+    }
+    public void setMetaObject(MetaObject metaObject){
+      this.metaObject=metaObject;
+    }
+    public void setPropertyMapping(ResultMapping propertyMapping){
+      this.propertyMapping=propertyMapping;
+    }
+    
 }

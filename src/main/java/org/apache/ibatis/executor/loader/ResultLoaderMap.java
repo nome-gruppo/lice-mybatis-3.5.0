@@ -106,15 +106,15 @@ public class ResultLoaderMap {
    * Property which was not loaded yet.
    */
   public static class LoadPair implements Serializable {
-	  
-	
+
+
 
     private static final long serialVersionUID = 20130412;
     /**
      * Name of factory method which returns database connection.
      */
     private static final String FACTORY_METHOD = "getConfiguration";
-    
+
     /**
      * Meta object which sets loaded properties.
      */
@@ -153,7 +153,7 @@ public class ResultLoaderMap {
       if (metaResultObject != null && metaResultObject.getOriginalObject() instanceof Serializable) {
         final Object mappedStatementParameter = resultLoader.parameterObject;
 
-        /* @todo May the parameter be null? */
+      
         if (mappedStatementParameter instanceof Serializable) {
           this.mappedStatement = resultLoader.mappedStatement.getId();
           this.mappedParameter = (Serializable) mappedStatementParameter;
@@ -278,7 +278,7 @@ public class ResultLoaderMap {
   }
 
   private static final class ClosedExecutor extends BaseExecutor {
-	  private static final String NOT_SUPPORTED = "Not supported"; 
+	  private static final String NOT_SUPPORTED = "Not supported";
     public ClosedExecutor() {
       super(null, null);
     }

@@ -38,11 +38,9 @@ public class Slf4jImpl implements Log {
         logger.getClass().getMethod("log", Marker.class, String.class, int.class, String.class, Object[].class, Throwable.class);
         log = new Slf4jLocationAwareLoggerImpl((LocationAwareLogger) logger);
         return;
-      } catch (SecurityException e) {
+      } catch (SecurityException|NoSuchMethodException e) {
         // fail-back to Slf4jLoggerImpl
-      } catch (NoSuchMethodException e) {
-        // fail-back to Slf4jLoggerImpl
-      }
+      } 
     }
 
     // Logger is not LocationAwareLogger or slf4j version < 1.6

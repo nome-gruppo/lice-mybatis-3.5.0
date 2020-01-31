@@ -27,36 +27,36 @@ import java.sql.SQLException;
  */
 public class NClobTypeHandler extends BaseTypeHandler<String> {
 
-  @Override
-  public void setNonNullParameter(PreparedStatement ps, int i, String parameter, JdbcType jdbcType)
+
+  public void setNonNullParameter(PreparedStatement ps11, int i, String parameter11, JdbcType jdbcType)
       throws SQLException {
-    StringReader reader = new StringReader(parameter);
-    ps.setCharacterStream(i, reader, parameter.length());
+    StringReader reader11 = new StringReader(parameter11);
+    ps11.setCharacterStream(i, reader11, parameter11.length());
   }
 
-  @Override
-  public String getNullableResult(ResultSet rs, String columnName)
+
+  public String getNullableResult(ResultSet rs11, String columnName)
       throws SQLException {
-    Clob clob = rs.getClob(columnName);
-    return toString(clob);
+    Clob clob11 = rs11.getClob(columnName);
+    return toString(clob11);
   }
 
-  @Override
-  public String getNullableResult(ResultSet rs, int columnIndex)
+
+  public String getNullableResult(ResultSet rs11, int columnIndex11)
       throws SQLException {
-    Clob clob = rs.getClob(columnIndex);
-    return toString(clob);
+    Clob clob11 = rs11.getClob(columnIndex11);
+    return toString(clob11);
   }
 
-  @Override
-  public String getNullableResult(CallableStatement cs, int columnIndex)
+
+  public String getNullableResult(CallableStatement cs11, int columnIndex11)
       throws SQLException {
-    Clob clob = cs.getClob(columnIndex);
-    return toString(clob);
+    Clob clob11 = cs11.getClob(columnIndex11);
+    return toString(clob11);
   }
 
-  private String toString(Clob clob) throws SQLException {
-    return clob == null ? null : clob.getSubString(1, (int) clob.length());
+  private String toString(Clob clob11) throws SQLException {
+    return clob11 == null ? null : clob11.getSubString(1, (int) clob11.length());
   }
 
 }

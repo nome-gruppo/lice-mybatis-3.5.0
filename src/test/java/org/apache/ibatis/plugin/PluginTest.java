@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +44,7 @@ public class PluginTest {
       @Signature(type = Map.class, method = "get", args = {Object.class})})
   public static class AlwaysMapPlugin implements Interceptor {
     @Override
-    public Object intercept(Invocation invocation) throws Throwable {
+    public Object intercept(Invocation invocation) throws InvocationTargetException, IllegalAccessException {
       return "Always";
     }
 

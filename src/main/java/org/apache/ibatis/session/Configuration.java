@@ -953,6 +953,7 @@ public class Configuration {
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public V put(String key, V value) {
             if (containsKey(key)) {
                 throw new IllegalArgumentException(name + " already contains value for " + key
@@ -969,6 +970,8 @@ public class Configuration {
             return super.put(key, value);
         }
 
+
+        @Override
         public V get(Object key) {
             V value = super.get(key);
             if (value == null) {

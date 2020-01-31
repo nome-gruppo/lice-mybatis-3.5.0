@@ -41,52 +41,35 @@ import org.apache.ibatis.transaction.Transaction;
  *
  * @author Clinton Begin
  */
-public interface Executor {
+ public interface Executor {
+      ResultHandler NO_RESULT_HANDLER = null;
 
-    ResultHandler NO_RESULT_HANDLER = null;
+     int update(MappedStatement ms, Object parameter) throws SQLException;
 
-    //次方法包含的insert、update、delete的作用
-    int update(MappedStatement ms, Object parameter) throws SQLException;
+     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql) throws SQLException;
 
-    //查询，先查缓存，再查数据库
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql) throws SQLException;
+      <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
+      <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException;
 
-    // 查询信息
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
+      List<BatchResult> flushStatements() throws SQLException;
 
-    <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException;
+      void commit(boolean required) throws SQLException;
 
-    // 刷新statements
-    List<BatchResult> flushStatements() throws SQLException;
+      void rollback(boolean required) throws SQLException;
 
-    // 提交数据
-    void commit(boolean required) throws SQLException;
+      CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
 
-    //回滚
-    void rollback(boolean required) throws SQLException;
+      boolean isCached(MappedStatement ms, CacheKey key);
 
-    //创建缓存key
-    CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
+      void clearLocalCache();
 
-    //是否被缓存
-    boolean isCached(MappedStatement ms, CacheKey key);
+      void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
-    // 清空本地缓存
-    void clearLocalCache();
+      Transaction getTransaction();
 
-    // 延迟加载
-    void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
+      void close(boolean forceRollback);
 
-    // 获取Transaction 对象
-    Transaction getTransaction();
+     boolean isClosed();
 
-    // 连接关闭
-    void close(boolean forceRollback);
-
-    // 连接是否关闭
-    boolean isClosed();
-
-    // 设置执行器增强器
-    void setExecutorWrapper(Executor executor);
-
-}
+      void setExecutorWrapper(Executor executor);
+ }

@@ -77,7 +77,7 @@ public enum Null {
     this.jdbcType = jdbcType;
   }
 
-  public TypeHandler<? extends Object> getTypeHandler() {
+  public TypeHandler<?> getTypeHandler() {
     return typeHandler;
   }
 

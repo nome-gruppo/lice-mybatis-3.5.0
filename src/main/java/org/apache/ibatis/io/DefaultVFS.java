@@ -21,10 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +44,8 @@ public class DefaultVFS extends VFS {
   /** The magic header that indicates a JAR (ZIP) file. */
   private static final byte[] JAR_MAGIC = { 'P', 'K', 3, 4 };
 
+  private static final String PATH_STRING="/";
+
   @Override
   public boolean isValid() {
     return true;
@@ -53,7 +53,6 @@ public class DefaultVFS extends VFS {
 
   @Override
   public List<String> list(URL url, String path) throws IOException {
-    InputStream is = null;
     try {
       List<String> resources = new ArrayList<>();
 
@@ -101,7 +100,7 @@ public class DefaultVFS extends VFS {
 
         // Iterate over immediate children, adding files and recursing into directories
         for (String child : children) {
-          String resourcePath = path + "/" + child;
+          String resourcePath = path + PATH_STRING + child;
           resources.add(resourcePath);
           URL childUrl = new URL(prefix + child);
           resources.addAll(list(childUrl, resourcePath));
@@ -178,7 +177,7 @@ public class DefaultVFS extends VFS {
         children.addAll(lines);
       }
     } catch (Exception e) {
-      Exception exception=e;
+      //Exception e
     } finally {
       is.close();
 
@@ -213,10 +212,10 @@ public class DefaultVFS extends VFS {
   protected List<String> listResources(JarInputStream jar, String path) throws IOException {
     // Include the leading and trailing slash when matching names
     if (!path.startsWith("/")) {
-      path = "/" + path;
+      path = PATH_STRING + path;
     }
     if (!path.endsWith("/")) {
-      path = path + "/";
+      path = path + PATH_STRING;
     }
 
     // Iterate over the entries and collect those that begin with the requested path
@@ -253,19 +252,11 @@ public class DefaultVFS extends VFS {
    * @throws MalformedURLException
    */
   protected URL findJarForResource(URL url) throws MalformedURLException {
-
     findJarForResourceIf1(url);
-
-    // If the file part of the URL is itself a URL, then that URL probably points to
-    // the JAR
     try {
-      for (;;) {
-        url = new URL(url.getFile());
-        if (log.isDebugEnabled()) {
-          log.debug("Inner URL: " + url);
-          break;
-        }
-      }
+
+      url=findJarForResourceSupport(url);
+
     } catch (MalformedURLException e) {
       // This will happen at some point and serves as a break in the loop
     }
@@ -300,12 +291,6 @@ public class DefaultVFS extends VFS {
           if (isJar(testUrl)) {
             return testUrl;
           }
-        } else {
-          try {
-            file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
-          } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unsupported encoding?  UTF-8?  That's unpossible.");
-          }
         }
       }
     } catch (MalformedURLException e) {
@@ -316,6 +301,17 @@ public class DefaultVFS extends VFS {
 
     return null;
   }// end method findJarForResource
+
+  private URL findJarForResourceSupport(URL url)throws MalformedURLException{
+    for (;;) {
+      url = new URL(url.getFile());
+      if (log.isDebugEnabled()) {
+        log.debug("Inner URL: " + url);
+        break;
+      }
+    }
+    return url;
+  }
 
   private void findJarForResourceIf1(URL url){
     if (log.isDebugEnabled()) {

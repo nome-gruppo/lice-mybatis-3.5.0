@@ -391,7 +391,7 @@ public class BindingTest {
     }
   }
 
-  @Disabled
+  @Disabled //disabled shouldExecuteBoundSelectBlogUsingConstructorWithResultMapCollection
   @Test // issue #480 and #101
   public void shouldExecuteBoundSelectBlogUsingConstructorWithResultMapCollection() {
     try (SqlSession session = sqlSessionFactory.openSession()) {

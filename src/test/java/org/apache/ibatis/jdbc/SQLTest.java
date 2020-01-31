@@ -45,7 +45,7 @@ public class SQLTest {
   public void shouldDemonstrateMixedStyle() {
     //Mixed
     final String sql = new SQL() {{
-      SELECT("id, name");
+      select("id, name");
       FROM("PERSON A");
       WHERE("name like ?").WHERE("id = ?");
     }}.toString();
@@ -60,7 +60,7 @@ public class SQLTest {
   public void shouldDemonstrateFluentStyle() {
     //Fluent Style
     final String sql = new SQL()
-        .SELECT("id, name").FROM("PERSON A")
+        .select("id, name").FROM("PERSON A")
         .WHERE("name like ?")
         .WHERE("id = ?").toString();
 
@@ -127,8 +127,8 @@ public class SQLTest {
 
   private static SQL example1() {
     return new SQL() {{
-      SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");
-      SELECT("P.LAST_NAME, P.CREATED_ON, P.UPDATED_ON");
+      select("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");
+      select("P.LAST_NAME, P.CREATED_ON, P.UPDATED_ON");
       FROM("PERSON P");
       FROM("ACCOUNT A");
       INNER_JOIN("DEPARTMENT D on D.ID = P.DEPARTMENT_ID");
@@ -148,7 +148,7 @@ public class SQLTest {
 
   private static String example2(final String id, final String firstName, final String lastName) {
     return new SQL() {{
-      SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FIRST_NAME, P.LAST_NAME");
+      select("P.ID, P.USERNAME, P.PASSWORD, P.FIRST_NAME, P.LAST_NAME");
       FROM("PERSON P");
       if (id != null) {
         WHERE("P.ID like #id#");
@@ -167,7 +167,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnSelect() {
     final String sql = new SQL() {{
-      SELECT("P.ID", "P.USERNAME");
+      select("P.ID", "P.USERNAME");
     }}.toString();
 
     assertEquals("SELECT P.ID, P.USERNAME", sql);
@@ -176,7 +176,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnSelectDistinct() {
     final String sql = new SQL() {{
-      SELECT_DISTINCT("P.ID", "P.USERNAME");
+      selectDistinct("P.ID", "P.USERNAME");
     }}.toString();
 
     assertEquals("SELECT DISTINCT P.ID, P.USERNAME", sql);
@@ -185,7 +185,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnFrom() {
     final String sql = new SQL() {{
-      SELECT().FROM("TABLE_A a", "TABLE_B b");
+      select().FROM("TABLE_A a", "TABLE_B b");
     }}.toString();
 
     assertEquals("FROM TABLE_A a, TABLE_B b", sql);
@@ -194,7 +194,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnJoin() {
     final String sql = new SQL() {{
-      SELECT().JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
+      select().JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
     }}.toString();
 
     assertEquals("JOIN TABLE_A b ON b.id = a.id\n" +
@@ -204,7 +204,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnInnerJoin() {
     final String sql = new SQL() {{
-      SELECT().INNER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
+      select().INNER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
     }}.toString();
 
     assertEquals("INNER JOIN TABLE_A b ON b.id = a.id\n" +
@@ -214,7 +214,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnOuterJoin() {
     final String sql = new SQL() {{
-      SELECT().OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
+      select().OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
     }}.toString();
 
     assertEquals("OUTER JOIN TABLE_A b ON b.id = a.id\n" +
@@ -224,7 +224,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnLeftOuterJoin() {
     final String sql = new SQL() {{
-      SELECT().LEFT_OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
+      select().LEFT_OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
     }}.toString();
 
     assertEquals("LEFT OUTER JOIN TABLE_A b ON b.id = a.id\n" +
@@ -234,7 +234,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnRightOuterJoin() {
     final String sql = new SQL() {{
-      SELECT().RIGHT_OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
+      select().RIGHT_OUTER_JOIN("TABLE_A b ON b.id = a.id", "TABLE_C c ON c.id = a.id");
     }}.toString();
 
     assertEquals("RIGHT OUTER JOIN TABLE_A b ON b.id = a.id\n" +
@@ -244,7 +244,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnWhere() {
     final String sql = new SQL() {{
-      SELECT().WHERE("a = #{a}", "b = #{b}");
+      select().WHERE("a = #{a}", "b = #{b}");
     }}.toString();
 
     assertEquals("WHERE (a = #{a} AND b = #{b})", sql);
@@ -253,7 +253,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnGroupBy() {
     final String sql = new SQL() {{
-      SELECT().GROUP_BY("a", "b");
+      select().GROUP_BY("a", "b");
     }}.toString();
 
     assertEquals("GROUP BY a, b", sql);
@@ -262,7 +262,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnHaving() {
     final String sql = new SQL() {{
-      SELECT().HAVING("a = #{a}", "b = #{b}");
+      select().HAVING("a = #{a}", "b = #{b}");
     }}.toString();
 
     assertEquals("HAVING (a = #{a} AND b = #{b})", sql);
@@ -271,7 +271,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnOrderBy() {
     final String sql = new SQL() {{
-      SELECT().ORDER_BY("a", "b");
+      select().ORDER_BY("a", "b");
     }}.toString();
 
     assertEquals("ORDER BY a, b", sql);
@@ -280,7 +280,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnSet() {
     final String sql = new SQL() {{
-      UPDATE("TABLE_A").SET("a = #{a}", "b = #{b}");
+      update("TABLE_A").set("a = #{a}", "b = #{b}");
     }}.toString();
 
     assertEquals("UPDATE TABLE_A\n" +
@@ -290,7 +290,7 @@ public class SQLTest {
   @Test
   public void variableLengthArgumentOnIntoColumnsAndValues() {
     final String sql = new SQL() {{
-      INSERT_INTO("TABLE_A").INTO_COLUMNS("a", "b").INTO_VALUES("#{a}", "#{b}");
+      insertInto("TABLE_A").intoColumns("a", "b").intoValues("#{a}", "#{b}");
     }}.toString();
 
     System.out.println(sql);
@@ -300,7 +300,7 @@ public class SQLTest {
 
   @Test
   public void fixFor903UpdateJoins() {
-    final SQL sql = new SQL().UPDATE("table1 a").INNER_JOIN("table2 b USING (ID)").SET("a.value = b.value");
+    final SQL sql = new SQL().update("table1 a").INNER_JOIN("table2 b USING (ID)").set("a.value = b.value");
     assertThat(sql.toString()).isEqualTo("UPDATE table1 a\nINNER JOIN table2 b USING (ID)\nSET a.value = b.value");
   }
 }

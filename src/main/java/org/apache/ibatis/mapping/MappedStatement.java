@@ -194,11 +194,7 @@ public final class MappedStatement {
         /**
          * @deprecated Use {@link #resultSets}
          */
-        @Deprecated
-        public Builder resulSets(String resultSet) {
-            mappedStatement.resultSets = delimitedStringToArray(resultSet);
-            return this;
-        }
+
 
         public MappedStatement build() {
             assert mappedStatement.configuration != null;
@@ -208,6 +204,14 @@ public final class MappedStatement {
             mappedStatement.resultMaps = Collections.unmodifiableList(mappedStatement.resultMaps);
             return mappedStatement;
         }
+        private static String[] delimitedStringToArray(String in) {
+            String[]empty=null;
+              if (in == null || in.trim().length() == 0) {
+                  return empty;
+              } else {
+                  return in.split(",");
+              }
+          }
     }
 
     public KeyGenerator getKeyGenerator() {
@@ -305,10 +309,7 @@ public final class MappedStatement {
     /**
      * @deprecated Use {@link #getResultSets()}
      */
-    @Deprecated
-    public String[] getResulSets() {
-        return resultSets;
-    }
+  
 
     public BoundSql getBoundSql(Object parameterObject) {
         BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
@@ -331,12 +332,6 @@ public final class MappedStatement {
         return boundSql;
     }
 
-    private static String[] delimitedStringToArray(String in) {
-        if (in == null || in.trim().length() == 0) {
-            return null;
-        } else {
-            return in.split(",");
-        }
-    }
+    
 
 }

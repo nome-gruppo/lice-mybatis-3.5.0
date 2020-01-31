@@ -101,9 +101,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
           final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
           tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
           final Executor executor = configuration.newExecutor(tx, execType);
-          DefaultSqlSession defaultSqlSession=openSessionFromDataSourceSupport(configuration,executor,autoCommit);
-          return defaultSqlSession;
-
+          return openSessionFromDataSourceSupport(configuration,executor,autoCommit);
         } catch (Exception e) {
             closeTransaction(tx); // may have fetched a connection so lets call close()
             throw ExceptionFactory.wrapException("Error opening session.  Cause: " + e, e);
@@ -113,28 +111,33 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     }
 
     private DefaultSqlSession openSessionFromDataSourceSupport(Configuration configuration, Executor executor,boolean autoCommit){
-      DefaultSqlSession defaultSqlSession=new DefaultSqlSession(configuration, executor, autoCommit);
-      return defaultSqlSession;
+      return new DefaultSqlSession(configuration, executor, autoCommit);
     }
 
     //返回一个包含Connection的SqlSession对象
+
+
+    private boolean trycatchinnested(boolean autoCommit, Connection connection) throws SQLException {
+      try {
+          autoCommit = connection.getAutoCommit();
+      } catch (SQLException e) {
+          // Failover to true, as most poor drivers
+          // or databases won't support transactions
+          autoCommit = true;
+      }
+      return autoCommit;
+    }
+
     private SqlSession openSessionFromConnection(ExecutorType execType, Connection connection) {
         try {
-            boolean autoCommit;
-            try {
-                autoCommit = connection.getAutoCommit();
-            } catch (SQLException e) {
-                // Failover to true, as most poor drivers
-                // or databases won't support transactions
-                autoCommit = true;
-            }
+            boolean autoCommit = false;
+            autoCommit=trycatchinnested(autoCommit,connection);
+
             final Environment environment = configuration.getEnvironment();
             final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
             final Transaction tx = transactionFactory.newTransaction(connection);
             final Executor executor = configuration.newExecutor(tx, execType);
-            DefaultSqlSession defaultSqlSession=openSessionFromConnectionSupport(configuration,executor,autoCommit);
-            return defaultSqlSession;
-
+            return openSessionFromConnectionSupport(configuration,executor,autoCommit);
         } catch (Exception e) {
             throw ExceptionFactory.wrapException("Error opening session.  Cause: " + e, e);
         } finally {
@@ -143,8 +146,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     }
 
     private DefaultSqlSession openSessionFromConnectionSupport(Configuration configuration,Executor executor, boolean autoCommit){
-      DefaultSqlSession defaultSqlSession=new DefaultSqlSession(configuration,executor,autoCommit);
-      return defaultSqlSession;
+      return new DefaultSqlSession(configuration,executor,autoCommit);
     }
 
     //从Environment中 获取事务对象

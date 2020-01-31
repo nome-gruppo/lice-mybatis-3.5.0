@@ -318,9 +318,10 @@ public class DynamicSqlSourceTest extends BaseDataTest {
       put("array", new String[]{"one", "two", "three"});
     }};
     final String expected = "SELECT * FROM BLOG WHERE ID in (  one = ? AND two = ? AND three = ? )";
+    ForEachSqlNode forEachSqlNode =  new ForEachSqlNode(mixedContents(new TextSqlNode("${item} = #{item}")), "array", "index", "item", "(", ")", "AND");
+    forEachSqlNode.setConfiguration(new Configuration());
     DynamicSqlSource source = createDynamicSqlSource(
-        new TextSqlNode("SELECT * FROM BLOG WHERE ID in"),
-        new ForEachSqlNode(new Configuration(),mixedContents(new TextSqlNode("${item} = #{item}")), "array", "index", "item", "(", ")", "AND"));
+        new TextSqlNode("SELECT * FROM BLOG WHERE ID in"),forEachSqlNode);
     BoundSql boundSql = source.getBoundSql(parameterObject);
     assertEquals(expected, boundSql.getSql());
     assertEquals(3, boundSql.getParameterMappings().size());
@@ -346,9 +347,10 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         put("array", new Integer[] {});
     }};
     final String expected = "SELECT * FROM BLOG";
-    DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode("SELECT * FROM BLOG"),
-        new ForEachSqlNode(new Configuration(), mixedContents(
-            new TextSqlNode("#{item}")), "array", null, "item", "WHERE id in (", ")", ","));
+    ForEachSqlNode forEachSqlNode = new ForEachSqlNode(mixedContents(
+      new TextSqlNode("#{item}")), "array", null, "item", "WHERE id in (", ")", ",");
+      forEachSqlNode.setConfiguration(new Configuration());
+    DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode("SELECT * FROM BLOG"), forEachSqlNode);
     BoundSql boundSql = source.getBoundSql(parameterObject);
     assertEquals(expected, boundSql.getSql());
     assertEquals(0, boundSql.getParameterMappings().size());
@@ -363,11 +365,12 @@ public class DynamicSqlSourceTest extends BaseDataTest {
     uuuu.add(new Bean("bean id"));
     param.put("uuu", uuu);
     param.put("uuuu", uuuu);
+    ForEachSqlNode forEachSqlNode = new ForEachSqlNode(mixedContents(
+      new TextSqlNode("#{uuu.u}, #{u.id}, #{ u,typeHandler=org.apache.ibatis.type.StringTypeHandler},"
+          + " #{u:VARCHAR,typeHandler=org.apache.ibatis.type.StringTypeHandler}")), "uuuu", "uu", "u", "(", ")", ",");
+          forEachSqlNode.setConfiguration(new Configuration());
     DynamicSqlSource source = createDynamicSqlSource(
-        new TextSqlNode("INSERT INTO BLOG (ID, NAME, NOTE, COMMENT) VALUES"),
-        new ForEachSqlNode(new Configuration(),mixedContents(
-            new TextSqlNode("#{uuu.u}, #{u.id}, #{ u,typeHandler=org.apache.ibatis.type.StringTypeHandler},"
-                + " #{u:VARCHAR,typeHandler=org.apache.ibatis.type.StringTypeHandler}")), "uuuu", "uu", "u", "(", ")", ","));
+        new TextSqlNode("INSERT INTO BLOG (ID, NAME, NOTE, COMMENT) VALUES"),forEachSqlNode);
     BoundSql boundSql = source.getBoundSql(param);
     assertEquals(4, boundSql.getParameterMappings().size());
     assertEquals("uuu.u", boundSql.getParameterMappings().get(0).getProperty());

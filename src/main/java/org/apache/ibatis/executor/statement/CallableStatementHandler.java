@@ -104,7 +104,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
             ParameterMapping parameterMapping = parameterMappings.get(i);
             registerOutputParametersFor(i, parameterMapping, cs);
         }
-    }// end method 
+    }// end method
 
     private void registerOutputParametersFor(int i, ParameterMapping parameterMapping, CallableStatement cs) throws SQLException{
         if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {

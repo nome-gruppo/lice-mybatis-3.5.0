@@ -26,102 +26,102 @@ public class SqlBuilder {
   private static final ThreadLocal<SQL> localSQL = new ThreadLocal<>();
 
   static {
-    BEGIN();
+    begin();
   }
 
   private SqlBuilder() {
     // Prevent Instantiation
   }
 
-  public static void BEGIN() {
-    RESET();
+  public static void begin() {
+    reset();
   }
 
-  public static void RESET() {
+  public static void reset() {
     localSQL.set(new SQL());
   }
 
-  public static void UPDATE(String table) {
-    sqlMethodSqlBuilder().UPDATE(table);
+  public static void update(String table) {
+    sqlMethodSqlBuilder().update(table);
   }
 
-  public static void SET(String sets) {
-    sqlMethodSqlBuilder().SET(sets);
+  public static void set(String sets) {
+    sqlMethodSqlBuilder().set(sets);
   }
 
-  public static String SQL() {
+  public static String sql() {
     try {
       return sqlMethodSqlBuilder().toString();
     } finally {
-        RESET();
+        reset();
     }
   }
 
-  public static void INSERT_INTO(String tableName) {
-    sqlMethodSqlBuilder().INSERT_INTO(tableName);
+  public static void insertInto(String tableName) {
+    sqlMethodSqlBuilder().insertInto(tableName);
   }
 
-  public static void VALUES(String columns, String values) {
-    sqlMethodSqlBuilder().VALUES(columns, values);
+  public static void values(String columns, String values) {
+    sqlMethodSqlBuilder().values(columns, values);
   }
 
-  public static void SELECT(String columns) {
-    sqlMethodSqlBuilder().SELECT(columns);
+  public static void select(String columns) {
+    sqlMethodSqlBuilder().select(columns);
   }
 
-  public static void SELECT_DISTINCT(String columns) {
-    sqlMethodSqlBuilder().SELECT_DISTINCT(columns);
+  public static void selectDistinct(String columns) {
+    sqlMethodSqlBuilder().selectDistinct(columns);
   }
 
-  public static void DELETE_FROM(String table) {
-    sqlMethodSqlBuilder().DELETE_FROM(table);
+  public static void deleteFrom(String table) {
+    sqlMethodSqlBuilder().deleteFrom(table);
   }
 
-  public static void FROM(String table) {
-    sqlMethodSqlBuilder().FROM(table);
+  public static void from(String table) {
+    sqlMethodSqlBuilder().from(table);
   }
 
-  public static void JOIN(String join) {
+  public static void join(String join) {
     sqlMethodSqlBuilder().JOIN(join);
   }
 
-  public static void INNER_JOIN(String join) {
+  public static void innerJoin(String join) {
     sqlMethodSqlBuilder().INNER_JOIN(join);
   }
 
-  public static void LEFT_OUTER_JOIN(String join) {
+  public static void leftOuterJoin(String join) {
     sqlMethodSqlBuilder().LEFT_OUTER_JOIN(join);
   }
 
-  public static void RIGHT_OUTER_JOIN(String join) {
+  public static void rightOuterJoin(String join) {
     sqlMethodSqlBuilder().RIGHT_OUTER_JOIN(join);
   }
 
-  public static void OUTER_JOIN(String join) {
+  public static void outerJoin(String join) {
     sqlMethodSqlBuilder().OUTER_JOIN(join);
   }
 
-  public static void WHERE(String conditions) {
+  public static void where(String conditions) {
     sqlMethodSqlBuilder().WHERE(conditions);
   }
 
-  public static void OR() {
+  public static void or() {
     sqlMethodSqlBuilder().OR();
   }
 
-  public static void AND() {
+  public static void and() {
     sqlMethodSqlBuilder().AND();
   }
 
-  public static void GROUP_BY(String columns) {
+  public static void groupBy(String columns) {
     sqlMethodSqlBuilder().GROUP_BY(columns);
   }
 
-  public static void HAVING(String conditions) {
+  public static void having(String conditions) {
     sqlMethodSqlBuilder().HAVING(conditions);
   }
 
-  public static void ORDER_BY(String columns) {
+  public static void orderBy(String columns) {
     sqlMethodSqlBuilder().ORDER_BY(columns);
   }
 

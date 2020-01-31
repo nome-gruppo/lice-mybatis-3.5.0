@@ -22,7 +22,7 @@ public class BoundBlogSql {
   public String selectBlogsSql() {
     return new SQL() {
       {
-        SELECT("*");
+        select("*");
         FROM("BLOG");
       }
     }.toString();

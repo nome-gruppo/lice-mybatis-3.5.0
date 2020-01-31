@@ -78,39 +78,39 @@ public class SqlBuilderTest {
   }
 
   private static String example1() {
-    SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");
-    SELECT("P.LAST_NAME, P.CREATED_ON, P.UPDATED_ON");
-    FROM("PERSON P");
-    FROM("ACCOUNT A");
-    INNER_JOIN("DEPARTMENT D on D.ID = P.DEPARTMENT_ID");
-    INNER_JOIN("COMPANY C on D.COMPANY_ID = C.ID");
-    WHERE("P.ID = A.ID");
-    WHERE("P.FIRST_NAME like ?");
-    OR();
-    WHERE("P.LAST_NAME like ?");
-    GROUP_BY("P.ID");
-    HAVING("P.LAST_NAME like ?");
-    OR();
-    HAVING("P.FIRST_NAME like ?");
-    ORDER_BY("P.ID");
-    ORDER_BY("P.FULL_NAME");
-    return SQL();
+    select("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");
+    select("P.LAST_NAME, P.CREATED_ON, P.UPDATED_ON");
+    from("PERSON P");
+    from("ACCOUNT A");
+    innerJoin("DEPARTMENT D on D.ID = P.DEPARTMENT_ID");
+    innerJoin("COMPANY C on D.COMPANY_ID = C.ID");
+    where("P.ID = A.ID");
+    where("P.FIRST_NAME like ?");
+    or();
+    where("P.LAST_NAME like ?");
+    groupBy("P.ID");
+    having("P.LAST_NAME like ?");
+    or();
+    having("P.FIRST_NAME like ?");
+    orderBy("P.ID");
+    orderBy("P.FULL_NAME");
+    return sql();
   }
 
   private static String example2(String id, String firstName, String lastName) {
-    SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FIRST_NAME, P.LAST_NAME");
-    FROM("PERSON P");
+    select("P.ID, P.USERNAME, P.PASSWORD, P.FIRST_NAME, P.LAST_NAME");
+    from("PERSON P");
     if (id != null) {
-      WHERE("P.ID like #id#");
+      where("P.ID like #id#");
     }
     if (firstName != null) {
-      WHERE("P.FIRST_NAME like #firstName#");
+      where("P.FIRST_NAME like #firstName#");
     }
     if (lastName != null) {
-      WHERE("P.LAST_NAME like #lastName#");
+      where("P.LAST_NAME like #lastName#");
     }
-    ORDER_BY("P.LAST_NAME");
-    return SQL();
+    orderBy("P.LAST_NAME");
+    return sql();
   }
 
 }

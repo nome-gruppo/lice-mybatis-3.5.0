@@ -14,10 +14,8 @@
  *    limitations under the License.
  */
 package org.apache.ibatis.reflection.wrapper;
-
 import java.util.List;
 
-import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
@@ -25,21 +23,17 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.invoker.Invoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
-
 /**
  * @author Clinton Begin
  */
 public class BeanWrapper extends BaseWrapper {
-
   private final Object object;
   private final MetaClass metaClass;
-
   public BeanWrapper(MetaObject metaObject, Object object) {
     super(metaObject);
     this.object = object;
     this.metaClass = MetaClass.forClass(object.getClass(), metaObject.getReflectorFactory());
   }
-
   @Override
   public Object get(PropertyTokenizer prop) {
     if (prop.getIndex() != null) {
@@ -49,7 +43,6 @@ public class BeanWrapper extends BaseWrapper {
       return getBeanProperty(prop, object);
     }
   }
-
   @Override
   public void set(PropertyTokenizer prop, Object value) {
     if (prop.getIndex() != null) {
@@ -59,22 +52,18 @@ public class BeanWrapper extends BaseWrapper {
       setBeanProperty(prop, object, value);
     }
   }
-
   @Override
   public String findProperty(String name, boolean useCamelCaseMapping) {
     return metaClass.findProperty(name, useCamelCaseMapping);
   }
-
   @Override
   public String[] getGetterNames() {
     return metaClass.getGetterNames();
   }
-
   @Override
   public String[] getSetterNames() {
     return metaClass.getSetterNames();
   }
-
   @Override
   public Class<?> getSetterType(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -89,7 +78,6 @@ public class BeanWrapper extends BaseWrapper {
       return metaClass.getSetterType(name);
     }
   }
-
   @Override
   public Class<?> getGetterType(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -104,7 +92,6 @@ public class BeanWrapper extends BaseWrapper {
       return metaClass.getGetterType(name);
     }
   }
-
   @Override
   public boolean hasSetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -123,7 +110,6 @@ public class BeanWrapper extends BaseWrapper {
       return metaClass.hasSetter(name);
     }
   }
-
   @Override
   public boolean hasGetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -142,7 +128,6 @@ public class BeanWrapper extends BaseWrapper {
       return metaClass.hasGetter(name);
     }
   }
-
   @Override
   public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
     MetaObject metaValue;
@@ -156,49 +141,37 @@ public class BeanWrapper extends BaseWrapper {
     }
     return metaValue;
   }
-
-  private Object getBeanProperty(PropertyTokenizer prop, Object object) {
-    try{
+  private Object getBeanProperty(PropertyTokenizer prop, Object object){
+    
       Invoker method = metaClass.getGetInvoker(prop.getName());
       try {
         return method.invoke(object, NO_ARGUMENTS);
-      } catch (Throwable t) {
-        throw ExceptionUtil.unwrapThrowable(t);
+      } catch (RuntimeException e) {
+        throw e;
+      } catch (Exception c) {
+        throw new ReflectionException("Could not get property '" + prop.getName() + "' from " + object.getClass() + ".  Cause: " + c.toString(), c);
       }
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Throwable t) {
-      throw new ReflectionException("Could not get property '" + prop.getName() + "' from " + object.getClass() + ".  Cause: " + t.toString(), t);
-    }
  }
-
   private void setBeanProperty(PropertyTokenizer prop, Object object, Object value) {
-    try{
+   
       Invoker method = metaClass.getSetInvoker(prop.getName());
       Object[] params = {value};
       try {
         method.invoke(object, params);
-      } catch (Throwable t) {
-        throw ExceptionUtil.unwrapThrowable(t);
-        }
-      } catch (Throwable t) {
-      throw new ReflectionException("Could not set property '" + prop.getName() + "' of '" + object.getClass() + "' with value '" + value + "' Cause: " + t.toString(), t);
+      } catch (Exception c) {
+      throw new ReflectionException("Could not set property '" + prop.getName() + "' of '" + object.getClass() + "' with value '" + value + "' Cause: " + c.toString(), c);
     }
   }
-
   @Override
   public boolean isCollection() {
     return false;
   }
-
   @Override
   public void add(Object element) {
     throw new UnsupportedOperationException();
   }
-
   @Override
   public <E> void addAll(List<E> list) {
     throw new UnsupportedOperationException();
   }
-
 }

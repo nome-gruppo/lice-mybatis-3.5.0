@@ -111,7 +111,7 @@ public class ResultMap {
       }
       if (!constructorArgNames.isEmpty()) {
         final List<String> actualArgNames = argNamesOfMatchingConstructor(constructorArgNames);
-        if (actualArgNames == null) {
+        if (actualArgNames.isEmpty()) {
           throw new BuilderException("Error in result map '" + resultMap.id + "'. Failed to find a constructor in '"
               + resultMap.getType().getName() + "' by arg names " + constructorArgNames
               + ". There might be more info in debug log.");
@@ -172,7 +172,7 @@ public class ResultMap {
           }
         }
       }
-      return null;
+      return Collections.emptyList();
     }
 
     private boolean argTypesMatch(final List<String> constructorArgNames, Class<?>[] paramTypes,
@@ -212,7 +212,7 @@ public class ResultMap {
           }
 
           name = getArgNamesIf(paramIndex, actualParamNames, name);
-          
+
         }
         paramNames.add(name != null ? name : "arg" + paramIndex);
       }

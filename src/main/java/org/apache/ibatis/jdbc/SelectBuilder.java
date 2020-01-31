@@ -26,14 +26,14 @@ public class SelectBuilder {
   private static final ThreadLocal<SQL> localSQL = new ThreadLocal<>();
 
   static {
-    BEGIN();
+    begin();
   }
 
   private SelectBuilder() {
     // Prevent Instantiation
   }
 
-  public static void BEGIN() {
+  public static void begin() {
     RESET();
   }
 
@@ -42,11 +42,11 @@ public class SelectBuilder {
   }
 
   public static void SELECT(String columns) {
-    sqlMethod().SELECT(columns);
+    sqlMethod().select(columns);
   }
 
   public static void SELECT_DISTINCT(String columns) {
-    sqlMethod().SELECT_DISTINCT(columns);
+    sqlMethod().selectDistinct(columns);
   }
 
   public static void FROM(String table) {

@@ -34,9 +34,9 @@ public class ForEachSqlNode implements SqlNode {
     private final String separator;
     private final String item;
     private final String index;
-    private final Configuration configuration;
+    private Configuration configuration;
 
-    public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, String index, String item, String open, String close, String separator) {
+    public ForEachSqlNode(SqlNode contents, String collectionExpression, String index, String item, String open, String close, String separator) {
         this.evaluator = new ExpressionEvaluator();
         this.collectionExpression = collectionExpression;
         this.contents = contents;
@@ -45,9 +45,12 @@ public class ForEachSqlNode implements SqlNode {
         this.separator = separator;
         this.index = index;
         this.item = item;
-        this.configuration = configuration;
     }
 
+    public void setConfiguration(Configuration configuration){
+        this.configuration = configuration;
+    }
+    
     @Override
     public boolean apply(DynamicContext context) {
         Map<String, Object> bindings = context.getBindings();

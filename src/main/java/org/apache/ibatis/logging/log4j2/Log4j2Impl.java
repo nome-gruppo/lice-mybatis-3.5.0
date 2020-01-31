@@ -16,64 +16,52 @@
 package org.apache.ibatis.logging.log4j2;
 
 import org.apache.ibatis.logging.Log;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 /**
  * @author Eduardo Macarron
  */
 public class Log4j2Impl implements Log {
 
-  private final Log log;
-  private Slf4jImpl slf;
+  private Slf4jImpl slf123;
 
   public Log4j2Impl(String clazz) {
-    Logger logger = LogManager.getLogger(clazz);
 
-    if (logger instanceof AbstractLogger) {
-      log = new Log4j2AbstractLoggerImpl((AbstractLogger) logger);
-    } else {
-      log = new Log4j2LoggerImpl(logger);
-    }
-    this.slf=new Slf4jImpl(clazz);
+    this.slf123=new Slf4jImpl(clazz);
   }
 
-  @Override
+
   public boolean isDebugEnabled() {
-    boolean result=slf.isDebugEnabled();
-    return result;
+    return slf123.isDebugEnabled();
   }
 
-  @Override
+
   public boolean isTraceEnabled() {
-    boolean result=slf.isTraceEnabled();
-    return result;
+    return slf123.isTraceEnabled();
   }
 
-  @Override
+
   public void error(String s, Throwable e) {
-    slf.error(s,e);
+    slf123.error(s,e);
   }
 
-  @Override
+
   public void error(String s) {
-    slf.error(s);
+    slf123.error(s);
   }
 
-  @Override
+
   public void debug(String s) {
-    slf.debug(s);
+    slf123.debug(s);
   }
 
-  @Override
+
   public void trace(String s) {
-    slf.trace(s);
+    slf123.trace(s);
   }
 
-  @Override
+
   public void warn(String s) {
-    slf.warn(s);
+    slf123.warn(s);
   }
 
 }

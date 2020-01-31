@@ -98,13 +98,10 @@ public class DefaultParameterHandler implements ParameterHandler {
                 // 10.对PreparedStatement的占位符设置值(类型处理器可以给PreparedStatement设值)
                 try {
                     typeHandler.setParameter(ps, i + 1, value, jdbcType);
-                } catch (TypeException e) {
+                } catch (TypeException | SQLException e) {
                     throw new TypeException(
                             "Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
-                } catch (SQLException e) {
-                    throw new TypeException(
-                            "Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
-                }
+                } 
             }
         }
 

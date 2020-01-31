@@ -77,7 +77,7 @@ public class Reflector {
     Constructor<?>[] consts = clazz.getDeclaredConstructors();
     for (Constructor<?> constructor : consts) {
       if (constructor.getParameterTypes().length == 0) {
-          this.defaultConstructor = constructor;
+        this.defaultConstructor = constructor;
       }
     }
   }
@@ -90,15 +90,13 @@ public class Reflector {
         continue;
       }
       String name = method.getName();
-      if ((name.startsWith("get") && name.length() > 3)
-          || (name.startsWith("is") && name.length() > 2)) {
+      if ((name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2)) {
         name = PropertyNamer.methodToProperty(name);
         addMethodConflict(conflictingGetters, name, method);
       }
     }
     resolveGetterConflicts(conflictingGetters);
   }
-
 
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
@@ -114,25 +112,22 @@ public class Reflector {
         if (candidateType.equals(winnerType)) {
 
           if (!boolean.class.equals(candidateType)) {
-            throw new ReflectionException(
-                "Illegal overloaded getter method with ambiguous type for property "
-                    + propName + " in class " + winner.getDeclaringClass()
-                    + ". This breaks the JavaBeans specification and can cause unpredictable results.");
+            throw new ReflectionException("Illegal overloaded getter method with ambiguous type for property "
+                + propName + " in class " + winner.getDeclaringClass()
+                + ". This breaks the JavaBeans specification and can cause unpredictable results.");
           }
           if (candidate.getName().startsWith("is")) {
-             winner = candidate;
-           }
-
+            winner = candidate;
+          }
 
         } else if (candidateType.isAssignableFrom(winnerType)) {
           // OK getter type is descendant
         } else if (winnerType.isAssignableFrom(candidateType)) {
           winner = candidate;
         } else {
-          throw new ReflectionException(
-              "Illegal overloaded getter method with ambiguous type for property "
-                  + propName + " in class " + winner.getDeclaringClass()
-                  + ". This breaks the JavaBeans specification and can cause unpredictable results.");
+          throw new ReflectionException("Illegal overloaded getter method with ambiguous type for property " + propName
+              + " in class " + winner.getDeclaringClass()
+              + ". This breaks the JavaBeans specification and can cause unpredictable results.");
         }
       }
       addGetMethod(propName, winner);
@@ -154,8 +149,8 @@ public class Reflector {
       String name = method.getName();
       if (name.startsWith("set") && name.length() > 3 && method.getParameterTypes().length == 1) {
 
-          name = PropertyNamer.methodToProperty(name);
-          addMethodConflict(conflictingSetters, name, method);
+        name = PropertyNamer.methodToProperty(name);
+        addMethodConflict(conflictingSetters, name, method);
 
       }
     }
@@ -167,14 +162,16 @@ public class Reflector {
     list.add(method);
   }
 
-private void matchexception(Method match,ReflectionException exception) {
-  if (match == null&& exception!=null) {
-    throw exception;
+  private void matchexception(Method match, ReflectionException exception) {
+    if (match == null && exception != null) {
+      throw exception;
+    }
   }
-}
 
   private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
-    for (String propName : conflictingSetters.keySet()) {
+
+    for (Map.Entry<String, List<Method>> entry : conflictingSetters.entrySet()) {
+      String propName = entry.getKey();
       List<Method> setters = conflictingSetters.get(propName);
       Class<?> getterType = getTypes.get(propName);
       Method match = null;
@@ -197,10 +194,10 @@ private void matchexception(Method match,ReflectionException exception) {
         }
       }
 
-matchexception(match, exception);
-if (match != null) {
-      addSetMethod(propName, match);
-}
+      matchexception(match, exception);
+      if (match != null) {
+        addSetMethod(propName, match);
+      }
     }
   }
 
@@ -215,9 +212,9 @@ if (match != null) {
     } else if (paramType2.isAssignableFrom(paramType1)) {
       return setter1;
     }
-    throw new ReflectionException("Ambiguous setters defined for property '" + property + "' in class '"
-        + setter2.getDeclaringClass() + "' with types '" + paramType1.getName() + "' and '"
-        + paramType2.getName() + "'.");
+    throw new ReflectionException(
+        "Ambiguous setters defined for property '" + property + "' in class '" + setter2.getDeclaringClass()
+            + "' with types '" + paramType1.getName() + "' and '" + paramType2.getName() + "'.");
   }
 
   private void addSetMethod(String name, Method method) {
@@ -291,10 +288,9 @@ if (match != null) {
   }
 
   /**
-   * This method returns an array containing all methods
-   * declared in this class and any superclass.
-   * We use this method, instead of the simpler Class.getMethods(),
-   * because we want to look for private methods as well.
+   * This method returns an array containing all methods declared in this class
+   * and any superclass. We use this method, instead of the simpler
+   * Class.getMethods(), because we want to look for private methods as well.
    *
    * @param cls The class
    * @return An array containing all methods in this class

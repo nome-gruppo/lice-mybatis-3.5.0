@@ -39,7 +39,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
   private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
 
-  private final static String ERROR_ROLLBACK = "Error:  Cannot rollback.  No managed session is started.";
+  private static final String ERROR_ROLLBACK = "Error:  Cannot rollback.  No managed session is started.";
 
   private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
     this.sqlSessionFactory = sqlSessionFactory;
@@ -350,7 +350,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
       if (sqlSession != null) {
         try {
           return method.invoke(sqlSession, args);
-        } catch (Throwable t) {
+        } catch (Exception t) {
           throw ExceptionUtil.unwrapThrowable(t);
         }
       } else {
@@ -359,7 +359,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
             final Object result = method.invoke(autoSqlSession, args);
             autoSqlSession.commit();
             return result;
-          } catch (Throwable t) {
+          } catch (Exception t) {
             autoSqlSession.rollback();
             throw ExceptionUtil.unwrapThrowable(t);
           }

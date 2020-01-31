@@ -18,6 +18,11 @@ package org.apache.ibatis.mapping;
 /**
  * @author Eduardo Macarron
  */
+
+
+ /**
+   * @deprecated (
+   */
 @Deprecated
 public class DefaultDatabaseIdProvider extends VendorDatabaseIdProvider {
 }

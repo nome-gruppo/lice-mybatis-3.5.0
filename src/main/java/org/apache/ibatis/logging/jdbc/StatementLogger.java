@@ -62,7 +62,7 @@ public final class StatementLogger extends BaseJdbcLogger implements InvocationH
       } else {
         return method.invoke(statement, params);
       }
-    } catch (Throwable t) {
+    } catch (Exception t) {
       throw ExceptionUtil.unwrapThrowable(t);
     }
   }

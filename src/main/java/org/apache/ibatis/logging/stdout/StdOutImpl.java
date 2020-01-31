@@ -17,11 +17,14 @@ package org.apache.ibatis.logging.stdout;
 
 import org.apache.ibatis.logging.Log;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * @author Clinton Begin
  */
 public class StdOutImpl implements Log {
 
+  private Logger log = Logger.getLogger("Logger");
   public StdOutImpl(String clazz) {
     // Do Nothing
   }
@@ -38,27 +41,26 @@ public class StdOutImpl implements Log {
 
   @Override
   public void error(String s, Throwable e) {
-    System.err.println(s);
-    e.printStackTrace(System.err);
+    log.log(Level.WARNING, s, e);
   }
 
   @Override
   public void error(String s) {
-    System.err.println(s);
+    log.info(s);
   }
 
   @Override
   public void debug(String s) {
-    System.out.println(s);
+    log.info(s);
   }
 
   @Override
   public void trace(String s) {
-    System.out.println(s);
+    log.info(s);
   }
 
   @Override
   public void warn(String s) {
-    System.out.println(s);
+    log.info(s);
   }
 }

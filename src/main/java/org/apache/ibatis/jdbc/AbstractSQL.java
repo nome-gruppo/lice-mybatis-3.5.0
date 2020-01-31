@@ -37,13 +37,13 @@ public abstract class AbstractSQL<T> {
 
   public abstract T getSelf();
 
-  public T UPDATE(String table) {
+  public T update(String table) {
     sql().statementType = SQLStatement.StatementType.UPDATE;
     sql().tables.add(table);
     return getSelf();
   }
 
-  public T SET(String sets) {
+  public T set(String sets) {
     sql().sets.add(sets);
     return getSelf();
   }
@@ -51,18 +51,18 @@ public abstract class AbstractSQL<T> {
   /**
    * @since 3.4.2
    */
-  public T SET(String... sets) {
+  public T set(String... sets) {
     sql().sets.addAll(Arrays.asList(sets));
     return getSelf();
   }
 
-  public T INSERT_INTO(String tableName) {
+  public T insertInto(String tableName) {
     sql().statementType = SQLStatement.StatementType.INSERT;
     sql().tables.add(tableName);
     return getSelf();
   }
 
-  public T VALUES(String columns, String values) {
+  public T values(String columns, String values) {
     sql().columns.add(columns);
     sql().values.add(values);
     return getSelf();
@@ -71,7 +71,7 @@ public abstract class AbstractSQL<T> {
   /**
    * @since 3.4.2
    */
-  public T INTO_COLUMNS(String... columns) {
+  public T intoColumns(String... columns) {
     sql().columns.addAll(Arrays.asList(columns));
     return getSelf();
   }
@@ -79,12 +79,12 @@ public abstract class AbstractSQL<T> {
   /**
    * @since 3.4.2
    */
-  public T INTO_VALUES(String... values) {
+  public T intoValues(String... values) {
     sql().values.addAll(Arrays.asList(values));
     return getSelf();
   }
 
-  public T SELECT(String columns) {
+  public T select(String columns) {
     sql().statementType = SQLStatement.StatementType.SELECT;
     sql().select.add(columns);
     return getSelf();
@@ -93,34 +93,34 @@ public abstract class AbstractSQL<T> {
   /**
    * @since 3.4.2
    */
-  public T SELECT(String... columns) {
+  public T select(String... columns) {
     sql().statementType = SQLStatement.StatementType.SELECT;
     sql().select.addAll(Arrays.asList(columns));
     return getSelf();
   }
 
-  public T SELECT_DISTINCT(String columns) {
+  public T selectDistinct(String columns) {
     sql().distinct = true;
-    SELECT(columns);
+    select(columns);
     return getSelf();
   }
 
   /**
    * @since 3.4.2
    */
-  public T SELECT_DISTINCT(String... columns) {
+  public T selectDistinct(String... columns) {
     sql().distinct = true;
-    SELECT(columns);
+    select(columns);
     return getSelf();
   }
 
-  public T DELETE_FROM(String table) {
+  public T deleteFrom(String table) {
     sql().statementType = SQLStatement.StatementType.DELETE;
     sql().tables.add(table);
     return getSelf();
   }
 
-  public T FROM(String table) {
+  public T from(String table) {
     sql().tables.add(table);
     return getSelf();
   }
@@ -359,7 +359,7 @@ public abstract class AbstractSQL<T> {
 
     private String selectSQL(SafeAppendable builder) {
 
-      
+
 
       if (distinct) {
         sqlClause(builder, "SELECT DISTINCT", select, "", "", ", ");
